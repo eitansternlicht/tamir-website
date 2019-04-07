@@ -1,6 +1,6 @@
-import React, { Component } from "react";
-import { Dropzone } from "./components";
-import "./App.css";
+import React, { Component } from 'react';
+import { Dropzone } from './components';
+import './App.css';
 
 class App extends Component {
   render() {
