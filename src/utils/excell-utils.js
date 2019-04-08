@@ -1,14 +1,14 @@
 import XLSX from 'xlsx';
 
-const isDigit = c => c >= '0' && c <= '9';
+const isDigit = (c: string): boolean => c >= '0' && c <= '9';
 
-const reverseString = str =>
+const reverseString = (str: string): string =>
   str
     .split('')
     .reverse()
     .join('');
 
-const splitAtPredicate = (predicate, str) => {
+const splitAtPredicate = (predicate: (c: string) => boolean, str: string): Array<string> | void => {
   for (let i = 0; i < str.length; i++) {
     if (predicate(str[i])) {
       return [str.slice(0, i), str.slice(i)];
@@ -16,7 +16,7 @@ const splitAtPredicate = (predicate, str) => {
   }
 };
 
-const lettersToNum = letters => {
+const lettersToNum = (letters: string): number => {
   let reversed = reverseString(letters);
   let num = reversed.charCodeAt(0) - 'A'.charCodeAt(0);
   for (let i = 1; i < reversed.length; i++) {
@@ -27,9 +27,9 @@ const lettersToNum = letters => {
   return num;
 };
 
-const numToLetters = num => {
-  const base = 'Z'.charCodeAt(0) - 'A'.charCodeAt(0) + 1;
-  let letters = String.fromCharCode('A'.charCodeAt(0) + (num % base));
+const numToLetters = (num: number): string => {
+  const base: number = 'Z'.charCodeAt(0) - 'A'.charCodeAt(0) + 1;
+  let letters: string = String.fromCharCode('A'.charCodeAt(0) + (num % base));
   for (num = Math.floor(num / base); num !== 0; num = Math.floor(num / base)) {
     letters = String.fromCharCode('A'.charCodeAt(0) + (num % base) - 1) + letters;
   }
@@ -50,19 +50,25 @@ const generateCells = ref => {
   return cells;
 };
 
-const mapCellsToValues = (worksheet, cells) => {
+const mapCellsToValues = (worksheet, cells: Array<Array<string>>): Array<Array<?string>> => {
+  const values = [];
   for (let i = 0; i < cells.length; i++) {
+    values[i] = [];
     for (let j = 0; j < cells[i].length; j++) {
-      const cell = cells[i][j];
-      const value = worksheet.Sheets[worksheet.SheetNames[0]][cell];
-      cells[i][j] = value ? value.v : undefined;
+      const value = worksheet.Sheets[worksheet.SheetNames[0]][cells[i][j]];
+      values[i][j] = value ? value.v : undefined;
     }
   }
-  return cells;
+  return values;
 };
 
-export default function readerToAOA({ result }) {
-  const worksheet = XLSX.read(new Uint8Array(result), { type: 'array' });
-  const cells = generateCells(worksheet.Sheets[worksheet.SheetNames[0]]['!ref']);
-  return mapCellsToValues(worksheet, cells);
-}
+const readerToAOA = ({ result }: FileReader): Array<Array<?string>> => {
+  if (typeof result !== 'string') {
+    const worksheet = XLSX.read(new Uint8Array(result), { type: 'array' });
+    const cells = generateCells(worksheet.Sheets[worksheet.SheetNames[0]]['!ref']);
+    return mapCellsToValues(worksheet, cells);
+  }
+  return [];
+};
+
+export default readerToAOA;
