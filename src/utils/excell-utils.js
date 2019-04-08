@@ -36,33 +36,33 @@ const numToLetters = num => {
   return letters;
 };
 
-const generateKeys = ref => {
-  const [start, last] = ref.split(':');
-  const [startLetter, startNumber] = splitAtPredicate(isDigit, start);
-  const [lastLetters, lastNumbers] = splitAtPredicate(isDigit, last);
-  const keys = [];
+const generateCells = ref => {
+  const [[startLetter, startNumber], [lastLetters, lastNumbers]] = ref
+    .split(':')
+    .map(s => splitAtPredicate(isDigit, s));
+  const cells = [];
   for (let n = parseInt(startNumber) - 1; n < parseInt(lastNumbers); n++) {
-    keys[n] = [];
+    cells[n] = [];
     for (let ls = lettersToNum(startLetter); ls <= lettersToNum(lastLetters); ls++) {
-      keys[n][ls] = numToLetters(ls) + (n + 1);
+      cells[n][ls] = numToLetters(ls) + (n + 1);
     }
   }
-  return keys;
+  return cells;
 };
 
-const mapKeysToValues = (worksheet, keys) => {
-  for (let i = 0; i < keys.length; i++) {
-    for (let j = 0; j < keys[i].length; j++) {
-      const key = keys[i][j];
-      const cell = worksheet.Sheets[worksheet.SheetNames[0]][key];
-      keys[i][j] = cell ? cell.v : undefined;
+const mapCellsToValues = (worksheet, cells) => {
+  for (let i = 0; i < cells.length; i++) {
+    for (let j = 0; j < cells[i].length; j++) {
+      const cell = cells[i][j];
+      const value = worksheet.Sheets[worksheet.SheetNames[0]][cell];
+      cells[i][j] = value ? value.v : undefined;
     }
   }
-  return keys;
+  return cells;
 };
 
 export default function readerToAOA({ result }) {
   const worksheet = XLSX.read(new Uint8Array(result), { type: 'array' });
-  const keys = generateKeys(worksheet.Sheets[worksheet.SheetNames[0]]['!ref']);
-  return mapKeysToValues(worksheet, keys);
+  const cells = generateCells(worksheet.Sheets[worksheet.SheetNames[0]]['!ref']);
+  return mapCellsToValues(worksheet, cells);
 }
