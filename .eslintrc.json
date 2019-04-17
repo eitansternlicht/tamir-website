@@ -3,7 +3,6 @@
     "browser": true,
     "es6": true
   },
-  "extends": ["plugin:flowtype/recommended"],
   "globals": {
     "Atomics": "readonly",
     "SharedArrayBuffer": "readonly"
@@ -15,8 +14,5 @@
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
-  "plugins": ["react", "flowtype"],
-  "rules": {
-    "flowtype/no-types-missing-file-annotation": 0
-  }
+  "plugins": ["react"]
 }

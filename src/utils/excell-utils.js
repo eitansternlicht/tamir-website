@@ -1,22 +1,16 @@
 import XLSX from 'xlsx';
+import _ from 'mori';
+import {
+  isDigit,
+  reverseString,
+  splitAtPredicate,
+  aoaMap,
+  range,
+  createMatrix,
+  concatAll
+} from './general-utils';
 
-const isDigit = (c: string): boolean => c >= '0' && c <= '9';
-
-const reverseString = (str: string): string =>
-  str
-    .split('')
-    .reverse()
-    .join('');
-
-const splitAtPredicate = (predicate: (c: string) => boolean, str: string): Array<string> | void => {
-  for (let i = 0; i < str.length; i++) {
-    if (predicate(str[i])) {
-      return [str.slice(0, i), str.slice(i)];
-    }
-  }
-};
-
-const lettersToNum = (letters: string): number => {
+const lettersToNum = letters => {
   let reversed = reverseString(letters);
   let num = reversed.charCodeAt(0) - 'A'.charCodeAt(0);
   for (let i = 1; i < reversed.length; i++) {
@@ -27,9 +21,9 @@ const lettersToNum = (letters: string): number => {
   return num;
 };
 
-const numToLetters = (num: number): string => {
-  const base: number = 'Z'.charCodeAt(0) - 'A'.charCodeAt(0) + 1;
-  let letters: string = String.fromCharCode('A'.charCodeAt(0) + (num % base));
+const numToLetters = num => {
+  const base = 'Z'.charCodeAt(0) - 'A'.charCodeAt(0) + 1;
+  let letters = String.fromCharCode('A'.charCodeAt(0) + (num % base));
   for (num = Math.floor(num / base); num !== 0; num = Math.floor(num / base)) {
     letters = String.fromCharCode('A'.charCodeAt(0) + (num % base) - 1) + letters;
   }
@@ -37,38 +31,90 @@ const numToLetters = (num: number): string => {
 };
 
 const generateCells = ref => {
-  const [[startLetter, startNumber], [lastLetters, lastNumbers]] = ref
+  const [[startLetter, startNumber], [endLetters, endNumbers]] = ref
     .split(':')
-    .map(s => splitAtPredicate(isDigit, s));
-  const cells = [];
-  for (let n = parseInt(startNumber) - 1; n < parseInt(lastNumbers); n++) {
-    cells[n] = [];
-    for (let ls = lettersToNum(startLetter); ls <= lettersToNum(lastLetters); ls++) {
-      cells[n][ls] = numToLetters(ls) + (n + 1);
-    }
-  }
-  return cells;
+    .map(s => splitAtPredicate(isDigit, s))
+    .map(([s, n]) => [s, parseInt(n)]);
+  const numbers = range({ start: startNumber, end: endNumbers });
+  const letters = range({
+    start: startLetter,
+    end: endLetters,
+    toNum: lettersToNum,
+    fromNum: numToLetters
+  });
+  return createMatrix(letters, numbers);
 };
 
-const mapCellsToValues = (worksheet, cells: Array<Array<string>>): Array<Array<?string>> => {
-  const values = [];
-  for (let i = 0; i < cells.length; i++) {
-    values[i] = [];
-    for (let j = 0; j < cells[i].length; j++) {
-      const value = worksheet.Sheets[worksheet.SheetNames[0]][cells[i][j]];
-      values[i][j] = value ? value.v : undefined;
-    }
-  }
-  return values;
+const mapCellsToValues = (worksheet, cells) =>
+  aoaMap(cell => {
+    console.log(`cell: ${cell}`);
+    const value = worksheet.Sheets[worksheet.SheetNames[0]][cell];
+    return value ? value.v : undefined;
+  });
+
+const openFile = inputFile => {
+  const fileReader = new FileReader();
+  return new Promise((resolve, reject) => {
+    fileReader.onerror = () => {
+      fileReader.abort();
+      resolve();
+    };
+    fileReader.onload = () => {
+      resolve({ fileName: inputFile.name, result: fileReader.result });
+    };
+    fileReader.readAsArrayBuffer(inputFile);
+  });
 };
 
-const readerToAOA = ({ result }: FileReader): Array<Array<?string>> => {
+const fileToAOA = ({ fileName, result }) => {
+  const res = [];
   if (typeof result !== 'string') {
     const worksheet = XLSX.read(new Uint8Array(result), { type: 'array' });
-    const cells = generateCells(worksheet.Sheets[worksheet.SheetNames[0]]['!ref']);
-    return mapCellsToValues(worksheet, cells);
+    worksheet.SheetNames.forEach(function(sheetName) {
+      const roa = XLSX.utils.sheet_to_json(worksheet.Sheets[sheetName], { header: 1 });
+      if (roa.length) {
+        res.push({ fileName, sheetName, aoa: roa });
+      }
+    });
   }
-  return [];
+  return res;
 };
 
-export default readerToAOA;
+const filesToAOAs = files => {
+  const openPromises = files.map(openFile);
+
+  return new Promise((resolve, reject) => {
+    Promise.all(openPromises).then(openedFiles => {
+      // console.log(`openedFiles: ${openedFiles}`);
+      // debugger;
+      // const aoas = openedFiles
+      // .filter(x => x !== undefined)
+      // .map(fileToAOA);
+      // .filter(aoa => aoa.length !== 0);
+      // console.log(`aoas: ${aoas}`);
+
+      resolve(
+        concatAll(
+          openedFiles
+            .filter(x => x !== undefined)
+            .map(fileToAOA)
+            .filter(aoa => aoa.length !== 0)
+        )
+      );
+    });
+  });
+};
+
+// const filesToAOAs = files =>
+//   new Promise((resolve, reject) =>
+//     Promise.all(_.map(readUploadedFileAsArrayBuffer, files)).then(fileReaders =>
+//       resolve(
+//         _.fileReaders
+//           .filter(x => x !== undefined)
+//           .map(fileReader => readerToAOA(fileReader))
+//           .filter(aoa => aoa.length !== 0)
+//       )
+//     )
+//   );
+
+export { filesToAOAs };
