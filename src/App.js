@@ -3,17 +3,9 @@ import { Component } from 'react';
 import { Dropzone } from './components';
 import './App.css';
 
-type Props = {};
-
-class App extends Component<Props> {
+class App extends Component {
   render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <Dropzone />
-        </header>
-      </div>
-    );
+    return <Dropzone />;
   }
 }
 

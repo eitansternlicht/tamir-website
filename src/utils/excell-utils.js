@@ -45,4 +45,13 @@ const filesToAOAs = files => {
   });
 };
 
-export { filesToAOAs };
+const aoaToFile = ({ fileName, sheetName = 'Sheet1', aoa }) => {
+  if (aoa) {
+    const workbook = XLSX.utils.book_new();
+    const sheet = XLSX.utils.aoa_to_sheet(aoa);
+    XLSX.utils.book_append_sheet(workbook, sheet, sheetName);
+    XLSX.writeFile(workbook, fileName);
+  }
+};
+
+export { filesToAOAs, aoaToFile };
