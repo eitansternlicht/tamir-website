@@ -4,9 +4,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "eslint-plugin-react-hooks": "^1.6.0",
+    "faker": "^4.1.0",
     "firebase": "^5.9.3",
     "gh-pages": "^2.0.1",
     "react": "^16.8.6",
+    "react-data-grid": "^6.1.0",
+    "react-data-grid-addons": "^6.1.0",
     "react-dom": "^16.8.6",
     "react-dropzone": "^10.1.0",
     "react-scripts": "2.1.8",

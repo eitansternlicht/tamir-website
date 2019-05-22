@@ -1,11 +1,17 @@
 import * as React from 'react';
 import { Component } from 'react';
-import { Dropzone } from './components';
+import { Dropzone, Table } from './components';
+import faker from "faker";
+import row from './utils/createRowData';
+//import { createRowData } from './utils/'
 import './App.css';
 
+
+
 class App extends Component {
+
   render() {
-    return <Dropzone />;
+    return <Table rows={row} />;
   }
 }
 
