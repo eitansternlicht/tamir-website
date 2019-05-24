@@ -59,7 +59,7 @@ const row = [
     city: "ירושלים",
     school: "בית ספר דוגמא",
     coordinator: "רכז א",
-    tutor: "מדריך א",
+    tutor: "מדריך ב",
     status: "שובץ",
     lastModified: "22.05.2019"
   },
@@ -71,7 +71,7 @@ const row = [
     city: "ירושלים",
     school: "בית ספר דוגמא",
     coordinator: "רכז א",
-    tutor: "מדריך א",
+    tutor: "מדריך ב",
     status: "שובץ",
     lastModified: "22.05.2019"
   },
@@ -83,7 +83,7 @@ const row = [
     city: "ירושלים",
     school: "בית ספר דוגמא",
     coordinator: "רכז א",
-    tutor: "מדריך א",
+    tutor: "מדריך ג",
     status: "שובץ",
     lastModified: "22.05.2019"
   },
@@ -95,7 +95,7 @@ const row = [
     city: "ירושלים",
     school: "בית ספר דוגמא",
     coordinator: "רכז א",
-    tutor: "מדריך א",
+    tutor: "מדריך ג",
     status: "שובץ",
     lastModified: "22.05.2019"
   },
@@ -119,7 +119,7 @@ const row = [
     city: "ירושלים",
     school: "בית ספר דוגמא",
     coordinator: "רכז א",
-    tutor: "מדריך א",
+    tutor: "מדריך ד",
     status: "שובץ",
     lastModified: "22.05.2019"
   },
@@ -131,7 +131,7 @@ const row = [
     city: "ירושלים",
     school: "בית ספר דוגמא",
     coordinator: "רכז א",
-    tutor: "מדריך א",
+    tutor: "מדריך ד",
     status: "שובץ",
     lastModified: "22.05.2019"
   },
@@ -143,7 +143,7 @@ const row = [
     city: "ירושלים",
     school: "בית ספר דוגמא",
     coordinator: "רכז א",
-    tutor: "מדריך א",
+    tutor: "מדריך ד",
     status: "שובץ",
     lastModified: "22.05.2019"
   },
@@ -155,7 +155,7 @@ const row = [
     city: "ירושלים",
     school: "בית ספר דוגמא",
     coordinator: "רכז א",
-    tutor: "מדריך א",
+    tutor: "מדריך ה",
     status: "שובץ",
     lastModified: "22.05.2019"
   },
@@ -167,7 +167,7 @@ const row = [
     city: "ירושלים",
     school: "בית ספר דוגמא",
     coordinator: "רכז א",
-    tutor: "מדריך א",
+    tutor: "מדריך ה",
     status: "שובץ",
     lastModified: "22.05.2019"
   },
@@ -191,7 +191,7 @@ const row = [
     city: "ירושלים",
     school: "בית ספר דוגמא",
     coordinator: "רכז א",
-    tutor: "מדריך א",
+    tutor: "מדריך ה",
     status: "שובץ",
     lastModified: "22.05.2019"
   }

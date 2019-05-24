@@ -5,7 +5,8 @@ import { Toolbar, Data, Filters } from "react-data-grid-addons";
 const defaultColumnProperties = {
   filterable: true,
   sortable: true,
-  width: 160
+  resizable: true,
+  width: 120
 };
 
 const selectors = Data.Selectors;
@@ -105,26 +106,26 @@ function getRows(rows, filters) {
   return selectors.getRows({ rows, filters });
 }
 
-const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
-  this.setState(state => {
-    const rows = state.rows.slice();
-    for (let i = fromRow; i <= toRow; i++) {
-      rows[i] = { ...rows[i], ...updated };
-    }
-    return { rows };
-  });
-};
+// const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
+//   this.setState(state => {
+//     const rows = state.rows.slice();
+//     for (let i = fromRow; i <= toRow; i++) {
+//       rows[i] = { ...rows[i], ...updated };
+//     }
+//     return { rows };
+//   });
+// };
 
 function Table({ rows }) {
   const [filters, setFilters] = useState({});
   const [rowsCopy, setRows] = useState(rows);
-  const filteredRows = getRows(rows, filters);
+  const filteredRows = getRows(rowsCopy, filters);
 
   return (
     <div>
       <ReactDataGrid
         columns={columns}
-        rowGetter={i => rowsCopy[i]}
+        rowGetter={i => filteredRows[i]}
         rowsCount={filteredRows.length}
         minHeight={500}
         toolbar={<Toolbar enableFilter={true} />}
@@ -211,7 +212,7 @@ function Table({ rows }) {
 //         filterRenderer: AutoCompleteFilter
 //       }
 //     ].map(c => ({ ...c, ...defaultColumnProperties }));
-   
+
 //     this.state = { rows: this.props.rows, selectedIndexes: [] };
 //   }
 
