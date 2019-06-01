@@ -3,7 +3,7 @@ import { Component } from 'react';
 import { Dropzone, Table } from './components';
 import faker from "faker";
 import row from './utils/createRowData';
-//import { createRowData } from './utils/'
+import MainScene from './Scenes';
 import './App.css';
 
 
