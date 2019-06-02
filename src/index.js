@@ -3,6 +3,9 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import FirebaseInit from './Firebase';
+
+FirebaseInit();
 
 const root = document.getElementById('root');
 if (root) {

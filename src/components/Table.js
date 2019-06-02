@@ -1,94 +1,40 @@
 import React, { useState, Component } from "react";
 import ReactDataGrid from "react-data-grid";
 import { Toolbar, Data, Filters, Editors } from "react-data-grid-addons";
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
+import DeleteIcon from '@material-ui/icons/Delete';
+import AddIcon from '@material-ui/icons/Add';
+import SaveIcon from '@material-ui/icons/Save';
+import AssignmentIcon from '@material-ui/icons/AssignmentInd';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
 
-const defaultColumnProperties = {
-  filterable: true,
-  sortable: true,
-  resizable: true,
-  width: 120
-};
+import { Columns } from '../utils/getColumns'
+
+const useStyles = makeStyles(theme => ({
+  actionsContainer: {
+    display: 'flex',
+    flexDirection: 'row-reverse',
+  },
+  actions: {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: 5,
+    marginTop: 20,
+  },
+  button: {
+    margin: theme.spacing(1),
+    textAlign: 'right',
+
+  },
+  icon: {
+    margin: theme.spacing(1),
+    textAlign: 'right',
+  },
+}));
 
 const selectors = Data.Selectors;
-const { DropDownEditor } = Editors;
-const {
-  NumericFilter,
-  AutoCompleteFilter,
-} = Filters;
-
-const TShirtSizes = [
-  { id: "xSmall", value: "XS" },
-  { id: "small", value: "S" },
-  { id: "medium", value: "M" },
-  { id: "large", value: "L" },
-  { id: "xLarge", value: "XL" }
-
-];
-const TShirtSizesEditor = <DropDownEditor options={TShirtSizes} />;
-
-const columns = [
-  {
-    key: "check",
-    width: 60,
-    resizable: true,
-    dragable: true
-  },
-  {
-    key: "id",
-    name: "ID",
-    filterRenderer: NumericFilter,
-    sortDescendingFirst: true
-  },
-  {
-    key: "name",
-    name: "Name",
-    filterRenderer: AutoCompleteFilter
-  },
-  {
-    key: "neighborhood",
-    name: "Neighborhood",
-    filterRenderer: AutoCompleteFilter
-  },
-  {
-    key: "tShirtSize",
-    name: "T-Shirt Size",
-    filterRenderer: AutoCompleteFilter,
-    editor: TShirtSizesEditor
-  },
-  {
-    key: "city",
-    name: "City",
-    filterRenderer: AutoCompleteFilter
-  },
-  {
-    key: "school",
-    name: "School",
-    filterRenderer: AutoCompleteFilter
-  },
-  {
-    key: "coordinator",
-    name: "Coordinator",
-    filterRenderer: AutoCompleteFilter
-  },
-  {
-    key: "tutor",
-    name: "Tutor",
-    filterRenderer: AutoCompleteFilter
-  },
-  {
-    key: "status",
-    name: "Status",
-    filterRenderer: AutoCompleteFilter
-  },
-
-  {
-    key: "lastModified",
-    name: "Last Modified",
-    filterRenderer: AutoCompleteFilter
-  }
-].map(c => ({ ...c, ...defaultColumnProperties }));
-
-const ROW_COUNT = 50;
 
 const sortRows = (initialRows, sortColumn, sortDirection) => rows => {
   const comparer = (a, b) => {
@@ -123,9 +69,6 @@ function getRows(rows, filters) {
   return selectors.getRows({ rows, filters });
 }
 
-
-
-
 function Table({ rows }) {
   const [selectedIndexes, setSelectedIndexes] = useState([]);
   const [filters, setFilters] = useState({});
@@ -133,12 +76,14 @@ function Table({ rows }) {
   const filteredRows = getRows(rowsCopy, filters);
 
   const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
+    console.log("from", fromRow, "to", toRow, "update", updated);
     const newRows = [...rowsCopy];
     for (let i = fromRow; i <= toRow; i++) {
       newRows[i] = { ...rows[i], ...updated };
     }
     setRows(newRows);
   };
+
   const onRowsSelected = rows => {
     setSelectedIndexes(selectedIndexes.concat(
       rows.map(r => r.rowIdx)
@@ -154,14 +99,27 @@ function Table({ rows }) {
   };
 
   const rowText = selectedIndexes.length === 1 ? "row" : "rows";
+  const classes = useStyles();
 
+  const getData = () => {
+    const fs = firebase.firestore();
+    const uid = 'oPtv4HgN09ToxUX9hXJp4ihvopN2'
+    let s = fs.collection('Students').where(`owners.tutors.${uid}`, '==', true)
+    let t = fs.collection('Tutors').doc(uid).get()
+    Promise.all([s, t]).then(res => {
+      console.log("res", res);
+    })
+  }
+
+  getData();
   return (
     <div>
       <span style={{ textAlign: 'center', alignContent: 'center', font: 30 }} >
         {selectedIndexes.length} {rowText} selected
       </span>
       <ReactDataGrid
-        columns={columns}
+        rowKey="id"
+        columns={Columns({ type: "ceo" })}
         rowGetter={i => filteredRows[i]}
         rowsCount={filteredRows.length}
         minHeight={500}
@@ -184,6 +142,64 @@ function Table({ rows }) {
           }
         }}
       />
+
+      <div className={classes.actionsContainer}>
+
+        <div className={classes.actions}>
+          <Button variant="contained" color="primary" className={classes.button} >
+            הוסף חניך
+          <AddIcon />
+          </Button>
+
+          <Button variant="contained" color="primary" className={classes.button}>
+            הוסף מדריך
+            <AddIcon />
+          </Button>
+
+          <Button variant="contained" color="primary" className={classes.button}>
+            הוסף רכז
+          <AddIcon />
+          </Button>
+          <Button variant="contained" color="primary" className={classes.button}>
+            הוסף מנהל מחלקה
+          <AddIcon />
+          </Button>
+        </div>
+
+        <div className={classes.actions}>
+          <Button variant="contained" color="primary" className={classes.button}>
+            שבץ חניכים בחורים למדריך
+         <AssignmentIcon />
+          </Button>
+
+          <Button variant="contained" color="primary" className={classes.button}>
+            שבץ חניכים בחורים לרכז
+         <AssignmentIcon />
+          </Button>
+
+          <Button variant="contained" color="primary" className={classes.button}>
+            שבץ חניכים בחורים למנהל מחלקה
+         <AssignmentIcon />
+          </Button>
+
+        </div>
+
+        <div className={classes.actions}>
+          <Button variant="contained" color="primary" className={classes.button}>
+            מחק חניכים בחורים
+         <DeleteIcon />
+          </Button>
+        </div>
+
+        <div className={classes.actions}>
+          <Button variant="contained" color="primary" className={classes.button}>
+            ייצא לאקסל
+          <SaveIcon />
+          </Button>
+        </div>
+
+      </div>
+
     </div>
   );
 }
