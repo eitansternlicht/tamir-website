@@ -173,7 +173,7 @@ const departmentManagerColumns = [
         editable: false,
         resizable: true
     }
-].map(c => ({ ...c, ...defaultColumnProperties }));
+].map(c => ({ ...c, ...defaultColumnProperties })).reverse();
 
 const coordinatorColumns = [
     {
@@ -315,7 +315,7 @@ const Columns = ({ type }) => {
     else if (type === "tutor")
         return tutorColumns;
     else
-        return columns;
+        return columns.reverse();
 }
 
 export { Columns };

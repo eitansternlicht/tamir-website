@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
     },
     table: {
         padding: 5,
-
+        
     }
 }));
 

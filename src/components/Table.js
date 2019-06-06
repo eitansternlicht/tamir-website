@@ -10,6 +10,7 @@ import AssignmentIcon from '@material-ui/icons/AssignmentInd';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { Menu } from "react-data-grid-addons";
+import { aoaToFile } from '../utils/excell-utils';
 
 import { Columns } from '../utils/getColumns'
 
@@ -127,9 +128,11 @@ function Table({ rows }) {
   };
 
   const onRowsSelected = rows => {
+     { console.log("rows: ", rows); }
     setSelectedIndexes(selectedIndexes.concat(
       rows.map(r => r.rowIdx)
     ));
+      { console.log("selected: ", selectedIndexes); }
   };
 
   const onRowsDeselected = rows => {
@@ -142,6 +145,7 @@ function Table({ rows }) {
 
   const rowText = selectedIndexes.length === 1 ? "row" : "rows";
   const classes = useStyles();
+  const columns = Columns('ceo').reverse();
 
   const getData = () => {
     const fs = firebase.firestore();
@@ -149,8 +153,17 @@ function Table({ rows }) {
     let s = fs.collection('Students').where(`owners.tutors.${uid}`, '==', true)
     let t = fs.collection('Tutors').doc(uid).get()
     Promise.all([s, t]).then(res => {
-      console.log("res", res);
+      //console.log("res", res);
     })
+  }
+
+  const studentToArr = (student) => 
+    columns.map(r => student[r.key]);
+
+  const exportToExcel = () => {
+    const columnNames = columns.map(r => r.name);
+    const aoa = [columnNames].concat(rowsCopy.map(studentToArr));
+    aoaToFile({fileName: "temp.xlsx", aoa })
   }
 
   getData();
@@ -159,10 +172,12 @@ function Table({ rows }) {
       <span style={{ textAlign: 'center', alignContent: 'center', font: 30 }} >
         {selectedIndexes.length} {rowText} selected
       </span>
+      
       <ReactDataGrid
         rowKey="id"
         columns={Columns({ type: "ceo" })}
         rowGetter={i => filteredRows[i]}
+        
         rowsCount={filteredRows.length}
         minHeight={500}
         toolbar={<Toolbar enableFilter={true} />}
@@ -172,8 +187,8 @@ function Table({ rows }) {
         onGridSort={(sortColumn, sortDirection) =>
           setRows(sortRows(rows, sortColumn, sortDirection))
         }
-        enableCellSelect={true}
         onGridRowsUpdated={onGridRowsUpdated}
+        enableCellSelect={true}
         rowSelection={{
           showCheckbox: true,
           enableShiftSelect: true,
@@ -192,8 +207,6 @@ function Table({ rows }) {
           />
         }
         RowsContainer={ContextMenuTrigger}
-
-
       />
 
       <div className={classes.actionsContainer}>
@@ -245,7 +258,7 @@ function Table({ rows }) {
         </div>
 
         <div className={classes.actions}>
-          <Button variant="contained" color="primary" className={classes.button}>
+          <Button variant="contained" color="primary" className={classes.button} onClick={() => exportToExcel()}>
             ייצא לאקסל
           <SaveIcon />
           </Button>
