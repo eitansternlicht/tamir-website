@@ -5,7 +5,9 @@ const defaultColumnProperties = {
     filterable: true,
     sortable: true,
     resizable: true,
-    minWidth: 150,
+    editable: true,
+    minWidth: 15
+
 };
 
 const { DropDownEditor } = Editors;
@@ -33,8 +35,7 @@ const columns = [
     {
         key: "id",
         name: "ID",
-        filterRenderer: NumericFilter,
-        resizable: true
+        filterRenderer: NumericFilter
     },
     {
         key: "name",
@@ -96,7 +97,9 @@ const columns = [
     {
         key: "lastModified",
         name: "Last Modified",
-        filterRenderer: AutoCompleteFilter
+        filterRenderer: AutoCompleteFilter,
+        editable: false,
+        resizable: true
     }
 ].map(c => ({ ...defaultColumnProperties, ...c }));
 
@@ -166,7 +169,9 @@ const departmentManagerColumns = [
     {
         key: "lastModified",
         name: "Last Modified",
-        filterRenderer: AutoCompleteFilter
+        filterRenderer: AutoCompleteFilter,
+        editable: false,
+        resizable: true
     }
 ].map(c => ({ ...c, ...defaultColumnProperties }));
 
@@ -232,7 +237,9 @@ const coordinatorColumns = [
     {
         key: "lastModified",
         name: "Last Modified",
-        filterRenderer: AutoCompleteFilter
+        filterRenderer: AutoCompleteFilter,
+        editable: false,
+        resizable: true
     }
 ].map(c => ({ ...c, ...defaultColumnProperties }));
 
@@ -293,7 +300,9 @@ const tutorColumns = [
     {
         key: "lastModified",
         name: "Last Modified",
-        filterRenderer: AutoCompleteFilter
+        filterRenderer: AutoCompleteFilter,
+        editable: false,
+        resizable: true
     }
 ].map(c => ({ ...c, ...defaultColumnProperties }));
 

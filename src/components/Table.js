@@ -9,6 +9,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import AssignmentIcon from '@material-ui/icons/AssignmentInd';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import { Menu } from "react-data-grid-addons";
 
 import { Columns } from '../utils/getColumns'
 
@@ -33,6 +34,8 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'right',
   },
 }));
+
+const { ContextMenu, MenuItem, SubMenu, ContextMenuTrigger } = Menu;
 
 const selectors = Data.Selectors;
 
@@ -69,6 +72,46 @@ function getRows(rows, filters) {
   return selectors.getRows({ rows, filters });
 }
 
+
+function ExampleContextMenu({
+  idx,
+  id,
+  rowIdx,
+  onRowDelete,
+  onRowInsertAbove,
+  onRowInsertBelow
+}) {
+  return (
+    <ContextMenu id={id}>
+      <MenuItem data={{ rowIdx, idx }} onClick={onRowDelete}>
+        Delete Row
+      </MenuItem>
+      <SubMenu title="Insert Row">
+        <MenuItem data={{ rowIdx, idx }} onClick={onRowInsertAbove}>
+          Above
+        </MenuItem>
+        <MenuItem data={{ rowIdx, idx }} onClick={onRowInsertBelow}>
+          Below
+        </MenuItem>
+      </SubMenu>
+    </ContextMenu>
+  );
+}
+
+const deleteRow = rowIdx => rows => {
+  const nextRows = [...rows];
+  nextRows.splice(rowIdx, 1);
+  return nextRows;
+};
+
+const insertRow = rowIdx => rows => {
+  const newRow = "heey";
+  const nextRows = [...rows];
+  nextRows.splice(rowIdx, 0, newRow);
+  return nextRows;
+};
+
+
 function Table({ rows }) {
   const [selectedIndexes, setSelectedIndexes] = useState([]);
   const [filters, setFilters] = useState({});
@@ -76,7 +119,6 @@ function Table({ rows }) {
   const filteredRows = getRows(rowsCopy, filters);
 
   const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
-    console.log("from", fromRow, "to", toRow, "update", updated);
     const newRows = [...rowsCopy];
     for (let i = fromRow; i <= toRow; i++) {
       newRows[i] = { ...rows[i], ...updated };
@@ -141,6 +183,17 @@ function Table({ rows }) {
             indexes: selectedIndexes
           }
         }}
+
+        contextMenu={
+          <ExampleContextMenu
+            onRowDelete={(e, { rowIdx }) => setRows(deleteRow(rowIdx))}
+            onRowInsertAbove={(e, { rowIdx }) => setRows(insertRow(rowIdx))}
+            onRowInsertBelow={(e, { rowIdx }) => setRows(insertRow(rowIdx + 1))}
+          />
+        }
+        RowsContainer={ContextMenuTrigger}
+
+
       />
 
       <div className={classes.actionsContainer}>
@@ -199,7 +252,6 @@ function Table({ rows }) {
         </div>
 
       </div>
-
     </div>
   );
 }
