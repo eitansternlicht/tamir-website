@@ -6,8 +6,7 @@ const defaultColumnProperties = {
     sortable: true,
     resizable: true,
     editable: true,
-    minWidth: 15
-
+    minWidth: 30
 };
 
 const { DropDownEditor } = Editors;
@@ -27,11 +26,7 @@ const TShirtSizes = [
 const TShirtSizesEditor = <DropDownEditor options={TShirtSizes} />;
 
 const columns = [
-    {
-        key: "check",
-        width: 15,
-        resizable: true
-    },
+
     {
         key: "id",
         name: "ID",
@@ -100,15 +95,16 @@ const columns = [
         filterRenderer: AutoCompleteFilter,
         editable: false,
         resizable: true
-    }
-].map(c => ({ ...defaultColumnProperties, ...c }));
-
-const departmentManagerColumns = [
+    },
     {
         key: "check",
         width: 15,
         resizable: true
-    },
+    }
+].map(c => ({ ...defaultColumnProperties, ...c }));
+
+const departmentManagerColumns = [
+
     {
         key: "id",
         name: "ID",
@@ -172,15 +168,15 @@ const departmentManagerColumns = [
         filterRenderer: AutoCompleteFilter,
         editable: false,
         resizable: true
-    }
-].map(c => ({ ...c, ...defaultColumnProperties })).reverse();
-
-const coordinatorColumns = [
+    },
     {
         key: "check",
         width: 15,
         resizable: true
-    },
+    }
+].map(c => ({ ...c, ...defaultColumnProperties })).reverse();
+
+const coordinatorColumns = [
     {
         key: "id",
         name: "ID",
@@ -240,15 +236,16 @@ const coordinatorColumns = [
         filterRenderer: AutoCompleteFilter,
         editable: false,
         resizable: true
-    }
-].map(c => ({ ...c, ...defaultColumnProperties }));
-
-const tutorColumns = [
+    },
     {
         key: "check",
         width: 15,
         resizable: true
-    },
+    }
+].map(c => ({ ...c, ...defaultColumnProperties }));
+
+const tutorColumns = [
+
     {
         key: "id",
         name: "ID",
@@ -302,6 +299,11 @@ const tutorColumns = [
         name: "Last Modified",
         filterRenderer: AutoCompleteFilter,
         editable: false,
+        resizable: true
+    },
+    {
+        key: "check",
+        width: 15,
         resizable: true
     }
 ].map(c => ({ ...c, ...defaultColumnProperties }));

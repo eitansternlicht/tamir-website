@@ -1,4 +1,4 @@
-import React, { useState, Component } from "react";
+import React, { useState, Component, Form } from "react";
 import ReactDataGrid from "react-data-grid";
 import { Toolbar, Data, Filters, Editors } from "react-data-grid-addons";
 import Button from '@material-ui/core/Button';
@@ -9,8 +9,16 @@ import SaveIcon from '@material-ui/icons/Save';
 import AssignmentIcon from '@material-ui/icons/AssignmentInd';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
-import { Menu } from "react-data-grid-addons";
 import { aoaToFile } from '../utils/excell-utils';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import green from '@material-ui/core/colors/green';
+import clsx from 'clsx';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 
 import { Columns } from '../utils/getColumns'
 
@@ -34,9 +42,15 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(1),
     textAlign: 'right',
   },
+  buttonProgress: {
+    color: green[500],
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12,
+  },
 }));
-
-const { ContextMenu, MenuItem, SubMenu, ContextMenuTrigger } = Menu;
 
 const selectors = Data.Selectors;
 
@@ -73,38 +87,6 @@ function getRows(rows, filters) {
   return selectors.getRows({ rows, filters });
 }
 
-
-function ExampleContextMenu({
-  idx,
-  id,
-  rowIdx,
-  onRowDelete,
-  onRowInsertAbove,
-  onRowInsertBelow
-}) {
-  return (
-    <ContextMenu id={id}>
-      <MenuItem data={{ rowIdx, idx }} onClick={onRowDelete}>
-        Delete Row
-      </MenuItem>
-      <SubMenu title="Insert Row">
-        <MenuItem data={{ rowIdx, idx }} onClick={onRowInsertAbove}>
-          Above
-        </MenuItem>
-        <MenuItem data={{ rowIdx, idx }} onClick={onRowInsertBelow}>
-          Below
-        </MenuItem>
-      </SubMenu>
-    </ContextMenu>
-  );
-}
-
-const deleteRow = rowIdx => rows => {
-  const nextRows = [...rows];
-  nextRows.splice(rowIdx, 1);
-  return nextRows;
-};
-
 const insertRow = rowIdx => rows => {
   const newRow = "heey";
   const nextRows = [...rows];
@@ -112,11 +94,12 @@ const insertRow = rowIdx => rows => {
   return nextRows;
 };
 
-
 function Table({ rows }) {
   const [selectedIndexes, setSelectedIndexes] = useState([]);
   const [filters, setFilters] = useState({});
   const [rowsCopy, setRows] = useState(rows);
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
   const filteredRows = getRows(rowsCopy, filters);
 
   const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
@@ -127,12 +110,43 @@ function Table({ rows }) {
     setRows(newRows);
   };
 
+
+  function handleClickOpen() {
+    setOpen(true);
+  }
+
+  function handleClose() {
+    setOpen(false);
+  }
+
+  const deleteRow = () => {
+    console.log("selected: ", selectedIndexes);
+
+    if (selectedIndexes.length === 0)
+      return;
+    if (!loading) {
+      setLoading(true);
+      while (selectedIndexes.length !== 0) {
+        console.log("index: ", selectedIndexes[0]);
+        delete rows[selectedIndexes[0]];
+        rows.splice(selectedIndexes[0], 1);
+        selectedIndexes.shift();
+      }
+      setRows(rows);
+      setLoading(false);
+      handleClickOpen();
+    }
+
+  };
+
+
+  const classes = useStyles();
+
   const onRowsSelected = rows => {
-     { console.log("rows: ", rows); }
     setSelectedIndexes(selectedIndexes.concat(
       rows.map(r => r.rowIdx)
     ));
-      { console.log("selected: ", selectedIndexes); }
+
   };
 
   const onRowsDeselected = rows => {
@@ -141,10 +155,10 @@ function Table({ rows }) {
       i => rowIndexes.indexOf(i) === -1
     );
     setSelectedIndexes(newSelectedIndexes);
+    console.log("selected :", selectedIndexes);
   };
 
   const rowText = selectedIndexes.length === 1 ? "row" : "rows";
-  const classes = useStyles();
   const columns = Columns('ceo').reverse();
 
   const getData = () => {
@@ -157,29 +171,27 @@ function Table({ rows }) {
     })
   }
 
-  const studentToArr = (student) => 
-    columns.map(r => student[r.key]);
+  const studentToArr = (student) => columns.map(r => student[r.key]);
 
   const exportToExcel = () => {
     const columnNames = columns.map(r => r.name);
     const aoa = [columnNames].concat(rowsCopy.map(studentToArr));
-    aoaToFile({fileName: "temp.xlsx", aoa })
+    aoaToFile({ fileName: "temp.xlsx", aoa })
   }
 
-  getData();
+  //getData();
   return (
     <div>
       <span style={{ textAlign: 'center', alignContent: 'center', font: 30 }} >
         {selectedIndexes.length} {rowText} selected
       </span>
-      
+
       <ReactDataGrid
         rowKey="id"
         columns={Columns({ type: "ceo" })}
         rowGetter={i => filteredRows[i]}
-        
         rowsCount={filteredRows.length}
-        minHeight={500}
+        minHeight={400}
         toolbar={<Toolbar enableFilter={true} />}
         onAddFilter={filter => setFilters(handleFilterChange(filter))}
         onClearFilters={() => setFilters({})}
@@ -198,15 +210,6 @@ function Table({ rows }) {
             indexes: selectedIndexes
           }
         }}
-
-        contextMenu={
-          <ExampleContextMenu
-            onRowDelete={(e, { rowIdx }) => setRows(deleteRow(rowIdx))}
-            onRowInsertAbove={(e, { rowIdx }) => setRows(insertRow(rowIdx))}
-            onRowInsertBelow={(e, { rowIdx }) => setRows(insertRow(rowIdx + 1))}
-          />
-        }
-        RowsContainer={ContextMenuTrigger}
       />
 
       <div className={classes.actionsContainer}>
@@ -251,19 +254,46 @@ function Table({ rows }) {
         </div>
 
         <div className={classes.actions}>
-          <Button variant="contained" color="primary" className={classes.button}>
+          <Button variant="contained" color="primary"
+            className={classes.button}
+            onClick={() => deleteRow()}
+            disabled={loading}
+          >
             מחק חניכים בחורים
          <DeleteIcon />
           </Button>
+
+          <Dialog
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogTitle id="alert-dialog-title">{"Deleting Succeed."}</DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">
+                All the selected Students was deleted Successfully.
+          </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose} color="primary">
+                OK
+          </Button>
+            </DialogActions>
+          </Dialog>
+
+          {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
+
         </div>
 
         <div className={classes.actions}>
-          <Button variant="contained" color="primary" className={classes.button} onClick={() => exportToExcel()}>
+          <Button variant="contained" color="primary"
+            className={classes.button}
+            onClick={() => exportToExcel()}>
             ייצא לאקסל
           <SaveIcon />
           </Button>
         </div>
-
       </div>
     </div>
   );
