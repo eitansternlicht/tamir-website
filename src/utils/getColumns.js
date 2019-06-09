@@ -6,7 +6,10 @@ const defaultColumnProperties = {
     sortable: true,
     resizable: true,
     editable: true,
-    minWidth: 30
+    dragable: true,
+    isExpanded: true,
+    minWidth: 120,
+    enableDragAndDrop: true,
 };
 
 const { DropDownEditor } = Editors;
@@ -23,78 +26,93 @@ const TShirtSizes = [
     { id: "xLarge", value: "XL" }
 
 ];
+
+const statusOptions = [
+    { id: 'assinged', value: "שובץ" },
+    { id: 'notAssinged', value: "לא שובץ" },
+]
+
+const AssignmentEditor = <DropDownEditor options={statusOptions} />;
 const TShirtSizesEditor = <DropDownEditor options={TShirtSizes} />;
 
 const columns = [
-
     {
         key: "id",
-        name: "ID",
-        filterRenderer: NumericFilter
+        name: "No.",
+        width: 40,
+        filterRenderer: NumericFilter,
+        editable: false
     },
     {
-        key: "name",
-        name: "Name",
+        key: "fName",
+        name: "שם פרטי",
+        filterRenderer: AutoCompleteFilter
+    },
+    {
+        key: "lName",
+        name: "שם משפחה",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "phone",
-        name: "Phone Number",
+        name: "מס' טלפון",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "gender",
-        name: "Gender",
+        name: "מין",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "neighborhood",
-        name: "Neighborhood",
+        name: "שכונה",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "tShirtSize",
-        name: "T-Shirt Size",
+        name: "מידת חולצה",
         filterRenderer: AutoCompleteFilter,
         editor: TShirtSizesEditor
     },
     {
         key: "city",
-        name: "City",
+        name: "עיר",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "school",
-        name: "School",
+        name: "בית ספר",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "departmentManager",
-        name: "Department Manager",
+        name: "מנהל מחלקה",
         filterRenderer: AutoCompleteFilter
 
     },
     {
         key: "coordinator",
-        name: "Coordinator",
+        name: "רכז שכונה",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "tutor",
-        name: "Tutor",
+        name: "מדריך",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "status",
-        name: "Status",
-        filterRenderer: AutoCompleteFilter
+        name: "סטטוס",
+        filterRenderer: AutoCompleteFilter,
+        editor: AssignmentEditor
     },
     {
         key: "lastModified",
-        name: "Last Modified",
+        name: "שינוי אחרון",
         filterRenderer: AutoCompleteFilter,
         editable: false,
-        resizable: true
+        resizable: true,
+        width: 160
     },
     {
         key: "check",
@@ -107,132 +125,146 @@ const departmentManagerColumns = [
 
     {
         key: "id",
-        name: "ID",
+        name: "No.",
+        width: 40,
         filterRenderer: NumericFilter,
-        resizable: true
+        editable: false,
     },
     {
-        key: "name",
-        name: "Name",
+        key: "fName",
+        name: "שם פרטי",
+        filterRenderer: AutoCompleteFilter
+    },
+    {
+        key: "lName",
+        name: "שם משפחה",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "phone",
-        name: "Phone Number",
+        name: "מס' טלפון",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "gender",
-        name: "Gender",
+        name: "מין",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "neighborhood",
-        name: "Neighborhood",
+        name: "שכונה",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "tShirtSize",
-        name: "T-Shirt Size",
+        name: "מידת חולצה",
         filterRenderer: AutoCompleteFilter,
         editor: TShirtSizesEditor
     },
     {
         key: "city",
-        name: "City",
+        name: "עיר",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "school",
-        name: "School",
+        name: "בית ספר",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "coordinator",
-        name: "Coordinator",
+        name: "רכז שכונה",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "tutor",
-        name: "Tutor",
+        name: "מדריך",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "status",
-        name: "Status",
-        filterRenderer: AutoCompleteFilter
+        name: "סטטוס",
+        filterRenderer: AutoCompleteFilter,
+        editor: AssignmentEditor
     },
     {
         key: "lastModified",
-        name: "Last Modified",
+        name: "שינוי אחרון",
         filterRenderer: AutoCompleteFilter,
         editable: false,
-        resizable: true
+        resizable: true,
+        width: 200
     },
     {
         key: "check",
         width: 15,
         resizable: true
     }
-].map(c => ({ ...c, ...defaultColumnProperties })).reverse();
+].map(c => ({ ...defaultColumnProperties, ...c })).reverse();
 
 const coordinatorColumns = [
     {
         key: "id",
-        name: "ID",
+        name: "No.",
+        width: 40,
         filterRenderer: NumericFilter,
-        resizable: true
+        editable: false,
     },
     {
-        key: "name",
-        name: "Name",
+        key: "fName",
+        name: "שם פרטי",
+        filterRenderer: AutoCompleteFilter
+    },
+    {
+        key: "lName",
+        name: "שם משפחה",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "phone",
-        name: "Phone Number",
+        name: "מס' טלפון",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "gender",
-        name: "Gender",
+        name: "מין",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "neighborhood",
-        name: "Neighborhood",
+        name: "שכונה",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "tShirtSize",
-        name: "T-Shirt Size",
+        name: "מידת חולצה",
         filterRenderer: AutoCompleteFilter,
         editor: TShirtSizesEditor
     },
     {
         key: "city",
-        name: "City",
+        name: "עיר",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "school",
-        name: "School",
+        name: "בית ספר",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "tutor",
-        name: "Tutor",
+        name: "מדריך",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "status",
-        name: "Status",
-        filterRenderer: AutoCompleteFilter
+        name: "סטטוס",
+        filterRenderer: AutoCompleteFilter,
+        editor: AssignmentEditor
     },
-
     {
         key: "lastModified",
-        name: "Last Modified",
+        name: "שינוי אחרון",
         filterRenderer: AutoCompleteFilter,
         editable: false,
         resizable: true
@@ -242,71 +274,75 @@ const coordinatorColumns = [
         width: 15,
         resizable: true
     }
-].map(c => ({ ...c, ...defaultColumnProperties }));
+].map(c => ({ ...defaultColumnProperties, ...c }));
 
 const tutorColumns = [
-
     {
         key: "id",
-        name: "ID",
+        name: "No.",
+        width: 40,
         filterRenderer: NumericFilter,
-        resizable: true
+        editable: false,
     },
     {
-        key: "name",
-        name: "Name",
+        key: "fName",
+        name: "שם פרטי",
+        filterRenderer: AutoCompleteFilter
+    },
+    {
+        key: "lName",
+        name: "שם משפחה",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "phone",
-        name: "Phone Number",
+        name: "מס' טלפון",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "gender",
-        name: "Gender",
+        name: "מין",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "neighborhood",
-        name: "Neighborhood",
+        name: "שכונה",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "tShirtSize",
-        name: "T-Shirt Size",
+        name: "מידת חולצה",
         filterRenderer: AutoCompleteFilter,
         editor: TShirtSizesEditor
     },
     {
         key: "city",
-        name: "City",
+        name: "עיר",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "school",
-        name: "School",
+        name: "בית ספר",
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "status",
-        name: "Status",
-        filterRenderer: AutoCompleteFilter
+        name: "סטטוס",
+        filterRenderer: AutoCompleteFilter,
+        editor: AssignmentEditor
     },
-
     {
         key: "lastModified",
-        name: "Last Modified",
+        name: "שינוי אחרון",
         filterRenderer: AutoCompleteFilter,
-        editable: false,
-        resizable: true
+        editable: false
     },
     {
         key: "check",
         width: 15,
         resizable: true
     }
-].map(c => ({ ...c, ...defaultColumnProperties }));
+].map(c => ({ ...defaultColumnProperties, ...c }));
 
 const Columns = ({ type }) => {
 

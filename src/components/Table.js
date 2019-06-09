@@ -12,13 +12,13 @@ import 'firebase/firestore';
 import { aoaToFile } from '../utils/excell-utils';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import green from '@material-ui/core/colors/green';
-import clsx from 'clsx';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-
+import TextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import { Columns } from '../utils/getColumns'
 
@@ -29,6 +29,8 @@ const useStyles = makeStyles(theme => ({
   },
   actions: {
     display: 'flex',
+    margin: theme.spacing(1),
+    position: 'relative',
     flexDirection: 'column',
     padding: 5,
     marginTop: 20,
@@ -36,19 +38,37 @@ const useStyles = makeStyles(theme => ({
   button: {
     margin: theme.spacing(1),
     textAlign: 'right',
+  },
+  formTitle: {
+    textAlign: 'center',
+    font: 30,
+  },
+  formText: {
+    textAlign: 'right',
+  },
+  textField: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    textAlign: 'right',
+    width: 150,
 
   },
   icon: {
     margin: theme.spacing(1),
-    textAlign: 'right',
   },
   buttonProgress: {
     color: green[500],
     position: 'absolute',
-    top: '50%',
+    top: '15%',
     left: '50%',
     marginTop: -12,
     marginLeft: -12,
+  },
+  menu: {
+    width: 150,
+  },
+  container: {
+    // display: 'flex'
   },
 }));
 
@@ -87,27 +107,62 @@ function getRows(rows, filters) {
   return selectors.getRows({ rows, filters });
 }
 
-const insertRow = rowIdx => rows => {
-  const newRow = "heey";
-  const nextRows = [...rows];
-  nextRows.splice(rowIdx, 0, newRow);
-  return nextRows;
-};
-
 function Table({ rows }) {
   const [selectedIndexes, setSelectedIndexes] = useState([]);
   const [filters, setFilters] = useState({});
   const [rowsCopy, setRows] = useState(rows);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [openForm, setOpenForm] = useState(false);
   const filteredRows = getRows(rowsCopy, filters);
+  const [student, setStudent] = useState({});
 
   const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
     const newRows = [...rowsCopy];
+
     for (let i = fromRow; i <= toRow; i++) {
       newRows[i] = { ...rows[i], ...updated };
+      newRows[i]['lastModified'] = updateDate();
     }
+    console.log("lm", newRows[fromRow]['lastModified']);
     setRows(newRows);
+  };
+
+  const updateDate = () => {
+    let day = new Date().getDate(); //Current Date
+    if (day < 10) {
+      day = '0' + day;
+    }
+    let month = new Date().getMonth() + 1; //Current Month
+    if (month < 10) {
+      month = '0' + month
+    }
+    let year = new Date().getFullYear(); //Current Year
+    let hours = new Date().getHours(); //Current Hours
+    if (hours < 10) {
+      hours = '0' + hours;
+    }
+    let min = new Date().getMinutes(); //Current Minutes
+    if (min < 10) {
+      min = '0' + min;
+    }
+    let sec = new Date().getSeconds(); //Current Seconds
+    if (sec < 10) {
+      sec = '0' + sec;
+    }
+
+    return day + '/' + month + '/' + year + ' ' + hours + ':' + min;
+  }
+
+  const updateNums = () => {
+    for (let i = 0; i < rowsCopy.length; i++) {
+      rowsCopy[i]['id'] = i;
+    }
+    setRows(rowsCopy);
+  }
+
+  const handleChange = name => event => {
+    setStudent({ ...student, [name]: event.target.value });
   };
 
 
@@ -119,26 +174,54 @@ function Table({ rows }) {
     setOpen(false);
   }
 
+  function handleClickOpenForm() {
+    setStudent({ 'id': rowsCopy.length, 'status': "לא שובץ", lastModified: updateDate(), ...student });
+    setOpenForm(true);
+  }
+
+  function handleCloseForm() {
+    setOpenForm(false);
+    setStudent({});
+  }
+
   const deleteRow = () => {
     console.log("selected: ", selectedIndexes);
-
+    console.log("rows: ", rowsCopy);
     if (selectedIndexes.length === 0)
       return;
     if (!loading) {
       setLoading(true);
       while (selectedIndexes.length !== 0) {
         console.log("index: ", selectedIndexes[0]);
-        delete rows[selectedIndexes[0]];
-        rows.splice(selectedIndexes[0], 1);
+        delete rowsCopy[selectedIndexes[0]];
+        rowsCopy.splice(selectedIndexes[0], 1);
         selectedIndexes.shift();
       }
       setRows(rows);
       setLoading(false);
       handleClickOpen();
+      updateNums();
+      console.log("rows: ", rowsCopy);
     }
-
   };
 
+  const genders = [
+    {
+      value: 'ז',
+      label: 'זכר'
+    },
+    {
+      value: 'נ',
+      label: 'נקבה'
+    }
+  ];
+
+
+  const addStudent = () => {
+    rowsCopy.unshift(student);
+    updateNums();
+    handleCloseForm();
+  }
 
   const classes = useStyles();
 
@@ -146,7 +229,6 @@ function Table({ rows }) {
     setSelectedIndexes(selectedIndexes.concat(
       rows.map(r => r.rowIdx)
     ));
-
   };
 
   const onRowsDeselected = rows => {
@@ -167,7 +249,7 @@ function Table({ rows }) {
     let s = fs.collection('Students').where(`owners.tutors.${uid}`, '==', true)
     let t = fs.collection('Tutors').doc(uid).get()
     Promise.all([s, t]).then(res => {
-      //console.log("res", res);
+      // console.log("res", res);
     })
   }
 
@@ -176,28 +258,25 @@ function Table({ rows }) {
   const exportToExcel = () => {
     const columnNames = columns.map(r => r.name);
     const aoa = [columnNames].concat(rowsCopy.map(studentToArr));
-    aoaToFile({ fileName: "temp.xlsx", aoa })
+    aoaToFile({ fileName: "Students List.xlsx", aoa })
   }
 
   //getData();
   return (
     <div>
-      <span style={{ textAlign: 'center', alignContent: 'center', font: 30 }} >
-        {selectedIndexes.length} {rowText} selected
-      </span>
 
       <ReactDataGrid
         rowKey="id"
         columns={Columns({ type: "ceo" })}
         rowGetter={i => filteredRows[i]}
         rowsCount={filteredRows.length}
-        minHeight={400}
+        minHeight={350}
         toolbar={<Toolbar enableFilter={true} />}
         onAddFilter={filter => setFilters(handleFilterChange(filter))}
         onClearFilters={() => setFilters({})}
-        getValidFilterValues={columnKey => getValidFilterValues(rows, columnKey)}
+        getValidFilterValues={columnKey => getValidFilterValues(rowsCopy, columnKey)}
         onGridSort={(sortColumn, sortDirection) =>
-          setRows(sortRows(rows, sortColumn, sortDirection))
+          setRows(sortRows(rowsCopy, sortColumn, sortDirection))
         }
         onGridRowsUpdated={onGridRowsUpdated}
         enableCellSelect={true}
@@ -211,14 +290,94 @@ function Table({ rows }) {
           }
         }}
       />
-
+      <span style={{ textAlign: 'center', alignContent: 'center', alignSelf: 'center', font: 30 }} >
+        {selectedIndexes.length} {rowText} selected
+      </span>
       <div className={classes.actionsContainer}>
 
         <div className={classes.actions}>
-          <Button variant="contained" color="primary" className={classes.button} >
+          <Button variant="contained" color="primary" className={classes.button} onClick={() => handleClickOpenForm()} >
             הוסף חניך
           <AddIcon />
           </Button>
+
+          <Dialog open={openForm} onClose={handleCloseForm} aria-labelledby="form-dialog-title">
+            <form validate="true" className={classes.container} autoComplete="on">
+
+              <DialogTitle id="form-dialog-title" className={classes.formTitle}>הוספת חניך</DialogTitle>
+              <DialogContent>
+                <DialogContentText className={classes.formText}>
+                  : נא למלא את כל השדות
+          </DialogContentText>
+                <TextField
+                  required
+                  autoFocus
+                  margin="dense"
+                  id="fName"
+                  className={classes.textField}
+                  placeholder="דוד"
+                  label="שם החניך"
+                  type="name"
+                  onChange={handleChange('fName')}
+                />
+                <TextField
+                  required
+                  autoFocus
+                  margin="dense"
+                  id="lName"
+                  className={classes.textField}
+                  placeholder="כהן"
+                  label="שם המשפחה"
+                  type="name"
+                  onChange={handleChange('lName')}
+                />
+
+
+                <TextField
+                  required
+                  autoFocus
+                  margin="dense"
+                  id="phone"
+                  className={classes.textField}
+                  placeholder="055-5555555"
+                  label="מס' טלפון"
+                  type="number"
+                  onChange={handleChange('phone')}
+                />
+                <TextField
+                  required
+                  autoFocus
+                  select
+                  id="gender"
+                  margin="normal"
+                  label="מין"
+                  className={classes.textField}
+                  onChange={handleChange('gender')}
+                  value={student.gender}
+                  SelectProps={{
+                    MenuProps: {
+                      className: classes.menu,
+                    },
+                  }}
+                >
+                  {genders.map(option => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseForm} color="primary">
+                  Cancel
+          </Button>
+                <Button onClick={() => addStudent()} color="primary">
+                  Save
+          </Button>
+              </DialogActions>
+            </form>
+          </Dialog>
 
           <Button variant="contained" color="primary" className={classes.button}>
             הוסף מדריך
@@ -263,6 +422,8 @@ function Table({ rows }) {
          <DeleteIcon />
           </Button>
 
+          {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
+
           <Dialog
             open={open}
             onClose={handleClose}
@@ -282,7 +443,7 @@ function Table({ rows }) {
             </DialogActions>
           </Dialog>
 
-          {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
+
 
         </div>
 

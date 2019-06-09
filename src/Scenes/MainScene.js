@@ -14,8 +14,8 @@ const useStyles = makeStyles(theme => ({
 
     },
     table: {
-        padding: 5,
-        
+        padding: 3.5,
+        borderRadius: 3,
     }
 }));
 
@@ -27,7 +27,7 @@ function MainScene() {
         <>
             <div>
                 <Paper className={classes.root}>
-                    <Typography variant="h3" component="h3">
+                    <Typography variant="h5" component="h5">
                         מנהל מחלקה א
         </Typography>
                     <Typography component="p">

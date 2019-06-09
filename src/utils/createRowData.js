@@ -1,12 +1,10 @@
 
 
-
-
-
 const rows = [
   {
     id: 0,
-    name: "חניך א",
+    fName: "חניך ",
+    lName: "א",
     phone: "052-6488822",
     gender: "ז",
     neighborhood: "בית חנינא",
@@ -21,7 +19,8 @@ const rows = [
   },
   {
     id: 1,
-    name: "חניך ב",
+    fName: "חניך ב",
+    lName: "כהן",
     phone: "052-6488822",
     gender: "ז",
     neighborhood: "הגבעה הצרפתית",
@@ -36,7 +35,8 @@ const rows = [
   },
   {
     id: 2,
-    name: "חניך ג",
+    fName: "חניך ג",
+    lName: "כהן",
     phone: "052-6488822",
     gender: "ז",
     neighborhood: "בית חנינא",
@@ -46,12 +46,13 @@ const rows = [
     departmentManager: "מנהל מחלקה א",
     coordinator: "רכז א",
     tutor: "מדריך ב",
-    status: "שובץ",
+    status: "לא שובץ",
     lastModified: "22.05.2019"
   },
   {
     id: 3,
-    name: "חניך ג",
+    fName: "חניך ג",
+    lName: "כהן",
     phone: "052-6488822",
     gender: "ז",
     neighborhood: "בית חנינא",
@@ -66,7 +67,8 @@ const rows = [
   },
   {
     id: 4,
-    name: "חניך ג",
+    fName: "חניך ג",
+    lName: "כהן",
     phone: "052-6488822",
     gender: "ז",
     neighborhood: "בית חנינא",
@@ -81,7 +83,8 @@ const rows = [
   },
   {
     id: 5,
-    name: "חניך ג",
+    fName: "חניך ג",
+    lName: "כהן",
     phone: "052-6488822",
     gender: "ז",
     neighborhood: "בית חנינא",
@@ -96,7 +99,8 @@ const rows = [
   },
   {
     id: 6,
-    name: "חניך ג",
+    fName: "חניך ג",
+    lName: "כהן",
     phone: "052-6488822",
     gender: "ז",
     neighborhood: "בית חנינא",
@@ -111,7 +115,8 @@ const rows = [
   },
   {
     id: 7,
-    name: "חניך ג",
+    fName: "חניך ג",
+    lName: "כהן",
     phone: "052-6488822",
     gender: "ז",
     neighborhood: "בית חנינא",
@@ -126,7 +131,8 @@ const rows = [
   },
   {
     id: 8,
-    name: "חניך ג",
+    fName: "חניך ג",
+    lName: "כהן",
     phone: "052-6488822",
     gender: "ז",
     neighborhood: "בית חנינא",
@@ -141,7 +147,8 @@ const rows = [
   },
   {
     id: 9,
-    name: "חניך ג",
+    fName: "חניך ג",
+    lName: "כהן",
     phone: "052-6488822",
     gender: "ז",
     neighborhood: "בית חנינא",
@@ -156,7 +163,8 @@ const rows = [
   },
   {
     id: 10,
-    name: "חניך ג",
+    fName: "חניך ג",
+    lName: "כהן",
     phone: "052-6488822",
     gender: "ז",
     neighborhood: "בית חנינא",
@@ -171,7 +179,8 @@ const rows = [
   },
   {
     id: 11,
-    name: "חניך ג",
+    fName: "חניך ג",
+    lName: "כהן",
     phone: "052-6488822",
     gender: "ז",
     neighborhood: "בית חנינא",
@@ -186,7 +195,8 @@ const rows = [
   },
   {
     id: 12,
-    name: "חניך ג",
+    fName: "חניך ג",
+    lName: "כהן",
     phone: "052-6488822",
     gender: "ז",
     neighborhood: "בית חנינא",
@@ -201,7 +211,8 @@ const rows = [
   },
   {
     id: 13,
-    name: "חניך ג",
+    fName: "חניך ג",
+    lName: "כהן",
     phone: "052-6488822",
     gender: "ז",
     neighborhood: "בית חנינא",
