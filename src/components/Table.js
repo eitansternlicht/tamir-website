@@ -19,6 +19,9 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
+import 'react-responsive-ui/style.css';
+
+import PhoneInput from 'react-phone-number-input/react-responsive-ui';
 
 import { Columns } from '../utils/getColumns'
 
@@ -110,7 +113,7 @@ function getRows(rows, filters) {
 function Table({ rows }) {
   const [selectedIndexes, setSelectedIndexes] = useState([]);
   const [filters, setFilters] = useState({});
-  const [rowsCopy, setRows] = useState(rows);
+  let [rowsCopy, setRows] = useState(rows);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [openForm, setOpenForm] = useState(false);
@@ -165,6 +168,10 @@ function Table({ rows }) {
     setStudent({ ...student, [name]: event.target.value });
   };
 
+  const handleChangePhone = name => value => {
+    setStudent({ ...student, [name]: value });
+  }
+
 
   function handleClickOpen() {
     setOpen(true);
@@ -185,23 +192,19 @@ function Table({ rows }) {
   }
 
   const deleteRow = () => {
-    console.log("selected: ", selectedIndexes);
-    console.log("rows: ", rowsCopy);
     if (selectedIndexes.length === 0)
       return;
     if (!loading) {
       setLoading(true);
+      let newArr = rowsCopy.filter((row, i) => !selectedIndexes.includes(i));
       while (selectedIndexes.length !== 0) {
-        console.log("index: ", selectedIndexes[0]);
-        delete rowsCopy[selectedIndexes[0]];
-        rowsCopy.splice(selectedIndexes[0], 1);
         selectedIndexes.shift();
       }
-      setRows(rows);
+      rowsCopy = newArr;
+      setRows(rowsCopy);
       setLoading(false);
       handleClickOpen();
       updateNums();
-      console.log("rows: ", rowsCopy);
     }
   };
 
@@ -241,7 +244,10 @@ function Table({ rows }) {
   };
 
   const rowText = selectedIndexes.length === 1 ? "row" : "rows";
-  const columns = Columns('ceo').reverse();
+
+  const role = 'ceo';
+  const columns = Columns(role);
+  const columnsToShow = [...columns];
 
   const getData = () => {
     const fs = firebase.firestore();
@@ -267,7 +273,7 @@ function Table({ rows }) {
 
       <ReactDataGrid
         rowKey="id"
-        columns={Columns({ type: "ceo" })}
+        columns={columnsToShow.reverse()}
         rowGetter={i => filteredRows[i]}
         rowsCount={filteredRows.length}
         minHeight={350}
@@ -278,6 +284,7 @@ function Table({ rows }) {
         onGridSort={(sortColumn, sortDirection) =>
           setRows(sortRows(rowsCopy, sortColumn, sortDirection))
         }
+        //headerRowHeight={30}
         onGridRowsUpdated={onGridRowsUpdated}
         enableCellSelect={true}
         rowSelection={{
@@ -303,12 +310,11 @@ function Table({ rows }) {
 
           <Dialog open={openForm} onClose={handleCloseForm} aria-labelledby="form-dialog-title">
             <form validate="true" className={classes.container} autoComplete="on">
-
               <DialogTitle id="form-dialog-title" className={classes.formTitle}>הוספת חניך</DialogTitle>
               <DialogContent>
                 <DialogContentText className={classes.formText}>
                   : נא למלא את כל השדות
-          </DialogContentText>
+                </DialogContentText>
                 <TextField
                   required
                   autoFocus
@@ -331,9 +337,7 @@ function Table({ rows }) {
                   type="name"
                   onChange={handleChange('lName')}
                 />
-
-
-                <TextField
+                {/* <TextField
                   required
                   autoFocus
                   margin="dense"
@@ -343,7 +347,18 @@ function Table({ rows }) {
                   label="מס' טלפון"
                   type="number"
                   onChange={handleChange('phone')}
+                /> */}
+
+                <PhoneInput
+                  required
+                  country="IL"
+                  label="מס' טלפון"
+                  className={classes.textField}
+                  placeholder="Enter phone number"
+                  value={student['phone']}
+                  onChange={handleChangePhone('phone')}
                 />
+
                 <TextField
                   required
                   autoFocus
@@ -379,36 +394,38 @@ function Table({ rows }) {
             </form>
           </Dialog>
 
-          <Button variant="contained" color="primary" className={classes.button}>
+          {role !== 'tutor' ? <Button variant="contained" color="primary" className={classes.button}>
             הוסף מדריך
             <AddIcon />
-          </Button>
+          </Button> : <></>}
 
-          <Button variant="contained" color="primary" className={classes.button}>
+          {role === 'departmentManager' || role === 'ceo' ? <Button variant="contained" color="primary" className={classes.button}>
             הוסף רכז
           <AddIcon />
-          </Button>
-          <Button variant="contained" color="primary" className={classes.button}>
+          </Button> : <></>}
+
+          {role === 'ceo' ? <Button variant="contained" color="primary" className={classes.button}>
             הוסף מנהל מחלקה
           <AddIcon />
-          </Button>
+          </Button> : <></>}
         </div>
 
         <div className={classes.actions}>
-          <Button variant="contained" color="primary" className={classes.button}>
+
+          {role !== 'tutor' ? <Button variant="contained" color="primary" className={classes.button}>
             שבץ חניכים בחורים למדריך
          <AssignmentIcon />
-          </Button>
+          </Button> : <></>}
 
-          <Button variant="contained" color="primary" className={classes.button}>
+          {role === 'departmentManager' || role === 'ceo' ? <Button variant="contained" color="primary" className={classes.button}>
             שבץ חניכים בחורים לרכז
          <AssignmentIcon />
-          </Button>
+          </Button> : <></>}
 
-          <Button variant="contained" color="primary" className={classes.button}>
+          {role === 'ceo' ? <Button variant="contained" color="primary" className={classes.button}>
             שבץ חניכים בחורים למנהל מחלקה
          <AssignmentIcon />
-          </Button>
+          </Button> : <></>}
 
         </div>
 
@@ -456,6 +473,7 @@ function Table({ rows }) {
           </Button>
         </div>
       </div>
+
     </div>
   );
 }

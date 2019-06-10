@@ -6,10 +6,7 @@ const defaultColumnProperties = {
     sortable: true,
     resizable: true,
     editable: true,
-    dragable: true,
-    isExpanded: true,
     minWidth: 120,
-    enableDragAndDrop: true,
 };
 
 const { DropDownEditor } = Editors;
@@ -200,7 +197,7 @@ const departmentManagerColumns = [
         width: 15,
         resizable: true
     }
-].map(c => ({ ...defaultColumnProperties, ...c })).reverse();
+].map(c => ({ ...defaultColumnProperties, ...c }));
 
 const coordinatorColumns = [
     {
@@ -344,16 +341,16 @@ const tutorColumns = [
     }
 ].map(c => ({ ...defaultColumnProperties, ...c }));
 
-const Columns = ({ type }) => {
+const Columns = (role) => {
 
-    if (type === "departmentManager")
+    if (role === "departmentManager")
         return departmentManagerColumns;
-    else if (type === "coordinator")
+    else if (role === "coordinator")
         return coordinatorColumns;
-    else if (type === "tutor")
+    else if (role === "tutor")
         return tutorColumns;
     else
-        return columns.reverse();
+        return columns;
 }
 
 export { Columns };
