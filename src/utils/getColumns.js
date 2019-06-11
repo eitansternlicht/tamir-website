@@ -7,6 +7,9 @@ const defaultColumnProperties = {
     resizable: true,
     editable: true,
     minWidth: 120,
+    dragable: false,
+    expandableOptions: false,
+    isExpanded: false,
 };
 
 const { DropDownEditor } = Editors;
@@ -84,17 +87,20 @@ const columns = [
     {
         key: "departmentManager",
         name: "מנהל מחלקה",
+        editable: false,
         filterRenderer: AutoCompleteFilter
 
     },
     {
         key: "coordinator",
         name: "רכז שכונה",
+        editable: false,
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "tutor",
         name: "מדריך",
+        editable: false,
         filterRenderer: AutoCompleteFilter
     },
     {
@@ -171,11 +177,13 @@ const departmentManagerColumns = [
     {
         key: "coordinator",
         name: "רכז שכונה",
+        editable: false,
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "tutor",
         name: "מדריך",
+        editable: false,
         filterRenderer: AutoCompleteFilter
     },
     {
@@ -251,6 +259,7 @@ const coordinatorColumns = [
     {
         key: "tutor",
         name: "מדריך",
+        editable: false,
         filterRenderer: AutoCompleteFilter
     },
     {

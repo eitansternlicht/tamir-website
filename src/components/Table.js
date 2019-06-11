@@ -20,7 +20,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import 'react-responsive-ui/style.css';
-
+import { MsgToShow } from './MsgToShow';
+import { AssignmentDialog } from './AssignmentDialog';
 import PhoneInput from 'react-phone-number-input/react-responsive-ui';
 
 import { Columns } from '../utils/getColumns'
@@ -115,19 +116,20 @@ function Table({ rows }) {
   const [filters, setFilters] = useState({});
   let [rowsCopy, setRows] = useState(rows);
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [msgState, setMsgState] = useState({ title: "", body: "", visible: false });
   const [openForm, setOpenForm] = useState(false);
   const filteredRows = getRows(rowsCopy, filters);
   const [student, setStudent] = useState({});
 
   const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
-    const newRows = [...rowsCopy];
+
+    const newRows = JSON.parse(JSON.stringify(rowsCopy));
 
     for (let i = fromRow; i <= toRow; i++) {
-      newRows[i] = { ...rows[i], ...updated };
+      newRows[i] = { ...rowsCopy[i], ...updated };
       newRows[i]['lastModified'] = updateDate();
     }
-    console.log("lm", newRows[fromRow]['lastModified']);
+    rowsCopy = JSON.parse(JSON.stringify(newRows));
     setRows(newRows);
   };
 
@@ -173,14 +175,6 @@ function Table({ rows }) {
   }
 
 
-  function handleClickOpen() {
-    setOpen(true);
-  }
-
-  function handleClose() {
-    setOpen(false);
-  }
-
   function handleClickOpenForm() {
     setStudent({ 'id': rowsCopy.length, 'status': "לא שובץ", lastModified: updateDate(), ...student });
     setOpenForm(true);
@@ -203,7 +197,11 @@ function Table({ rows }) {
       rowsCopy = newArr;
       setRows(rowsCopy);
       setLoading(false);
-      handleClickOpen();
+      setMsgState({
+        title: "מחיקת חניכים",
+        body: "!כל החניכים שבחורים נמחקו בהצלחה",
+        visible: true
+      });
       updateNums();
     }
   };
@@ -224,6 +222,11 @@ function Table({ rows }) {
     rowsCopy.unshift(student);
     updateNums();
     handleCloseForm();
+    setMsgState({
+      title: "הוספת חניך",
+      body: "!החניך הוסף בהצלחה",
+      visible: true
+    });
   }
 
   const classes = useStyles();
@@ -267,7 +270,6 @@ function Table({ rows }) {
     aoaToFile({ fileName: "Students List.xlsx", aoa })
   }
 
-  //getData();
   return (
     <div>
 
@@ -284,7 +286,6 @@ function Table({ rows }) {
         onGridSort={(sortColumn, sortDirection) =>
           setRows(sortRows(rowsCopy, sortColumn, sortDirection))
         }
-        //headerRowHeight={30}
         onGridRowsUpdated={onGridRowsUpdated}
         enableCellSelect={true}
         rowSelection={{
@@ -300,15 +301,17 @@ function Table({ rows }) {
       <span style={{ textAlign: 'center', alignContent: 'center', alignSelf: 'center', font: 30 }} >
         {selectedIndexes.length} {rowText} selected
       </span>
-      <div className={classes.actionsContainer}>
 
+      <div className={classes.actionsContainer}>
         <div className={classes.actions}>
           <Button variant="contained" color="primary" className={classes.button} onClick={() => handleClickOpenForm()} >
             הוסף חניך
           <AddIcon />
           </Button>
+          <MsgToShow {...msgState} handleClose={() => setMsgState({ ...msgState, visible: false })} />
 
-          <Dialog open={openForm} onClose={handleCloseForm} aria-labelledby="form-dialog-title">
+          <Dialog disableBackdropClick
+            disableEscapeKeyDown open={openForm} onClose={handleCloseForm} aria-labelledby="form-dialog-title">
             <form validate="true" className={classes.container} autoComplete="on">
               <DialogTitle id="form-dialog-title" className={classes.formTitle}>הוספת חניך</DialogTitle>
               <DialogContent>
@@ -337,17 +340,6 @@ function Table({ rows }) {
                   type="name"
                   onChange={handleChange('lName')}
                 />
-                {/* <TextField
-                  required
-                  autoFocus
-                  margin="dense"
-                  id="phone"
-                  className={classes.textField}
-                  placeholder="055-5555555"
-                  label="מס' טלפון"
-                  type="number"
-                  onChange={handleChange('phone')}
-                /> */}
 
                 <PhoneInput
                   required
@@ -416,6 +408,7 @@ function Table({ rows }) {
             שבץ חניכים בחורים למדריך
          <AssignmentIcon />
           </Button> : <></>}
+          {/* <AssignmentDialog /> */}
 
           {role === 'departmentManager' || role === 'ceo' ? <Button variant="contained" color="primary" className={classes.button}>
             שבץ חניכים בחורים לרכז
@@ -441,26 +434,7 @@ function Table({ rows }) {
 
           {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
 
-          <Dialog
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-          >
-            <DialogTitle id="alert-dialog-title">{"Deleting Succeed."}</DialogTitle>
-            <DialogContent>
-              <DialogContentText id="alert-dialog-description">
-                All the selected Students was deleted Successfully.
-          </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClose} color="primary">
-                OK
-          </Button>
-            </DialogActions>
-          </Dialog>
-
-
+          <MsgToShow {...msgState} handleClose={() => setMsgState({ ...msgState, visible: false })} />
 
         </div>
 
