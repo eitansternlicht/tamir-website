@@ -1,28 +1,35 @@
-import React, { useState, Component, Form } from "react";
+import React, { useState } from "react";
 import ReactDataGrid from "react-data-grid";
-import { Toolbar, Data, Filters, Editors } from "react-data-grid-addons";
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
+import { Toolbar, Data } from "react-data-grid-addons";
+import {
+  makeStyles,
+  Button,
+  List,
+  Radio,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
+  CircularProgress,
+  MenuItem,
+  TextField,
+
+} from '@material-ui/core/';
+import { MsgToShow, AssignmentDialog } from './';
+
+
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import SaveIcon from '@material-ui/icons/Save';
 import AssignmentIcon from '@material-ui/icons/AssignmentInd';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
+
 import { aoaToFile } from '../utils/excell-utils';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import green from '@material-ui/core/colors/green';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
+
 import 'react-responsive-ui/style.css';
-import { MsgToShow } from './MsgToShow';
-import { AssignmentDialog } from './AssignmentDialog';
 import PhoneInput from 'react-phone-number-input/react-responsive-ui';
+import { firestoreModule } from '../Firebase/Firebase'
 
 import { Columns } from '../utils/getColumns'
 
@@ -112,19 +119,21 @@ function getRows(rows, filters) {
 }
 
 function Table({ rows }) {
+
   const [selectedIndexes, setSelectedIndexes] = useState([]);
   const [filters, setFilters] = useState({});
+
   let [rowsCopy, setRows] = useState(rows);
   const [loading, setLoading] = useState(false);
   const [msgState, setMsgState] = useState({ title: "", body: "", visible: false });
+  const [assignmentDialogType, setAssignmentDialogType] = useState("");
   const [openForm, setOpenForm] = useState(false);
-  const filteredRows = getRows(rowsCopy, filters);
+  let filteredRows = getRows(rowsCopy, filters);
   const [student, setStudent] = useState({});
 
   const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
 
     const newRows = JSON.parse(JSON.stringify(rowsCopy));
-
     for (let i = fromRow; i <= toRow; i++) {
       newRows[i] = { ...rowsCopy[i], ...updated };
       newRows[i]['lastModified'] = updateDate();
@@ -185,6 +194,7 @@ function Table({ rows }) {
     setStudent({});
   }
 
+
   const deleteRow = () => {
     if (selectedIndexes.length === 0)
       return;
@@ -199,7 +209,7 @@ function Table({ rows }) {
       setLoading(false);
       setMsgState({
         title: "מחיקת חניכים",
-        body: "!כל החניכים שבחורים נמחקו בהצלחה",
+        body: "!כל החניכים שנבחרו נמחקו בהצלחה",
         visible: true
       });
       updateNums();
@@ -243,7 +253,6 @@ function Table({ rows }) {
       i => rowIndexes.indexOf(i) === -1
     );
     setSelectedIndexes(newSelectedIndexes);
-    console.log("selected :", selectedIndexes);
   };
 
   const rowText = selectedIndexes.length === 1 ? "row" : "rows";
@@ -252,14 +261,23 @@ function Table({ rows }) {
   const columns = Columns(role);
   const columnsToShow = [...columns];
 
+
+  // setTimeout(() => {
+  //   getData()
+  // }, 2000)
+
   const getData = () => {
-    const fs = firebase.firestore();
-    const uid = 'oPtv4HgN09ToxUX9hXJp4ihvopN2'
-    let s = fs.collection('Students').where(`owners.tutors.${uid}`, '==', true)
-    let t = fs.collection('Tutors').doc(uid).get()
-    Promise.all([s, t]).then(res => {
-      // console.log("res", res);
+    firestoreModule.getStudents().then(res => {
+      console.log(res)
     })
+    return
+    // const fs = firebase.firestore();
+    // const uid = 'oPtv4HgN09ToxUX9hXJp4ihvopN2'
+    // let s = fs.collection('Students').where(`owners.tutors.${uid}`, '==', true)
+    // let t = fs.collection('Tutors').doc(uid).get()
+    // Promise.all([s, t]).then(res => {
+    //   // console.log("res", res);
+    // })
   }
 
   const studentToArr = (student) => columns.map(r => student[r.key]);
@@ -269,6 +287,55 @@ function Table({ rows }) {
     const aoa = [columnNames].concat(rowsCopy.map(studentToArr));
     aoaToFile({ fileName: "Students List.xlsx", aoa })
   }
+
+  const tutorsOptions = [
+    'None',
+    'מדריך א',
+    'מדריך ב',
+    'מדריך ג',
+    'מדריך ד',
+    'מדריך ה',
+    'מדריך ו',
+    'מדריך ז',
+    'מדריך ח',
+    'מדריך ט',
+    'מדריך י',
+    'מדריך כ',
+    'מדריך ל',
+    'מדריך מ',
+  ];
+  const coordinatorsOptions = [
+    'None',
+    'רכז א',
+    'רכז ב',
+    'רכז ג',
+    'רכז ד',
+    'רכז ה',
+    'רכז ו',
+    'רכז ז',
+    'רכז ח',
+    'רכז ט',
+    'רכז י',
+    'רכז כ',
+    'רכז ל',
+    'רכז מ',
+  ];
+  const departmentManagersOptions = [
+    'None',
+    'מנהל  א',
+    'מנהל  ב',
+    'מנהל  ג',
+    'מנהל  ד',
+    'מנהל  ה',
+    'מנהל  ו',
+    'מנהל  ז',
+    'מנהל  ח',
+    'מנהל  ט',
+    'מנהל  י',
+    'מנהל  כ',
+    'מנהל  ל',
+    'מנהל  מ',
+  ];
 
   return (
     <div>
@@ -310,8 +377,12 @@ function Table({ rows }) {
           </Button>
           <MsgToShow {...msgState} handleClose={() => setMsgState({ ...msgState, visible: false })} />
 
-          <Dialog disableBackdropClick
-            disableEscapeKeyDown open={openForm} onClose={handleCloseForm} aria-labelledby="form-dialog-title">
+          <Dialog
+            disableBackdropClick
+            disableEscapeKeyDown
+            open={openForm}
+            onClose={handleCloseForm}
+            aria-labelledby="form-dialog-title">
             <form validate="true" className={classes.container} autoComplete="on">
               <DialogTitle id="form-dialog-title" className={classes.formTitle}>הוספת חניך</DialogTitle>
               <DialogContent>
@@ -404,21 +475,90 @@ function Table({ rows }) {
 
         <div className={classes.actions}>
 
-          {role !== 'tutor' ? <Button variant="contained" color="primary" className={classes.button}>
+          {role !== 'tutor' ? <Button variant="contained" color="primary" className={classes.button} onClick={() => selectedIndexes.length !== 0 ? setAssignmentDialogType('tutors') : setAssignmentDialogType('')}>
             שבץ חניכים בחורים למדריך
          <AssignmentIcon />
           </Button> : <></>}
-          {/* <AssignmentDialog /> */}
 
-          {role === 'departmentManager' || role === 'ceo' ? <Button variant="contained" color="primary" className={classes.button}>
+          <AssignmentDialog title="בחר מדריך" optionsArr={tutorsOptions} visible={assignmentDialogType === 'tutors'}
+            handleClose={(chosenOption) => {
+              setAssignmentDialogType("");
+              if (selectedIndexes.length !== 0 && chosenOption !== 'Cancel') {
+                selectedIndexes.map(
+                  (i) => {
+                    onGridRowsUpdated({ fromRow: i, toRow: i, updated: { tutor: chosenOption === 'None' ? '' : chosenOption } })
+                    onGridRowsUpdated({ fromRow: i, toRow: i, updated: { status: chosenOption === 'None' ? 'לא שובץ' : 'שובץ' } })
+                  }
+                )
+                if (chosenOption !== 'None')
+                  setMsgState({
+                    title: "שיבוץ חניכים למדריך",
+                    body: "כל החניכים שנבחרו שובצו בהצלחה עבור " + chosenOption,
+                    visible: true
+                  });
+                while (selectedIndexes.length !== 0) {
+                  selectedIndexes.shift();
+                }
+
+              }
+
+            }
+            } />
+
+          {role === 'departmentManager' || role === 'ceo' ? <Button variant="contained" color="primary" className={classes.button} onClick={() => selectedIndexes.length !== 0 ? setAssignmentDialogType('coordinators') : setAssignmentDialogType('')}>
             שבץ חניכים בחורים לרכז
          <AssignmentIcon />
           </Button> : <></>}
 
-          {role === 'ceo' ? <Button variant="contained" color="primary" className={classes.button}>
+          <AssignmentDialog title="בחר רכז" optionsArr={coordinatorsOptions} visible={assignmentDialogType === 'coordinators'}
+            handleClose={(chosenOption) => {
+              setAssignmentDialogType("");
+              if (selectedIndexes.length !== 0 && chosenOption !== 'Cancel') {
+                selectedIndexes.map(
+                  (i) => {
+                    onGridRowsUpdated({ fromRow: i, toRow: i, updated: { coordinator: chosenOption === 'None' ? '' : chosenOption } })
+                  }
+                )
+                if (chosenOption !== 'None')
+                  setMsgState({
+                    title: "שיבוץ חניכים לרכז",
+                    body: "כל החניכים שנבחרו שובצו בהצלחה עבור " + chosenOption,
+                    visible: true
+                  });
+                while (selectedIndexes.length !== 0) {
+                  selectedIndexes.shift();
+                }
+              }
+
+
+            }} />
+
+          {role === 'ceo' ? <Button variant="contained" color="primary" className={classes.button} onClick={() => selectedIndexes.length !== 0 ? setAssignmentDialogType('departmentManagers') : setAssignmentDialogType('')}>
             שבץ חניכים בחורים למנהל מחלקה
          <AssignmentIcon />
           </Button> : <></>}
+
+          <AssignmentDialog title="בחר מנהל מחלקה" optionsArr={departmentManagersOptions} visible={assignmentDialogType === 'departmentManagers'}
+            handleClose={(chosenOption) => {
+              setAssignmentDialogType("");
+              if (selectedIndexes.length !== 0 && chosenOption !== 'Cancel') {
+                selectedIndexes.map(
+                  (i) => {
+                    onGridRowsUpdated({ fromRow: i, toRow: i, updated: { departmentManager: chosenOption === 'None' ? '' : chosenOption } })
+                  }
+                )
+                if (chosenOption !== 'None')
+                  setMsgState({
+                    title: "שיבוץ חניכים למנהל מחלקה",
+                    body: "כל החניכים שנבחרו שובצו בהצלחה עבור " + chosenOption,
+                    visible: true
+                  });
+                while (selectedIndexes.length !== 0) {
+                  selectedIndexes.shift();
+                }
+              }
+
+            }} />
 
         </div>
 
@@ -434,7 +574,7 @@ function Table({ rows }) {
 
           {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
 
-          <MsgToShow {...msgState} handleClose={() => setMsgState({ ...msgState, visible: false })} />
+          {/* <MsgToShow {...msgState} handleClose={() => setMsgState({ ...msgState, visible: false })} /> */}
 
         </div>
 
