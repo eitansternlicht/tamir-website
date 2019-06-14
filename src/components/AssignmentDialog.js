@@ -1,40 +1,24 @@
 
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Dialog from '@material-ui/core/Dialog';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Radio from '@material-ui/core/Radio';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 
-const options = [
-    'None',
-    'Atria',
-    'Callisto',
-    'Dione',
-    'Ganymede',
-    'Hangouts Call',
-    'Luna',
-    'Oberon',
-    'Phobos',
-    'Pyxis',
-    'Sedna',
-    'Titania',
-    'Triton',
-    'Umbriel',
-];
+import { makeStyles, 
+    Button,
+     List,
+     Radio,
+      Dialog, 
+      DialogTitle, 
+      DialogContent, 
+      DialogActions,
+      RadioGroup,
+      FormControlLabel
+      
+    } from '@material-ui/core/';
 
 function AssignmentRow(props) {
-    const { onClose, value: valueProp, open, ...other } = props;
-    const [value, setValue] = React.useState(valueProp);
+    const { title, optionsArr, onClose, value: valueProp, open, ...other } = props;
+    const [value, setValue] = useState(valueProp);
     const radioGroupRef = React.useRef(null);
+    const classes = useStyles();
 
     React.useEffect(() => {
         if (!open) {
@@ -49,7 +33,7 @@ function AssignmentRow(props) {
     }
 
     function handleCancel() {
-        onClose();
+        onClose('Cancel');
     }
 
     function handleOk() {
@@ -69,16 +53,16 @@ function AssignmentRow(props) {
             open={open}
             {...other}
         >
-            <DialogTitle id="confirmation-dialog-title">Phone Ringtone</DialogTitle>
+            <DialogTitle id="confirmation-dialog-title" className={classes.title}>{title}</DialogTitle>
             <DialogContent dividers>
                 <RadioGroup
                     ref={radioGroupRef}
-                    aria-label="Ringtone"
-                    name="ringtone"
                     value={value}
                     onChange={handleChange}
+                    className={classes.options}
+
                 >
-                    {options.map(option => (
+                    {optionsArr.map(option => (
                         <FormControlLabel value={option} key={option} control={<Radio />} label={option} />
                     ))}
                 </RadioGroup>
@@ -95,12 +79,6 @@ function AssignmentRow(props) {
     );
 }
 
-AssignmentRow.propTypes = {
-    onClose: PropTypes.func.isRequired,
-    open: PropTypes.bool.isRequired,
-    value: PropTypes.string.isRequired,
-};
-
 const useStyles = makeStyles(theme => ({
     root: {
         width: '100%',
@@ -111,48 +89,30 @@ const useStyles = makeStyles(theme => ({
         width: '80%',
         maxHeight: 435,
     },
+    title: {
+        textAlign: 'center',
+        fontSize: 30,
+    },
+    options: {
+        textAlign: 'right',
+        alignContent: 'right',
+    }
 }));
 
-function AssignmentDialog() {
+function AssignmentDialog({ title, optionsArr, visible, handleClose }) {
     const classes = useStyles();
-    const [open, setOpen] = useState(false);
-    const [value, setValue] = useState('Dione');
-
-    function handleClickListItem() {
-        setOpen(true);
-    }
-
-    function handleClose(newValue) {
-        setOpen(false);
-
-        if (newValue) {
-            setValue(newValue);
-        }
-    }
 
     return (
         <div className={classes.root}>
             <List component="div" role="list">
-                <ListItem
-                    button
-                    divider
-                    aria-haspopup="true"
-                    aria-controls="ringtone-menu"
-                    aria-label="Phone ringtone"
-                    onClick={handleClickListItem}
-                    role="listitem"
-                >
-                    <ListItemText primary="Phone ringtone" secondary={value} />
-                </ListItem>
                 <AssignmentRow
-                    classes={{
-                        paper: classes.paper,
-                    }}
-                    id="ringtone-menu"
+                    classes={{paper: classes.paper,}}
+                    optionsArr={optionsArr}
+                    title={title}
                     keepMounted
-                    open={open}
+                    open={visible}
                     onClose={handleClose}
-                    value={value}
+                    value={optionsArr[0]}
                 />
             </List>
         </div>
