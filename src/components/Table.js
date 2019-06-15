@@ -1,8 +1,19 @@
-import React, { useState, Component, Form } from "react";
+import React, { useState } from "react";
 import ReactDataGrid from "react-data-grid";
-import { Toolbar, Data, Filters, Editors } from "react-data-grid-addons";
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
+import { Toolbar, Data } from "react-data-grid-addons";
+import {
+  makeStyles,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
+  CircularProgress,
+  MenuItem,
+  TextField,
+
+} from '@material-ui/core/';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import SaveIcon from '@material-ui/icons/Save';
@@ -10,20 +21,12 @@ import AssignmentIcon from '@material-ui/icons/AssignmentInd';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { aoaToFile } from '../utils/excell-utils';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import green from '@material-ui/core/colors/green';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
 import 'react-responsive-ui/style.css';
 import { MsgToShow } from './MsgToShow';
 import { AssignmentDialog } from './AssignmentDialog';
 import PhoneInput from 'react-phone-number-input/react-responsive-ui';
-
+import { firestoreModule } from '../Firebase/Firebase'
 import { Columns } from '../utils/getColumns'
 
 const useStyles = makeStyles(theme => ({
@@ -76,6 +79,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+
 const selectors = Data.Selectors;
 
 const sortRows = (initialRows, sortColumn, sortDirection) => rows => {
@@ -116,10 +120,16 @@ function Table({ rows }) {
   const [filters, setFilters] = useState({});
   let [rowsCopy, setRows] = useState(rows);
   const [loading, setLoading] = useState(false);
+  const [loadingPage, setLoadingPage] = useState(true);
   const [msgState, setMsgState] = useState({ title: "", body: "", visible: false });
+  const [assignmentDialogType, setAssignmentDialogType] = useState("");
   const [openForm, setOpenForm] = useState(false);
   const filteredRows = getRows(rowsCopy, filters);
-  const [student, setStudent] = useState({});
+  const [newStudent, setNewStudent] = useState({});
+  const [originalRows, setOriginalRows] = useState([]);
+
+  console.log("original", originalRows);
+  console.log("copy", rowsCopy);
 
   const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
 
@@ -167,22 +177,22 @@ function Table({ rows }) {
   }
 
   const handleChange = name => event => {
-    setStudent({ ...student, [name]: event.target.value });
+    setNewStudent({ ...newStudent, [name]: event.target.value });
   };
 
   const handleChangePhone = name => value => {
-    setStudent({ ...student, [name]: value });
+    setNewStudent({ ...newStudent, [name]: value });
   }
 
 
   function handleClickOpenForm() {
-    setStudent({ 'id': rowsCopy.length, 'status': "לא שובץ", lastModified: updateDate(), ...student });
+    setNewStudent({ 'id': rowsCopy.length, 'status': "לא שובץ", lastModified: updateDate(), ...newStudent });
     setOpenForm(true);
   }
 
   function handleCloseForm() {
     setOpenForm(false);
-    setStudent({});
+    setNewStudent({});
   }
 
   const deleteRow = () => {
@@ -219,13 +229,27 @@ function Table({ rows }) {
 
 
   const addStudent = () => {
-    rowsCopy.unshift(student);
-    updateNums();
+    // rowsCopy.unshift(student);
+    // updateNums();
+    // handleCloseForm();
+    // setMsgState({
+    //   title: "הוספת חניך",
+    //   body: "!החניך הוסף בהצלחה",
+    //   visible: true
+    // });
     handleCloseForm();
-    setMsgState({
-      title: "הוספת חניך",
-      body: "!החניך הוסף בהצלחה",
-      visible: true
+    firestoreModule.getStudents().add(newStudent).then(ref => {
+      console.log('Document successfully created!', ref.id);
+      rowsCopy.unshift(newStudent);
+      updateNums();
+      setRows(rowsCopy);
+      setMsgState({
+        title: "הוספת חניך",
+        body: "!החניך הוסף בהצלחה",
+        visible: true
+      });
+    }).catch(function (error) {
+      console.log("Error adding student", error);
     });
   }
 
@@ -252,15 +276,65 @@ function Table({ rows }) {
   const columns = Columns(role);
   const columnsToShow = [...columns];
 
-  const getData = () => {
-    const fs = firebase.firestore();
-    const uid = 'oPtv4HgN09ToxUX9hXJp4ihvopN2'
-    let s = fs.collection('Students').where(`owners.tutors.${uid}`, '==', true)
-    let t = fs.collection('Tutors').doc(uid).get()
-    Promise.all([s, t]).then(res => {
-      // console.log("res", res);
-    })
-  }
+  // const getData = () => {
+  //   const fs = firebase.firestore();
+  //   const uid = 'oPtv4HgN09ToxUX9hXJp4ihvopN2'
+  //   let s = fs.collection('Students').where(`owners.tutors.${uid}`, '==', true)
+  //   let t = fs.collection('Tutors').doc(uid).get()
+  //   Promise.all([s, t]).then(res => {
+  //     // console.log("res", res);
+  //   })
+  // }
+
+  const tutorsOptions = [
+    'None',
+    'מדריך א',
+    'מדריך ב',
+    'מדריך ג',
+    'מדריך ד',
+    'מדריך ה',
+    'מדריך ו',
+    'מדריך ז',
+    'מדריך ח',
+    'מדריך ט',
+    'מדריך י',
+    'מדריך כ',
+    'מדריך ל',
+    'מדריך מ',
+  ];
+  const coordinatorsOptions = [
+    'None',
+    'רכז א',
+    'רכז ב',
+    'רכז ג',
+    'רכז ד',
+    'רכז ה',
+    'רכז ו',
+    'רכז ז',
+    'רכז ח',
+    'רכז ט',
+    'רכז י',
+    'רכז כ',
+    'רכז ל',
+    'רכז מ',
+  ];
+  const departmentManagersOptions = [
+    'None',
+    'מנהל  א',
+    'מנהל  ב',
+    'מנהל  ג',
+    'מנהל  ד',
+    'מנהל  ה',
+    'מנהל  ו',
+    'מנהל  ז',
+    'מנהל  ח',
+    'מנהל  ט',
+    'מנהל  י',
+    'מנהל  כ',
+    'מנהל  ל',
+    'מנהל  מ',
+  ];
+
 
   const studentToArr = (student) => columns.map(r => student[r.key]);
 
@@ -269,6 +343,15 @@ function Table({ rows }) {
     const aoa = [columnNames].concat(rowsCopy.map(studentToArr));
     aoaToFile({ fileName: "Students List.xlsx", aoa })
   }
+
+  const firstTime = () => {
+    if (loadingPage) {
+      updateNums();
+      setOriginalRows(rowsCopy);
+      setLoadingPage(false);
+    }
+  }
+  firstTime();
 
   return (
     <div>
@@ -322,23 +405,23 @@ function Table({ rows }) {
                   required
                   autoFocus
                   margin="dense"
-                  id="fName"
+                  id="firstName"
                   className={classes.textField}
                   placeholder="דוד"
                   label="שם החניך"
                   type="name"
-                  onChange={handleChange('fName')}
+                  onChange={handleChange('firstName')}
                 />
                 <TextField
                   required
                   autoFocus
                   margin="dense"
-                  id="lName"
+                  id="lastName"
                   className={classes.textField}
                   placeholder="כהן"
                   label="שם המשפחה"
                   type="name"
-                  onChange={handleChange('lName')}
+                  onChange={handleChange('lastName')}
                 />
 
                 <PhoneInput
@@ -347,7 +430,7 @@ function Table({ rows }) {
                   label="מס' טלפון"
                   className={classes.textField}
                   placeholder="Enter phone number"
-                  value={student['phone']}
+                  value={newStudent['phone']}
                   onChange={handleChangePhone('phone')}
                 />
 
@@ -360,7 +443,7 @@ function Table({ rows }) {
                   label="מין"
                   className={classes.textField}
                   onChange={handleChange('gender')}
-                  value={student.gender}
+                  value={newStudent.gender}
                   SelectProps={{
                     MenuProps: {
                       className: classes.menu,
@@ -404,21 +487,91 @@ function Table({ rows }) {
 
         <div className={classes.actions}>
 
-          {role !== 'tutor' ? <Button variant="contained" color="primary" className={classes.button}>
+          {role !== 'tutor' ? <Button variant="contained" color="primary" className={classes.button} onClick={() => selectedIndexes.length !== 0 ? setAssignmentDialogType('tutors') : setAssignmentDialogType('')} >
             שבץ חניכים בחורים למדריך
          <AssignmentIcon />
           </Button> : <></>}
-          {/* <AssignmentDialog /> */}
 
-          {role === 'departmentManager' || role === 'ceo' ? <Button variant="contained" color="primary" className={classes.button}>
+          <AssignmentDialog title="בחר מדריך" optionsArr={tutorsOptions} visible={assignmentDialogType === 'tutors'}
+            handleClose={(chosenOption) => {
+              setAssignmentDialogType("");
+              if (selectedIndexes.length !== 0 && chosenOption !== 'Cancel') {
+                selectedIndexes.map(
+                  (i) => {
+                    onGridRowsUpdated({ fromRow: i, toRow: i, updated: { tutor: chosenOption === 'None' ? '' : chosenOption } })
+                    onGridRowsUpdated({ fromRow: i, toRow: i, updated: { status: chosenOption === 'None' ? 'לא שובץ' : 'שובץ' } })
+                  }
+                )
+                if (chosenOption !== 'None')
+                  setMsgState({
+                    title: "שיבוץ חניכים למדריך",
+                    body: "כל החניכים שנבחרו שובצו בהצלחה עבור " + chosenOption,
+                    visible: true
+                  });
+                while (selectedIndexes.length !== 0) {
+                  selectedIndexes.shift();
+                }
+
+              }
+
+            }
+            } />
+
+          {role === 'departmentManager' || role === 'ceo' ? <Button variant="contained" color="primary" className={classes.button} onClick={() => selectedIndexes.length !== 0 ? setAssignmentDialogType('coordinators') : setAssignmentDialogType('')}>
             שבץ חניכים בחורים לרכז
          <AssignmentIcon />
           </Button> : <></>}
 
-          {role === 'ceo' ? <Button variant="contained" color="primary" className={classes.button}>
+          <AssignmentDialog title="בחר רכז" optionsArr={coordinatorsOptions} visible={assignmentDialogType === 'coordinators'}
+            handleClose={(chosenOption) => {
+              setAssignmentDialogType("");
+              if (selectedIndexes.length !== 0 && chosenOption !== 'Cancel') {
+                selectedIndexes.map(
+                  (i) => {
+                    onGridRowsUpdated({ fromRow: i, toRow: i, updated: { coordinator: chosenOption === 'None' ? '' : chosenOption } })
+                  }
+                )
+                if (chosenOption !== 'None')
+                  setMsgState({
+                    title: "שיבוץ חניכים לרכז",
+                    body: "כל החניכים שנבחרו שובצו בהצלחה עבור " + chosenOption,
+                    visible: true
+                  });
+                while (selectedIndexes.length !== 0) {
+                  selectedIndexes.shift();
+                }
+              }
+
+
+            }} />
+
+
+          {role === 'ceo' ? <Button variant="contained" color="primary" className={classes.button} onClick={() => selectedIndexes.length !== 0 ? setAssignmentDialogType('departmentManagers') : setAssignmentDialogType('')}>
             שבץ חניכים בחורים למנהל מחלקה
          <AssignmentIcon />
           </Button> : <></>}
+
+          <AssignmentDialog title="בחר מנהל מחלקה" optionsArr={departmentManagersOptions} visible={assignmentDialogType === 'departmentManagers'}
+            handleClose={(chosenOption) => {
+              setAssignmentDialogType("");
+              if (selectedIndexes.length !== 0 && chosenOption !== 'Cancel') {
+                selectedIndexes.map(
+                  (i) => {
+                    onGridRowsUpdated({ fromRow: i, toRow: i, updated: { departmentManager: chosenOption === 'None' ? '' : chosenOption } })
+                  }
+                )
+                if (chosenOption !== 'None')
+                  setMsgState({
+                    title: "שיבוץ חניכים למנהל מחלקה",
+                    body: "כל החניכים שנבחרו שובצו בהצלחה עבור " + chosenOption,
+                    visible: true
+                  });
+                while (selectedIndexes.length !== 0) {
+                  selectedIndexes.shift();
+                }
+              }
+
+            }} />
 
         </div>
 
@@ -434,7 +587,7 @@ function Table({ rows }) {
 
           {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
 
-          <MsgToShow {...msgState} handleClose={() => setMsgState({ ...msgState, visible: false })} />
+          {/* <MsgToShow {...msgState} handleClose={() => setMsgState({ ...msgState, visible: false })} /> */}
 
         </div>
 

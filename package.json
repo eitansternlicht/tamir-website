@@ -8,7 +8,7 @@
     "@material-ui/icons": "^4.0.0",
     "eslint-plugin-react-hooks": "^1.6.0",
     "faker": "^4.1.0",
-    "firebase": "^5.9.3",
+    "firebase": "^6.2.0",
     "gh-pages": "^2.0.1",
     "react": "^16.8.6",
     "react-data-grid": "^6.1.0",

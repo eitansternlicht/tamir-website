@@ -44,13 +44,18 @@ const columns = [
         editable: false
     },
     {
-        key: "fName",
+        key: "firstName",
         name: "שם פרטי",
         filterRenderer: AutoCompleteFilter
     },
     {
-        key: "lName",
+        key: "lastName",
         name: "שם משפחה",
+        filterRenderer: AutoCompleteFilter
+    },
+    {
+        key: "govID",
+        name: "ת.ז",
         filterRenderer: AutoCompleteFilter
     },
     {
@@ -69,19 +74,15 @@ const columns = [
         filterRenderer: AutoCompleteFilter
     },
     {
-        key: "tShirtSize",
-        name: "מידת חולצה",
-        filterRenderer: AutoCompleteFilter,
-        editor: TShirtSizesEditor
-    },
-    {
-        key: "city",
-        name: "עיר",
+        key: "tutor",
+        name: "מדריך",
+        editable: false,
         filterRenderer: AutoCompleteFilter
     },
     {
-        key: "school",
-        name: "בית ספר",
+        key: "coordinator",
+        name: "רכז שכונה",
+        editable: false,
         filterRenderer: AutoCompleteFilter
     },
     {
@@ -92,15 +93,59 @@ const columns = [
 
     },
     {
-        key: "coordinator",
-        name: "רכז שכונה",
-        editable: false,
+        key: "city",
+        name: "עיר",
         filterRenderer: AutoCompleteFilter
     },
     {
-        key: "tutor",
-        name: "מדריך",
-        editable: false,
+        key: "address",
+        name: "כתובת",
+        filterRenderer: AutoCompleteFilter
+    },
+    {
+        key: "tShirtSize",
+        name: "מידת חולצה",
+        filterRenderer: AutoCompleteFilter,
+        editor: TShirtSizesEditor
+    },
+    {
+        key: "school",
+        name: "בית ספר",
+        filterRenderer: AutoCompleteFilter
+    },
+    {
+        key: "comments",
+        name: "הערות",
+        filterRenderer: AutoCompleteFilter
+    },
+    {
+        key: "dob",
+        name: "תאריך לידה",
+        filterRenderer: AutoCompleteFilter
+    },
+    {
+        key: "email",
+        name: "דואר אלקטרוני",
+        filterRenderer: AutoCompleteFilter
+    },
+    {
+        key: "prefferedDays",
+        name: "ימים מועדפים",
+        filterRenderer: AutoCompleteFilter
+    },
+    {
+        key: "schoolGrade",
+        name: "ממוצע ציונים",
+        filterRenderer: AutoCompleteFilter
+    },
+    {
+        key: "socialCircle",
+        name: "חברים קרובים",
+        filterRenderer: AutoCompleteFilter
+    },
+    {
+        key: "specialIssues",
+        name: "מקרים חריגים",
         filterRenderer: AutoCompleteFilter
     },
     {

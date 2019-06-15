@@ -4,14 +4,14 @@ import 'firebase/firestore'
 let firestoreDb = null
 
 function getStudents() {
-    return firestoreDb.collection("Students").get()
+    return firestoreDb.collection("Students");
 }
 function getSpecificStudent(studentId) {
     
 }
 
 const getModule = () => {
-    firestoreDb = firebase.firestore()
+    firestoreDb = firebase.firestore();
     return {
         getStudents
     }
