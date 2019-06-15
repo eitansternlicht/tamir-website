@@ -209,7 +209,7 @@ function Table({ rows }) {
       setLoading(false);
       setMsgState({
         title: "מחיקת חניכים",
-        body: "!כל החניכים שבחורים נמחקו בהצלחה",
+        body: "!כל החניכים שנבחרו נמחקו בהצלחה",
         visible: true
       });
       updateNums();
@@ -344,14 +344,14 @@ function Table({ rows }) {
     aoaToFile({ fileName: "Students List.xlsx", aoa })
   }
 
-  const firstTime = () => {
+  const firstTimeLoading = () => {
     if (loadingPage) {
       updateNums();
       setOriginalRows(rowsCopy);
       setLoadingPage(false);
     }
   }
-  firstTime();
+  firstTimeLoading();
 
   return (
     <div>

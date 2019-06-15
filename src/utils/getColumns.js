@@ -10,6 +10,7 @@ const defaultColumnProperties = {
     dragable: false,
     expandableOptions: false,
     isExpanded: false,
+    minWidth: 50
 };
 
 const { DropDownEditor } = Editors;
@@ -31,9 +32,14 @@ const statusOptions = [
     { id: 'assinged', value: "שובץ" },
     { id: 'notAssinged', value: "לא שובץ" },
 ]
+const genderOptions = [
+    { id: 'male', value: "ז" },
+    { id: 'female', value: "נ" },
 
+]
 const AssignmentEditor = <DropDownEditor options={statusOptions} />;
 const TShirtSizesEditor = <DropDownEditor options={TShirtSizes} />;
+const genderEditor = <DropDownEditor options={genderOptions} />;
 
 const columns = [
     {
@@ -51,21 +57,25 @@ const columns = [
     {
         key: "lastName",
         name: "שם משפחה",
+        width: 100,
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "govID",
         name: "ת.ז",
+        width: 100,
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "phone",
         name: "מס' טלפון",
+        width: 130,
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "gender",
         name: "מין",
+        editor: genderEditor,
         filterRenderer: AutoCompleteFilter
     },
     {
@@ -83,12 +93,14 @@ const columns = [
         key: "coordinator",
         name: "רכז שכונה",
         editable: false,
+        width: 100,
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "departmentManager",
         name: "מנהל מחלקה",
         editable: false,
+        width: 120,
         filterRenderer: AutoCompleteFilter
 
     },
@@ -105,6 +117,7 @@ const columns = [
     {
         key: "tShirtSize",
         name: "מידת חולצה",
+        width: 100,
         filterRenderer: AutoCompleteFilter,
         editor: TShirtSizesEditor
     },
@@ -112,40 +125,42 @@ const columns = [
         key: "school",
         name: "בית ספר",
         filterRenderer: AutoCompleteFilter
-    },
-    {
-        key: "comments",
-        name: "הערות",
-        filterRenderer: AutoCompleteFilter
+
     },
     {
         key: "dob",
         name: "תאריך לידה",
+        width: 100,
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "email",
         name: "דואר אלקטרוני",
+        width: 120,
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "prefferedDays",
         name: "ימים מועדפים",
+        width: 110,
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "schoolGrade",
         name: "ממוצע ציונים",
+        width: 110,
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "socialCircle",
         name: "חברים קרובים",
+        width: 110,
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "specialIssues",
         name: "מקרים חריגים",
+        width: 110,
         filterRenderer: AutoCompleteFilter
     },
     {
@@ -153,6 +168,11 @@ const columns = [
         name: "סטטוס",
         filterRenderer: AutoCompleteFilter,
         editor: AssignmentEditor
+    },
+    {
+        key: "comments",
+        name: "הערות",
+        filterRenderer: AutoCompleteFilter
     },
     {
         key: "lastModified",
