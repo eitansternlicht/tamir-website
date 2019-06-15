@@ -102,7 +102,6 @@ const columns = [
         editable: false,
         width: 120,
         filterRenderer: AutoCompleteFilter
-
     },
     {
         key: "city",

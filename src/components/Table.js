@@ -123,7 +123,7 @@ function Table({ rows }) {
   const [msgState, setMsgState] = useState({ title: "", body: "", visible: false });
   const [assignmentDialogType, setAssignmentDialogType] = useState("");
   const [openForm, setOpenForm] = useState(false);
-  const filteredRows = getRows(rowsCopy, filters);
+  let filteredRows = getRows(rowsCopy, filters);
   const [newStudent, setNewStudent] = useState({});
   const [originalRows, setOriginalRows] = useState([]);
 
@@ -345,6 +345,7 @@ function Table({ rows }) {
   const firstTimeLoading = () => {
     if (loadingPage) {
       updateNums();
+      filteredRows = getRows(rowsCopy, filters);
       setOriginalRows(rowsCopy);
       setLoadingPage(false);
     }
