@@ -14,17 +14,15 @@ import {
   TextField,
 
 } from '@material-ui/core/';
+import { MsgToShow, AssignmentDialog } from './';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import SaveIcon from '@material-ui/icons/Save';
 import AssignmentIcon from '@material-ui/icons/AssignmentInd';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
+
 import { aoaToFile } from '../utils/excell-utils';
 import green from '@material-ui/core/colors/green';
 import 'react-responsive-ui/style.css';
-import { MsgToShow } from './MsgToShow';
-import { AssignmentDialog } from './AssignmentDialog';
 import PhoneInput from 'react-phone-number-input/react-responsive-ui';
 import { firestoreModule } from '../Firebase/Firebase'
 import { Columns } from '../utils/getColumns'
@@ -116,6 +114,7 @@ function getRows(rows, filters) {
 }
 
 function Table({ rows }) {
+
   const [selectedIndexes, setSelectedIndexes] = useState([]);
   const [filters, setFilters] = useState({});
   let [rowsCopy, setRows] = useState(rows);
@@ -134,7 +133,6 @@ function Table({ rows }) {
   const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
 
     const newRows = JSON.parse(JSON.stringify(rowsCopy));
-
     for (let i = fromRow; i <= toRow; i++) {
       newRows[i] = { ...rowsCopy[i], ...updated };
       newRows[i]['lastModified'] = updateDate();
@@ -194,6 +192,7 @@ function Table({ rows }) {
     setOpenForm(false);
     setNewStudent({});
   }
+
 
   const deleteRow = () => {
     if (selectedIndexes.length === 0)
@@ -267,7 +266,6 @@ function Table({ rows }) {
       i => rowIndexes.indexOf(i) === -1
     );
     setSelectedIndexes(newSelectedIndexes);
-    console.log("selected :", selectedIndexes);
   };
 
   const rowText = selectedIndexes.length === 1 ? "row" : "rows";
@@ -393,8 +391,12 @@ function Table({ rows }) {
           </Button>
           <MsgToShow {...msgState} handleClose={() => setMsgState({ ...msgState, visible: false })} />
 
-          <Dialog disableBackdropClick
-            disableEscapeKeyDown open={openForm} onClose={handleCloseForm} aria-labelledby="form-dialog-title">
+          <Dialog
+            disableBackdropClick
+            disableEscapeKeyDown
+            open={openForm}
+            onClose={handleCloseForm}
+            aria-labelledby="form-dialog-title">
             <form validate="true" className={classes.container} autoComplete="on">
               <DialogTitle id="form-dialog-title" className={classes.formTitle}>הוספת חניך</DialogTitle>
               <DialogContent>
@@ -544,7 +546,6 @@ function Table({ rows }) {
 
 
             }} />
-
 
           {role === 'ceo' ? <Button variant="contained" color="primary" className={classes.button} onClick={() => selectedIndexes.length !== 0 ? setAssignmentDialogType('departmentManagers') : setAssignmentDialogType('')}>
             שבץ חניכים בחורים למנהל מחלקה
