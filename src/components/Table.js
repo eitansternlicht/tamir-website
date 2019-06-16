@@ -127,8 +127,26 @@ function Table({ rows }) {
   const [newStudent, setNewStudent] = useState({});
   const [originalRows, setOriginalRows] = useState([]);
 
+
   console.log("original", originalRows);
   console.log("copy", rowsCopy);
+
+  const fixStudentFields = (student) => {
+    columns.forEach(({ key }) => {
+      if (student.hasOwnProperty(key)) {
+        if (student[key] === null || student[key] === undefined)
+          student[key] = ''
+      }
+      else {
+        student = { ...student, [key]: '' };
+      }
+    })
+    return student;
+  }
+
+  const fixStudentsFields = () => {
+    return rowsCopy.map(fixStudentFields);
+  }
 
   const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
 
@@ -184,7 +202,7 @@ function Table({ rows }) {
 
 
   function handleClickOpenForm() {
-    setNewStudent({ 'id': rowsCopy.length, 'status': "לא שובץ", lastModified: updateDate(), ...newStudent });
+    setNewStudent({ 'id': rowsCopy.length, 'studentStatus': "לא שובץ", lastModified: updateDate(), ...newStudent });
     setOpenForm(true);
   }
 
@@ -199,6 +217,10 @@ function Table({ rows }) {
       return;
     if (!loading) {
       setLoading(true);
+      const fids = []
+      selectedIndexes.forEach(idx => fids.push(rowsCopy[idx].fid))
+      // firestoreModule.deleteStudents(fids)
+      fids.forEach(id => firestoreModule.deleteStudent(id));
       let newArr = rowsCopy.filter((row, i) => !selectedIndexes.includes(i));
       while (selectedIndexes.length !== 0) {
         selectedIndexes.shift();
@@ -236,10 +258,11 @@ function Table({ rows }) {
     //   body: "!החניך הוסף בהצלחה",
     //   visible: true
     // });
+    let fixedStudent = fixStudentFields(newStudent)
     handleCloseForm();
-    firestoreModule.getStudents().add(newStudent).then(ref => {
-      console.log('Document successfully created!', ref.id);
-      rowsCopy.unshift(newStudent);
+    firestoreModule.getStudents().add(fixedStudent).then(ref => {
+      fixedStudent = {...fixedStudent, 'fid': ref.id};
+      rowsCopy.unshift(fixedStudent);
       updateNums();
       setRows(rowsCopy);
       setMsgState({
@@ -345,7 +368,8 @@ function Table({ rows }) {
   const firstTimeLoading = () => {
     if (loadingPage) {
       updateNums();
-      filteredRows = getRows(rowsCopy, filters);
+      setRows(fixStudentsFields());
+      //filteredRows = getRows(rowsCopy, filters);
       setOriginalRows(rowsCopy);
       setLoadingPage(false);
     }

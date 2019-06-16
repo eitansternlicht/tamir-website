@@ -227,12 +227,13 @@ import { firestoreModule } from '../Firebase/Firebase';
 //   }
 // ];
 
-const getData = () => {
-  return firestoreModule
+const getData = (setRows, setLoading) => {
+    firestoreModule
     .getStudents()
-    .get()
-    .then(querySnapshot => querySnapshot.docs.map(doc => doc.data()))
-    .catch(error => console.log('Error getting document:', error));
+    .onSnapshot(querySnapshot => {
+      setRows(querySnapshot.docs.map(doc => ({... doc.data(), fid: doc.id})))
+      setLoading(false);
+    });
 };
 
 export { getData };

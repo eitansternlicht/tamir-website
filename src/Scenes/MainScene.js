@@ -25,11 +25,10 @@ const useStyles = makeStyles(theme => ({
 function MainScene() {
     const [loading, setLoading] = useState(true);
     const [rows, setRows] = useState([]);
-    if (loading)
-        getData().then(rows => {
-            setRows(rows);
-            setLoading(false);
-        });
+    if (loading){
+        getData(setRows, setLoading)
+    } 
+
     const classes = useStyles();
     
     return (
