@@ -14,7 +14,7 @@ import {
   TextField,
 
 } from '@material-ui/core/';
-import { MsgToShow, AssignmentDialog } from './';
+import { MsgToShow, AssignmentDialog } from '.';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import SaveIcon from '@material-ui/icons/Save';
@@ -58,6 +58,7 @@ const useStyles = makeStyles(theme => ({
     width: 150,
 
   },
+
   icon: {
     margin: theme.spacing(1),
   },
@@ -71,6 +72,10 @@ const useStyles = makeStyles(theme => ({
   },
   menu: {
     width: 150,
+  },
+  rowRener: {
+    border: 1,
+    borderRadius: 3,
   },
   container: {
     // display: 'flex'
@@ -113,7 +118,13 @@ function getRows(rows, filters) {
   return selectors.getRows({ rows, filters });
 }
 
-function Table({ rows }) {
+
+const RowRenderer = ({ renderBaseRow, ...props }) => {
+  const color = props.idx % 2 ? "#eee" : "#555";
+  return <div style={{ backgroundColor: color }}>{renderBaseRow(props)}</div>;
+};
+
+function TableTabScene({ rows }) {
 
   const [selectedIndexes, setSelectedIndexes] = useState([]);
   const [filters, setFilters] = useState({});
@@ -250,18 +261,10 @@ function Table({ rows }) {
 
 
   const addStudent = () => {
-    // rowsCopy.unshift(student);
-    // updateNums();
-    // handleCloseForm();
-    // setMsgState({
-    //   title: "הוספת חניך",
-    //   body: "!החניך הוסף בהצלחה",
-    //   visible: true
-    // });
     let fixedStudent = fixStudentFields(newStudent)
     handleCloseForm();
     firestoreModule.getStudents().add(fixedStudent).then(ref => {
-      fixedStudent = {...fixedStudent, 'fid': ref.id};
+      fixedStudent = { ...fixedStudent, 'fid': ref.id };
       rowsCopy.unshift(fixedStudent);
       updateNums();
       setRows(rowsCopy);
@@ -297,15 +300,6 @@ function Table({ rows }) {
   const columns = Columns(role);
   const columnsToShow = [...columns];
 
-  // const getData = () => {
-  //   const fs = firebase.firestore();
-  //   const uid = 'oPtv4HgN09ToxUX9hXJp4ihvopN2'
-  //   let s = fs.collection('Students').where(`owners.tutors.${uid}`, '==', true)
-  //   let t = fs.collection('Tutors').doc(uid).get()
-  //   Promise.all([s, t]).then(res => {
-  //     // console.log("res", res);
-  //   })
-  // }
 
   const tutorsOptions = [
     'None',
@@ -368,9 +362,9 @@ function Table({ rows }) {
   const firstTimeLoading = () => {
     if (loadingPage) {
       updateNums();
-      setRows(fixStudentsFields());
-      //filteredRows = getRows(rowsCopy, filters);
-      setOriginalRows(rowsCopy);
+      let newRows = fixStudentsFields()
+      setRows(newRows);
+      setOriginalRows(newRows);
       setLoadingPage(false);
     }
   }
@@ -392,7 +386,9 @@ function Table({ rows }) {
         onGridSort={(sortColumn, sortDirection) =>
           setRows(sortRows(rowsCopy, sortColumn, sortDirection))
         }
+
         onGridRowsUpdated={onGridRowsUpdated}
+        rowRenderer={RowRenderer}
         enableCellSelect={true}
         rowSelection={{
           showCheckbox: true,
@@ -526,7 +522,7 @@ function Table({ rows }) {
                 selectedIndexes.map(
                   (i) => {
                     onGridRowsUpdated({ fromRow: i, toRow: i, updated: { tutor: chosenOption === 'None' ? '' : chosenOption } })
-                    onGridRowsUpdated({ fromRow: i, toRow: i, updated: { status: chosenOption === 'None' ? 'לא שובץ' : 'שובץ' } })
+                    onGridRowsUpdated({ fromRow: i, toRow: i, updated: { studentStatus: chosenOption === 'None' ? 'לא שובץ' : 'שובץ' } })
                   }
                 )
                 if (chosenOption !== 'None')
@@ -633,4 +629,4 @@ function Table({ rows }) {
 
 
 
-export { Table };
+export { TableTabScene };

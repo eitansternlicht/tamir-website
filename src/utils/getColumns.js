@@ -6,11 +6,10 @@ const defaultColumnProperties = {
     sortable: true,
     resizable: true,
     editable: true,
-    minWidth: 120,
-    dragable: false,
-    expandableOptions: false,
-    isExpanded: false,
+    enableDragAndDrop: true,
+    dragable: true,
     minWidth: 50
+
 };
 
 const { DropDownEditor } = Editors;
@@ -42,8 +41,6 @@ const TShirtSizesEditor = <DropDownEditor options={TShirtSizes} />;
 const genderEditor = <DropDownEditor options={genderOptions} />;
 
 const columns = [
-
-
     {
         key: "id",
         name: "No.",
@@ -215,13 +212,12 @@ const columns = [
         name: "שינוי אחרון",
         filterRenderer: AutoCompleteFilter,
         editable: false,
-        resizable: true,
         width: 160
     },
     {
         key: "check",
-        width: 15,
-        resizable: true
+        width: 5
+
     }
 ].map(c => ({ ...defaultColumnProperties, ...c }));
 

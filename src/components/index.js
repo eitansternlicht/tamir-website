@@ -1,4 +1,4 @@
 export * from './Dropzone';
-export * from './Table';
+export * from './TableTabScene';
 export * from './AssignmentDialog';
 export * from './MsgToShow';
