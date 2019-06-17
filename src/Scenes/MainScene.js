@@ -4,6 +4,7 @@ import { getData } from '../utils/createRowData';
 import { makeStyles, CircularProgress, Paper, Typography, Tab, Tabs, AppBar } from '@material-ui/core/';
 import green from '@material-ui/core/colors/green';
 import { GenericTab } from '../components/GenericTab';
+import { getTutors, getCoordinators, getDepartmentManagers } from '../utils/createRowData';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -41,12 +42,24 @@ const useStyles = makeStyles(theme => ({
 
     }
 }));
+const role = 'coordinator';
+const uid = 'JNthnYkT2FnN7crYVal6';
+
 function MainScene() {
     const [loading, setLoading] = useState(true);
     const [rows, setRows] = useState([]);
+    const [coordinatorsRows, setCoordinatorsRows] = useState([]);
+    const [tutorsRows, setTutorsRows] = useState([]);
+    const [departmentManagersRows, setDepartmentManagersRows] = useState([]);
     const [displayedTab, setDisplayedTab] = useState('TableTabScene');
     if (loading) {
         getData(setRows, setLoading)
+        if (role !== 'tutor')
+            getTutors(setTutorsRows, uid, setLoading, role);
+        if (role === 'departmentManager' || role === 'ceo')
+            getCoordinators(setCoordinatorsRows, uid, setLoading, role);
+        if (role === 'ceo')
+            getDepartmentManagers(setDepartmentManagersRows, setLoading);
     }
 
     function handleChange(event, newValue) {
@@ -74,28 +87,28 @@ function MainScene() {
                         scrollButtons="auto"
                         value={displayedTab}
                         onChange={handleChange}
-                        
+
                     >
 
                         <Tab value="ReportsTabScene" label="דוחות" />
-                        <Tab value="DepartmentManagersTabScene" label="מנהלי מחלקות" />
-                        <Tab value="CoordinatorsTabScene" label="רכזים" />
-                        <Tab value="TutorsTabScene" label="מדריכים" />
-                        <Tab value="TableTabScene" label="חניכים"  />
+                        {role === 'ceo' ? <Tab value="DepartmentManagersTabScene" label="מנהלי מחלקות" /> : <></>}
+                        {role === 'departmentManager' || role === 'ceo' ? <Tab value="CoordinatorsTabScene" label="רכזים" /> : <></>}
+                        {role !== 'tutor' ? <Tab value="TutorsTabScene" label="מדריכים" /> : <></>}
+                        <Tab value="TableTabScene" label="חניכים" />
                     </Tabs>
                 </AppBar>
 
                 {displayedTab === 'TableTabScene' ?
                     <div className={classes.table}>
-                        {loading ? <></> : <TableTabScene rows={rows} />}
+                        {loading ? <></> : <TableTabScene rows={rows} role={role} uid={uid} />}
                         {loading && <CircularProgress size={40} className={classes.buttonProgress} />}
                     </div> : <></>}
                 {displayedTab === 'TutorsTabScene' ?
-                 <GenericTab rows={[{ id: 0, firstName: "test", lastName: "test" }]} type="tutors" /> : <></>}
-                 {displayedTab === 'CoordinatorsTabScene' ?
-                 <GenericTab rows={[{ id: 0, firstName: "test", lastName: "test" }]} type="coordinators" /> : <></>}
-                 {displayedTab === 'DepartmentManagersTabScene' ?
-                 <GenericTab rows={[{ id: 0, firstName: "test", lastName: "test" }]} type="departmentManagers" /> : <></>}
+                    <GenericTab rows={tutorsRows} type="tutors" role={role} uid={uid} /> : <></>}
+                {displayedTab === 'CoordinatorsTabScene' ?
+                    <GenericTab rows={coordinatorsRows} type="coordinators" role={role} uid={uid} /> : <></>}
+                {displayedTab === 'DepartmentManagersTabScene' ?
+                    <GenericTab rows={departmentManagersRows} type="departmentManagers" role={role} uid={uid} /> : <></>}
             </div>
         </div>
     );

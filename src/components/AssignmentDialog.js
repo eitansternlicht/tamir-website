@@ -63,7 +63,7 @@ function AssignmentRow(props) {
 
                 >
                     {optionsArr.map(option => (
-                        <FormControlLabel value={option} key={option} control={<Radio />} label={option} />
+                        <FormControlLabel value={option} key={option} control={<Radio  color="primary"/>} label={option} labelPlacement="start" />
                     ))}
                 </RadioGroup>
             </DialogContent>

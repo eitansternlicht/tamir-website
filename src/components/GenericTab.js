@@ -23,7 +23,7 @@ import green from '@material-ui/core/colors/green';
 import 'react-responsive-ui/style.css';
 import PhoneInput from 'react-phone-number-input/react-responsive-ui';
 import { firestoreModule } from '../Firebase/Firebase'
-import { Columns } from '../utils/getColumns'
+
 
 
 import { Filters, Editors } from "react-data-grid-addons";
@@ -58,15 +58,15 @@ const genderOptions = [
 ]
 const genderEditor = <DropDownEditor options={genderOptions} />;
 
-const headerRender = (text) => {
-    return <div style={{ textAlign: 'center' }}>{text}</div>
-}
+// const headerRender = (text) => {
+//     return <div style={{ textAlign: 'center' }}>{text}</div>
+// }
 const columns = [
     {
         key: "id",
         name: "No.",
         width: 40,
-        headerRenderer: headerRender('No.'),
+        //headerRenderer: headerRender('No.'),
         filterRenderer: NumericFilter,
         editable: false
     },
@@ -74,80 +74,67 @@ const columns = [
         key: "lastName",
         name: "שם משפחה",
         width: 100,
-        headerRenderer: headerRender('שם משפחה'),
+        //headerRenderer: headerRender('שם משפחה'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "firstName",
         name: "שם פרטי",
-        headerRenderer: headerRender('שם פרטי'),
+        //headerRenderer: headerRender('שם פרטי'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "phone",
         name: "נייד",
         width: 130,
-        headerRenderer: headerRender('נייד'),
+        //headerRenderer: headerRender('נייד'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "gender",
         name: "מין",
         editor: genderEditor,
-        headerRenderer: headerRender('מין'),
+        // headerRenderer: headerRender('מין'),
         filterRenderer: AutoCompleteFilter
     },
 
     {
         key: "address",
         name: "כתובת",
-        headerRenderer: headerRender('כתובת'),
+        //headerRenderer: headerRender('כתובת'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "neighborhood",
         name: "שכונה",
-        headerRenderer: headerRender('שכונה'),
-        filterRenderer: AutoCompleteFilter
-    },
-    {
-        key: "dob",
-        name: "תאריך לידה",
-        width: 100,
-        headerRenderer: headerRender('תאריך לידה'),
+        //headerRenderer: headerRender('שכונה'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "govID",
         name: "תעודת זהות",
         width: 100,
-        headerRenderer: headerRender('תעודת זהות'),
+        //headerRenderer: headerRender('תעודת זהות'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "city",
         name: "עיר",
-        headerRenderer: headerRender('עיר'),
+        //headerRenderer: headerRender('עיר'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "email",
         name: "מייל",
         width: 110,
-        headerRenderer: headerRender('מייל'),
+        //headerRenderer: headerRender('מייל'),
         filterRenderer: AutoCompleteFilter
     },
-
-
-
-
-
-
 
     {
         key: "lastModified",
         name: "שינוי אחרון",
-        headerRenderer: headerRender('שינוי אחרון'),
+        //headerRenderer: headerRender('שינוי אחרון'),
         filterRenderer: AutoCompleteFilter,
         editable: false,
         width: 160
@@ -266,7 +253,7 @@ const RowRenderer = ({ renderBaseRow, ...props }) => {
     return <div style={{ backgroundColor: color }}>{renderBaseRow(props)}</div>;
 };
 
-function GenericTab({ rows, type }) {
+function GenericTab({ rows, type, role, uid }) {
 
     const [selectedIndexes, setSelectedIndexes] = useState([]);
     const [filters, setFilters] = useState({});
@@ -279,9 +266,7 @@ function GenericTab({ rows, type }) {
     const [newRow, setNewRow] = useState({});
     const [originalRows, setOriginalRows] = useState([]);
 
-
-    console.log("original", originalRows);
-    console.log("copy", rowsCopy);
+    console.log("rows", rows);
 
     const fixRowFields = (row) => {
         columns.forEach(({ key }) => {
@@ -335,7 +320,7 @@ function GenericTab({ rows, type }) {
 
     const updateNums = () => {
         for (let i = 0; i < rowsCopy.length; i++) {
-            rowsCopy[i]['id'] = i;
+            rowsCopy[i]['id'] = i + 1;
         }
         setRows(rowsCopy);
     }
@@ -367,7 +352,7 @@ function GenericTab({ rows, type }) {
             const fids = []
             selectedIndexes.forEach(idx => fids.push(rowsCopy[idx].fid))
             // firestoreModule.deleteStudents(fids)
-            fids.forEach(id => firestoreModule.deleteStudent(id));
+            fids.forEach(id => firestoreModule.deleteUser(id));
             let newArr = rowsCopy.filter((row, i) => !selectedIndexes.includes(i));
             while (selectedIndexes.length !== 0) {
                 selectedIndexes.shift();
@@ -397,11 +382,49 @@ function GenericTab({ rows, type }) {
         }
     };
 
+    const removeUnnecessaryFields = (student) => {
+        delete student['check'];
+        delete student['id'];
+        delete student['studentStatus'];
+        delete student['fid'];
+
+    }
     const addRow = () => {
-        let fixedRow = fixRowFields(newRow)
+        let fixedRow = fixRowFields(newRow);
+        removeUnnecessaryFields(fixedRow);
+
+        if (role === 'coordinator') {
+            fixedRow = { ...fixedRow, 'owners': { 'tutors': [], 'coordinators': [], 'departmentManagers': [] }, 'role': 'tutor' };
+            fixedRow.owners['coordinators'][0] = uid;
+        }
+        else if (role === 'departmentManager') {
+            if (type === 'tutors')
+                fixedRow = { ...fixedRow, 'owners': { 'tutors': [], 'coordinators': [], 'departmentManagers': [] }, 'role': 'tutor' };
+            else
+                fixedRow = { ...fixedRow, 'owners': { 'coordinators': [], 'departmentManagers': [] }, 'role': 'coordinator' };
+            fixedRow.owners['departmentManagers'][0] = uid;
+        }
+        else {
+            if (type === 'tutors')
+                fixedRow = { ...fixedRow, 'owners': { 'tutors': [], 'coordinators': [], 'departmentManagers': [] }, 'role': 'tutor' };
+            else if (type === 'coordinators')
+                fixedRow = { ...fixedRow, 'owners': { 'coordinators': [], 'departmentManagers': [] }, 'role': 'coordinator' };
+            else
+                fixedRow = { ...fixedRow, 'owners': { 'departmentManagers': [] }, 'role': 'departmentManager' };
+        }
+
+
         handleCloseForm();
-        firestoreModule.getStudents().add(fixedRow).then(ref => {
+        firestoreModule.getUsers().add(fixedRow).then(ref => {
+
+            if (type === 'tutors')
+                fixedRow['owners']['tutors'].push(ref.id);
+            else if (type === 'coordinators')
+                fixedRow['owners']['coordinators'].push(uid)
+            else
+                fixedRow['owners']['departmentManagers'].push(uid)
             fixedRow = { ...fixedRow, 'fid': ref.id };
+            fixedRow = fixRowFields(newRow);
             rowsCopy.unshift(fixedRow);
             updateNums();
             setRows(rowsCopy);

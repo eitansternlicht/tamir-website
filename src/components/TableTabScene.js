@@ -124,7 +124,7 @@ const RowRenderer = ({ renderBaseRow, ...props }) => {
   return <div style={{ backgroundColor: color }}>{renderBaseRow(props)}</div>;
 };
 
-function TableTabScene({ rows }) {
+function TableTabScene({ rows, role, uid }) {
 
   const [selectedIndexes, setSelectedIndexes] = useState([]);
   const [filters, setFilters] = useState({});
@@ -210,7 +210,7 @@ function TableTabScene({ rows }) {
 
   const updateNums = () => {
     for (let i = 0; i < rowsCopy.length; i++) {
-      rowsCopy[i]['id'] = i;
+      rowsCopy[i]['id'] = i + 1;
     }
     setRows(rowsCopy);
   }
@@ -260,12 +260,32 @@ function TableTabScene({ rows }) {
     }
   };
 
-
+  const removeUnnecessaryFields = (student) => {
+    delete student['check'];
+    delete student['id'];
+    delete student['studentStatus'];
+    delete student['fid'];
+    delete student['tutor'];
+    delete student['coordinator'];
+    delete student['departmentManager'];
+  }
 
   const addStudent = () => {
-    let fixedStudent = fixStudentFields(newStudent)
+
+    let fixedStudent = fixStudentFields(newStudent);
+    removeUnnecessaryFields(fixedStudent);
     handleCloseForm();
+    if (role === 'tutor')
+      fixedStudent = { ...fixedStudent, 'owners': { 'tutors': [{ 'studentStatus': '', 'uid': uid }], 'coordinators': [], 'departmentManagers': [] } };
+    else if (role === 'coordinator')
+      fixedStudent = { ...fixedStudent, 'owners': { 'tutors': [], 'coordinators': [{ 'uid': uid }], 'departmentManagers': [] } };
+    else if (role === 'departmentManager')
+      fixedStudent = { ...fixedStudent, 'owners': { 'tutors': [], 'coordinators': [], 'departmentManagers': [{ 'uid': uid }] } };
+    else
+      fixedStudent = { ...fixedStudent, 'owners': { 'tutors': [], 'coordinators': [], 'departmentManagers': [] } };
+
     firestoreModule.getStudents().add(fixedStudent).then(ref => {
+      fixedStudent = fixStudentFields(newStudent);
       fixedStudent = { ...fixedStudent, 'fid': ref.id };
       rowsCopy.unshift(fixedStudent);
       updateNums();
@@ -298,11 +318,11 @@ function TableTabScene({ rows }) {
 
   const rowText = selectedIndexes.length === 1 ? "row" : "rows";
 
-  const role = 'ceo';
+
   const columns = Columns(role);
   const columnsToShow = [...columns];
 
-
+  //const tutorsOptions = [['none'],['madrikh', 't']];
   const tutorsOptions = [
     'None',
     'מדריך א',
@@ -319,6 +339,7 @@ function TableTabScene({ rows }) {
     'מדריך ל',
     'מדריך מ',
   ];
+  
   const coordinatorsOptions = [
     'None',
     'רכז א',

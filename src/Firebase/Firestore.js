@@ -11,24 +11,35 @@ const collections = {
 function getStudents() {
     return firestoreDb.collection(collections.students);
 }
-function getSpecificStudent() {
 
+// function getSpecificStudent() {
+
+// }
+
+function getUsers(){
+    return firestoreDb.collection(collections.users);
 }
 
 function deleteStudent(studentId) {
     return firestoreDb.collection(collections.students).doc(studentId).delete()
 }
 
-function deleteStudents(studentIds) {
-
+function deleteUser(userId) {
+    return firestoreDb.collection(collections.users).doc(userId).delete()
 }
+
+// function deleteStudents(studentIds) {
+
+// }
 
 const getModule = () => {
     firestoreDb = firebase.firestore();
     return {
         deleteStudent,
-        getStudents
-    }
+        getStudents,
+        deleteUser,
+        getUsers
+    };
 }
 
-export default getModule
+export default getModule;

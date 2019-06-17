@@ -1,239 +1,109 @@
 import { firestoreModule } from '../Firebase/Firebase';
-
-// const rows = [
-//   {
-//     id: 0,
-//     fName: "חניך ",
-//     lName: "א",
-//     phone: "052-6488822",
-//     gender: "ז",
-//     neighborhood: "בית חנינא",
-//     tShirtSize: "S",
-//     city: "ירושלים",
-//     school: "בית ספר דוגמא",
-//     departmentManager: "מנהל מחלקה א",
-//     coordinator: "רכז א",
-//     tutor: "מדריך א",
-//     status: "שובץ",
-//     lastModified: "22.05.2019"
-//   },
-//   {
-//     id: 1,
-//     fName: "חניך ב",
-//     lName: "כהן",
-//     phone: "052-6488822",
-//     gender: "ז",
-//     neighborhood: "הגבעה הצרפתית",
-//     tShirtSize: "M",
-//     city: "ירושלים",
-//     school: "בית ספר דוגמא",
-//     departmentManager: "מנהל מחלקה א",
-//     coordinator: "רכז א",
-//     tutor: "aaa",
-//     status: "שובץ",
-//     lastModified: "22.05.2019"
-//   },
-//   {
-//     id: 2,
-//     fName: "חניך ג",
-//     lName: "כהן",
-//     phone: "052-6488822",
-//     gender: "ז",
-//     neighborhood: "בית חנינא",
-//     tShirtSize: "L",
-//     city: "ירושלים",
-//     school: "בית ספר דוגמא",
-//     departmentManager: "מנהל מחלקה א",
-//     coordinator: "רכז א",
-//     tutor: "מדריך ב",
-//     status: "לא שובץ",
-//     lastModified: "22.05.2019"
-//   },
-//   {
-//     id: 3,
-//     fName: "חניך ג",
-//     lName: "כהן",
-//     phone: "052-6488822",
-//     gender: "ז",
-//     neighborhood: "בית חנינא",
-//     tShirtSize: "L",
-//     city: "ירושלים",
-//     school: "בית ספר דוגמא",
-//     departmentManager: "מנהל מחלקה א",
-//     coordinator: "רכז א",
-//     tutor: "מדריך ב",
-//     status: "שובץ",
-//     lastModified: "22.05.2019"
-//   },
-//   {
-//     id: 4,
-//     fName: "חניך ג",
-//     lName: "כהן",
-//     phone: "052-6488822",
-//     gender: "ז",
-//     neighborhood: "בית חנינא",
-//     tShirtSize: "M",
-//     city: "ירושלים",
-//     school: "בית ספר דוגמא",
-//     departmentManager: "מנהל מחלקה א",
-//     coordinator: "רכז א",
-//     tutor: "מדריך ג",
-//     status: "שובץ",
-//     lastModified: "22.05.2019"
-//   },
-//   {
-//     id: 5,
-//     fName: "חניך ג",
-//     lName: "כהן",
-//     phone: "052-6488822",
-//     gender: "ז",
-//     neighborhood: "בית חנינא",
-//     tShirtSize: "XS",
-//     city: "ירושלים",
-//     school: "בית ספר דוגמא",
-//     departmentManager: "מנהל מחלקה א",
-//     coordinator: "רכז א",
-//     tutor: "מדריך ג",
-//     status: "שובץ",
-//     lastModified: "22.05.2019"
-//   },
-//   {
-//     id: 6,
-//     fName: "חניך ג",
-//     lName: "כהן",
-//     phone: "052-6488822",
-//     gender: "ז",
-//     neighborhood: "בית חנינא",
-//     tShirtSize: "XL",
-//     city: "ירושלים",
-//     school: "בית ספר דוגמא",
-//     departmentManager: "מנהל מחלקה א",
-//     coordinator: "רכז א",
-//     tutor: "מדריך א",
-//     status: "שובץ",
-//     lastModified: "22.05.2019"
-//   },
-//   {
-//     id: 7,
-//     fName: "חניך ג",
-//     lName: "כהן",
-//     phone: "052-6488822",
-//     gender: "ז",
-//     neighborhood: "בית חנינא",
-//     tShirtSize: "L",
-//     city: "ירושלים",
-//     school: "בית ספר דוגמא",
-//     departmentManager: "מנהל מחלקה א",
-//     coordinator: "רכז א",
-//     tutor: "מדריך ד",
-//     status: "שובץ",
-//     lastModified: "22.05.2019"
-//   },
-//   {
-//     id: 8,
-//     fName: "חניך ג",
-//     lName: "כהן",
-//     phone: "052-6488822",
-//     gender: "ז",
-//     neighborhood: "בית חנינא",
-//     tShirtSize: "M",
-//     city: "ירושלים",
-//     school: "בית ספר דוגמא",
-//     departmentManager: "מנהל מחלקה א",
-//     coordinator: "רכז א",
-//     tutor: "מדריך ד",
-//     status: "שובץ",
-//     lastModified: "22.05.2019"
-//   },
-//   {
-//     id: 9,
-//     fName: "חניך ג",
-//     lName: "כהן",
-//     phone: "052-6488822",
-//     gender: "ז",
-//     neighborhood: "בית חנינא",
-//     tShirtSize: "L",
-//     city: "ירושלים",
-//     school: "בית ספר דוגמא",
-//     departmentManager: "מנהל מחלקה א",
-//     coordinator: "רכז א",
-//     tutor: "מדריך ד",
-//     status: "שובץ",
-//     lastModified: "22.05.2019"
-//   },
-//   {
-//     id: 10,
-//     fName: "חניך ג",
-//     lName: "כהן",
-//     phone: "052-6488822",
-//     gender: "ז",
-//     neighborhood: "בית חנינא",
-//     tShirtSize: "L",
-//     city: "ירושלים",
-//     school: "בית ספר דוגמא",
-//     departmentManager: "מנהל מחלקה א",
-//     coordinator: "רכז א",
-//     tutor: "מדריך ה",
-//     status: "שובץ",
-//     lastModified: "22.05.2019"
-//   },
-//   {
-//     id: 11,
-//     fName: "חניך ג",
-//     lName: "כהן",
-//     phone: "052-6488822",
-//     gender: "ז",
-//     neighborhood: "בית חנינא",
-//     tShirtSize: "L",
-//     city: "ירושלים",
-//     school: "בית ספר דוגמא",
-//     departmentManager: "מנהל מחלקה א",
-//     coordinator: "רכז א",
-//     tutor: "מדריך ה",
-//     status: "שובץ",
-//     lastModified: "22.05.2019"
-//   },
-//   {
-//     id: 12,
-//     fName: "חניך ג",
-//     lName: "כהן",
-//     phone: "052-6488822",
-//     gender: "ז",
-//     neighborhood: "בית חנינא",
-//     tShirtSize: "L",
-//     city: "ירושלים",
-//     school: "בית ספר דוגמא",
-//     departmentManager: "מנהל מחלקה א",
-//     coordinator: "רכז א",
-//     tutor: "מדריך א",
-//     status: "שובץ",
-//     lastModified: "22.05.2019"
-//   },
-//   {
-//     id: 13,
-//     fName: "חניך ג",
-//     lName: "כהן",
-//     phone: "052-6488822",
-//     gender: "ז",
-//     neighborhood: "בית חנינא",
-//     tShirtSize: "L",
-//     city: "ירושלים",
-//     school: "בית ספר דוגמא",
-//     departmentManager: "מנהל מחלקה א",
-//     coordinator: "רכז א",
-//     tutor: "מדריך ה",
-//     status: "שובץ",
-//     lastModified: "22.05.2019"
-//   }
-// ];
+import firebase from 'firebase/app'
 
 const getData = (setRows, setLoading) => {
-    firestoreModule
+  firestoreModule
     .getStudents()
     .onSnapshot(querySnapshot => {
-      setRows(querySnapshot.docs.map(doc => ({...doc.data(), fid: doc.id})))
+      setRows(querySnapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id })))
       setLoading(false);
     });
 };
 
-export { getData };
+const getTutors = (setRows, uid, setLoading, role) => {
+
+  // uid = !firebase.auth().currentUser.uid
+  //   ? tempUIDForTesting
+  //   : !firebase.auth().currentUser.uid;
+
+  if (role === 'coordinator')
+    firestoreModule
+      .getUsers()
+      .where("owners.coordinators", 'array-contains', uid)
+      .onSnapshot(snapshot => {
+
+        let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
+        answer = answer.filter(row => row.role === 'tutor');
+        setRows(answer);
+        setLoading(false);
+        console.log("result", answer);
+
+        //console.log('results', snapshot.docs.map(doc => doc.data()))
+      });
+  else if (role === 'departmentManager')
+    firestoreModule
+      .getUsers()
+      .where("owners.departmentManagers", 'array-contains', uid)
+      .onSnapshot(snapshot => {
+        setLoading(false);
+        let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
+        answer = answer.filter(row => row.role === 'tutor');
+        setRows(answer);
+        console.log("result", answer);
+        //console.log('results', snapshot.docs.map(doc => doc.data()))
+      });
+  else
+    firestoreModule
+      .getUsers()
+      .onSnapshot(snapshot => {
+        setLoading(false);
+        let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
+        answer = answer.filter(row => row.role === 'tutor');
+        setRows(answer);
+        console.log("result", answer);
+
+      });
+
+}
+
+const getCoordinators = (setRows, uid, setLoading, role) => {
+
+  // uid = !firebase.auth().currentUser.uid
+  //   ? tempUIDForTesting
+  //   : !firebase.auth().currentUser.uid;
+
+  if (role === 'departmentManager')
+  
+    firestoreModule
+      .getUsers()
+      .where("owners.departmentManagers", 'array-contains', uid)
+      .onSnapshot(snapshot => {
+        let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
+        answer = answer.filter(row => row.role === 'coordinator');
+        setRows(answer);
+        console.log('answer:', answer);
+        setLoading(false);
+        console.log("result coo", answer);
+
+      });
+  else
+    firestoreModule
+      .getUsers()
+      .onSnapshot(snapshot => {
+        let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
+        answer = answer.filter(row => row.role === 'coordinator');
+        setRows(answer);
+        setLoading(false);
+        console.log("result", answer);
+
+      });
+
+}
+
+const getDepartmentManagers = (setRows, setLoading) => {
+
+  firestoreModule
+    .getUsers()
+    .onSnapshot(snapshot => {
+      setLoading(false);
+      let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
+      answer = answer.filter(row => row.role === 'departmentManager');
+      setRows(answer);
+      console.log("result", answer);
+      return answer;
+      //console.log('results', snapshot.docs.map(doc => doc.data()))
+    });
+
+}
+
+export { getData, getTutors, getCoordinators, getDepartmentManagers };
