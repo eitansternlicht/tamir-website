@@ -28,11 +28,17 @@ import { Columns } from '../utils/getColumns'
 
 import { Filters, Editors } from "react-data-grid-addons";
 
+
+const formatter = ({ value }) => {
+    return <div style={{ textAlign: 'right' }}>{value}</div>
+}
+
 const defaultColumnProperties = {
     filterable: true,
     sortable: true,
     resizable: true,
     editable: true,
+    formatter: formatter,
     minWidth: 50
 
 };
@@ -52,11 +58,15 @@ const genderOptions = [
 ]
 const genderEditor = <DropDownEditor options={genderOptions} />;
 
+const headerRender = (text) => {
+    return <div style={{ textAlign: 'center' }}>{text}</div>
+}
 const columns = [
     {
         key: "id",
         name: "No.",
         width: 40,
+        headerRenderer: headerRender('No.'),
         filterRenderer: NumericFilter,
         editable: false
     },
@@ -64,63 +74,80 @@ const columns = [
         key: "lastName",
         name: "שם משפחה",
         width: 100,
+        headerRenderer: headerRender('שם משפחה'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "firstName",
         name: "שם פרטי",
+        headerRenderer: headerRender('שם פרטי'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "phone",
         name: "נייד",
         width: 130,
+        headerRenderer: headerRender('נייד'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "gender",
         name: "מין",
         editor: genderEditor,
+        headerRenderer: headerRender('מין'),
         filterRenderer: AutoCompleteFilter
     },
 
     {
         key: "address",
         name: "כתובת",
+        headerRenderer: headerRender('כתובת'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "neighborhood",
         name: "שכונה",
+        headerRenderer: headerRender('שכונה'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "dob",
         name: "תאריך לידה",
         width: 100,
+        headerRenderer: headerRender('תאריך לידה'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "govID",
         name: "תעודת זהות",
         width: 100,
+        headerRenderer: headerRender('תעודת זהות'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "city",
         name: "עיר",
+        headerRenderer: headerRender('עיר'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "email",
         name: "מייל",
         width: 110,
+        headerRenderer: headerRender('מייל'),
         filterRenderer: AutoCompleteFilter
     },
+
+
+
+
+
+
 
     {
         key: "lastModified",
         name: "שינוי אחרון",
+        headerRenderer: headerRender('שינוי אחרון'),
         filterRenderer: AutoCompleteFilter,
         editable: false,
         width: 160
@@ -128,9 +155,9 @@ const columns = [
     {
         key: "check",
         width: 5
-
     }
 ].map(c => ({ ...defaultColumnProperties, ...c }));
+
 const genders = [
     {
         value: 'ז',
@@ -503,7 +530,7 @@ function GenericTab({ rows, type }) {
                                     id="firstName"
                                     className={classes.textField}
                                     placeholder="דוד"
-                                    label="שם"
+                                    label="שם פרטי"
                                     type="name"
                                     onChange={handleChange('firstName')}
                                 />

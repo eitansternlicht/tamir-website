@@ -73,7 +73,7 @@ const useStyles = makeStyles(theme => ({
   menu: {
     width: 150,
   },
-  rowRener: {
+  rowRender: {
     border: 1,
     borderRadius: 3,
   },
@@ -153,7 +153,7 @@ function TableTabScene({ rows }) {
     }
   ];
 
-  
+
   const fixStudentFields = (student) => {
     columns.forEach(({ key }) => {
       if (student.hasOwnProperty(key)) {
@@ -260,7 +260,7 @@ function TableTabScene({ rows }) {
     }
   };
 
- 
+
 
   const addStudent = () => {
     let fixedStudent = fixStudentFields(newStudent)
@@ -432,7 +432,7 @@ function TableTabScene({ rows }) {
                   id="firstName"
                   className={classes.textField}
                   placeholder="דוד"
-                  label="שם החניך"
+                  label="שם פרטי"
                   type="name"
                   onChange={handleChange('firstName')}
                 />

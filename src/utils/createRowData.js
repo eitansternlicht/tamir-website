@@ -231,7 +231,7 @@ const getData = (setRows, setLoading) => {
     firestoreModule
     .getStudents()
     .onSnapshot(querySnapshot => {
-      setRows(querySnapshot.docs.map(doc => ({... doc.data(), fid: doc.id})))
+      setRows(querySnapshot.docs.map(doc => ({...doc.data(), fid: doc.id})))
       setLoading(false);
     });
 };
