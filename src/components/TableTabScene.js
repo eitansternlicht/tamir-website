@@ -142,6 +142,18 @@ function TableTabScene({ rows }) {
   console.log("original", originalRows);
   console.log("copy", rowsCopy);
 
+  const genders = [
+    {
+      value: 'ז',
+      label: 'זכר'
+    },
+    {
+      value: 'נ',
+      label: 'נקבה'
+    }
+  ];
+
+  
   const fixStudentFields = (student) => {
     columns.forEach(({ key }) => {
       if (student.hasOwnProperty(key)) {
@@ -248,17 +260,7 @@ function TableTabScene({ rows }) {
     }
   };
 
-  const genders = [
-    {
-      value: 'ז',
-      label: 'זכר'
-    },
-    {
-      value: 'נ',
-      label: 'נקבה'
-    }
-  ];
-
+ 
 
   const addStudent = () => {
     let fixedStudent = fixStudentFields(newStudent)
@@ -349,7 +351,6 @@ function TableTabScene({ rows }) {
     'מנהל  ל',
     'מנהל  מ',
   ];
-
 
   const studentToArr = (student) => columns.map(r => student[r.key]);
 
@@ -491,21 +492,6 @@ function TableTabScene({ rows }) {
               </DialogActions>
             </form>
           </Dialog>
-
-          {role !== 'tutor' ? <Button variant="contained" color="primary" className={classes.button}>
-            הוסף מדריך
-            <AddIcon />
-          </Button> : <></>}
-
-          {role === 'departmentManager' || role === 'ceo' ? <Button variant="contained" color="primary" className={classes.button}>
-            הוסף רכז
-          <AddIcon />
-          </Button> : <></>}
-
-          {role === 'ceo' ? <Button variant="contained" color="primary" className={classes.button}>
-            הוסף מנהל מחלקה
-          <AddIcon />
-          </Button> : <></>}
         </div>
 
         <div className={classes.actions}>

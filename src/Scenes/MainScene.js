@@ -3,6 +3,7 @@ import { TableTabScene } from '../components';
 import { getData } from '../utils/createRowData';
 import { makeStyles, CircularProgress, Paper, Typography, Tab, Tabs, AppBar } from '@material-ui/core/';
 import green from '@material-ui/core/colors/green';
+import { GenericTab } from '../components/GenericTab';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -73,13 +74,14 @@ function MainScene() {
                         scrollButtons="auto"
                         value={displayedTab}
                         onChange={handleChange}
-                        className={classes.appBar}
+                        
                     >
 
-                        <Tab value="DepartmenManagersTabScene" label="מנהלי מחלקות" />
+                        <Tab value="ReportsTabScene" label="דוחות" />
+                        <Tab value="DepartmentManagersTabScene" label="מנהלי מחלקות" />
                         <Tab value="CoordinatorsTabScene" label="רכזים" />
                         <Tab value="TutorsTabScene" label="מדריכים" />
-                        <Tab value="TableTabScene" label="חניכים" className={classes.appBar} />
+                        <Tab value="TableTabScene" label="חניכים"  />
                     </Tabs>
                 </AppBar>
 
@@ -88,8 +90,13 @@ function MainScene() {
                         {loading ? <></> : <TableTabScene rows={rows} />}
                         {loading && <CircularProgress size={40} className={classes.buttonProgress} />}
                     </div> : <></>}
+                {displayedTab === 'TutorsTabScene' ?
+                 <GenericTab rows={[{ id: 0, firstName: "test", lastName: "test" }]} type="tutors" /> : <></>}
+                 {displayedTab === 'CoordinatorsTabScene' ?
+                 <GenericTab rows={[{ id: 0, firstName: "test", lastName: "test" }]} type="coordinators" /> : <></>}
+                 {displayedTab === 'DepartmentManagersTabScene' ?
+                 <GenericTab rows={[{ id: 0, firstName: "test", lastName: "test" }]} type="departmentManagers" /> : <></>}
             </div>
-
         </div>
     );
 }
