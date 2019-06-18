@@ -1,7 +1,7 @@
 import { firestoreModule } from '../Firebase/Firebase';
 import firebase from 'firebase/app'
 
-const getData = (setRows, setLoading) => {
+const getStudents = (setRows, setLoading) => {
   firestoreModule
     .getStudents()
     .onSnapshot(querySnapshot => {
@@ -84,4 +84,4 @@ const getDepartmentManagers = (setRows, setLoading) => {
 
 }
 
-export { getData, getTutors, getCoordinators, getDepartmentManagers };
+export { getStudents, getTutors, getCoordinators, getDepartmentManagers };

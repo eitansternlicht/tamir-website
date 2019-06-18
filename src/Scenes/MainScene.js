@@ -4,7 +4,7 @@ import { getData } from '../utils/createRowData';
 import { makeStyles, CircularProgress, Paper, Typography, Tab, Tabs, AppBar } from '@material-ui/core/';
 import green from '@material-ui/core/colors/green';
 import { GenericTab } from '../components/GenericTab';
-import { getTutors, getCoordinators, getDepartmentManagers } from '../utils/createRowData';
+import { getStudents, getTutors, getCoordinators, getDepartmentManagers } from '../utils/createRowData';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -56,7 +56,7 @@ function MainScene() {
     const [departmentManagersRows, setDepartmentManagersRows] = useState([]);
     const [displayedTab, setDisplayedTab] = useState('TableTabScene');
     if (loading) {
-        getData(setRows, setLoading)
+        getStudents(setRows, setLoading)
         if (role !== 'tutor')
             getTutors(setTutorsRows, uid, setLoadingTutors, role);
         if (role === 'departmentManager' || role === 'ceo')

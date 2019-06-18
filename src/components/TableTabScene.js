@@ -137,7 +137,7 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
   const [openForm, setOpenForm] = useState(false);
   let filteredRows = getRows(rowsCopy, filters);
   const [newStudent, setNewStudent] = useState({});
-  const [originalRows, setOriginalRows] = useState([]);
+  let [originalRows, setOriginalRows] = useState([]);
 
   const classes = useStyles();
   const genders = [
@@ -289,6 +289,7 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
     delete student['departmentManager'];
   }
 
+  console.log("row", rowsCopy, 'original', originalRows);
   const addStudent = () => {
 
     let fixedStudent = fixStudentFields(newStudent);
@@ -309,6 +310,7 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
       rowsCopy.unshift(fixedStudent);
       updateNums();
       setRows(rowsCopy);
+      setRows(getMissedDetailsForAllStudents());
       setMsgState({
         title: "הוספת חניך",
         body: "!החניך הוסף בהצלחה",
@@ -381,7 +383,6 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
   const getMissedDetailsForStudent = (student) => {
 
     let newSt = { ...student };
-    console.log("st", newSt);
     let status = '';
     let tutor = '';
     let coordinator = '';
@@ -421,7 +422,7 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
         if (temp !== undefined)
           departmentManager = temp.firstName;
       }
- newSt = {
+      newSt = {
         ...newSt, studentStatus: status,
         tutor: tutor, departmentManager: departmentManager, coordinator: coordinator
       };
@@ -593,18 +594,21 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
                         owners = owners['tutors']
                         let uids = owners.map(o => o.uid);
                         if (!uids.includes(chosenOption))
-                          rowsCopy[i].owners['tutors'].push({ studentStatus: 'normal', uid: chosenOption });
+                          rowsCopy[i].owners['tutors'].push({ studentStatus: 'potential', uid: chosenOption });
                       }
                       else {
                         owners = { ...owners, 'tutors': [] };
-                        owners['tutors'].push({ studentStatus: 'normal', uid: chosenOption });
+                        owners['tutors'].push({ studentStatus: 'potential', uid: chosenOption });
                         rowsCopy[i].owners = owners;
+
                       }
                     }
                     else {
                       rowsCopy[i].owners['tutors'] = [];
                     }
-                    console.log("final", rowsCopy[i].owners['tutors']);
+                    firestoreModule.getSpecificStudent(rowsCopy[i].fid).update({ 'owners': rowsCopy[i].owners });
+                    rowsCopy[i].lastModified = updateDate();
+                    setRows(getMissedDetailsForAllStudents());
                   }
                 )
                 if (chosenOption !== 'None')
@@ -638,17 +642,21 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
                         let uids = owners.map(o => o.uid);
                         if (!uids.includes(chosenOption))
                           rowsCopy[i].owners['coordinators'].push(chosenOption);
+
                       }
                       else {
                         owners = { ...owners, 'coordinators': [] };
                         owners['coordinators'].push(chosenOption);
                         rowsCopy[i].owners = owners;
+
                       }
                     }
                     else {
                       rowsCopy[i].owners['coordinators'] = [];
                     }
-                    console.log("final", rowsCopy[i].owners['coordinators']);
+                    firestoreModule.getSpecificStudent(rowsCopy[i].fid).update({ 'owners': rowsCopy[i].owners });
+                    rowsCopy[i].lastModified = updateDate();
+                    setRows(getMissedDetailsForAllStudents());
                   }
                 )
                 if (chosenOption !== 'None')
@@ -691,13 +699,15 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
                     else {
                       rowsCopy[i].owners['departmentManagers'] = [];
                     }
-                    console.log("final", rowsCopy[i].owners['departmentManagers']);
+                    firestoreModule.getSpecificStudent(rowsCopy[i].fid).update({ 'owners': rowsCopy[i].owners });
+                    rowsCopy[i].lastModified = updateDate();
+                    setRows(getMissedDetailsForAllStudents());
                   }
                 )
                 if (chosenOption !== 'None')
                   setMsgState({
                     title: "שיבוץ חניכים למנהל מחלקה",
-                    body: "כל החניכים שנבחרו שובצו בהצלחה עבור " + chosenOption,
+                    body: "כל החניכים שנבחרו שובצו בהצלחה",
                     visible: true
                   });
                 while (selectedIndexes.length !== 0) {

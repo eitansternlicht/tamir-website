@@ -394,35 +394,29 @@ function GenericTab({ rows, setMainRows, type, role, uid }) {
         removeUnnecessaryFields(fixedRow);
 
         if (role === 'coordinator') {
-            fixedRow = { ...fixedRow, 'owners': { 'coordinators': [], 'departmentManagers': [] }, 'role': 'tutor' };
+            fixedRow = { ...fixedRow, 'owners': { 'coordinators': [], 'departmentManagers': [] }, 'role': 'tutor', lastModified: updateDate() };
             fixedRow.owners['coordinators'].push(uid);
         }
         else if (role === 'departmentManager') {
             if (type === 'tutors')
-                fixedRow = { ...fixedRow, 'owners': { 'coordinators': [], 'departmentManagers': [] }, 'role': 'tutor' };
+                fixedRow = { ...fixedRow, 'owners': { 'coordinators': [], 'departmentManagers': [] }, 'role': 'tutor', lastModified: updateDate() };
             else
-                fixedRow = { ...fixedRow, 'owners': { 'departmentManagers': [] }, 'role': 'coordinator' };
+                fixedRow = { ...fixedRow, 'owners': { 'departmentManagers': [] }, 'role': 'coordinator', lastModified: updateDate() };
             fixedRow.owners['departmentManagers'].push(uid);
         }
         else {
             if (type === 'tutors')
-                fixedRow = { ...fixedRow, 'owners': { 'coordinators': [], 'departmentManagers': [] }, 'role': 'tutor' };
+                fixedRow = { ...fixedRow, 'owners': { 'coordinators': [], 'departmentManagers': [] }, 'role': 'tutor', lastModified: updateDate() };
             else if (type === 'coordinators')
-                fixedRow = { ...fixedRow, 'owners': { 'departmentManagers': [] }, 'role': 'coordinator' };
+                fixedRow = { ...fixedRow, 'owners': { 'departmentManagers': [] }, 'role': 'coordinator', lastModified: updateDate() };
             else
-                fixedRow = { ...fixedRow, 'role': 'departmentManager' };
+                fixedRow = { ...fixedRow, 'role': 'departmentManager', lastModified: updateDate() };
         }
 
 
         handleCloseForm();
         firestoreModule.getUsers().add(fixedRow).then(ref => {
 
-            // if (type === 'tutors')
-            //     fixedRow['owners']['tutors'].push(ref.id);
-            // else if (type === 'coordinators')
-            //     fixedRow['owners']['coordinators'].push(ref.uid)
-            // else
-            //     fixedRow['owners']['departmentManagers'].push(ref.uid)
             fixedRow = { ...fixedRow, 'fid': ref.id };
             fixedRow = fixRowFields(newRow);
             rowsCopy.unshift(fixedRow);
