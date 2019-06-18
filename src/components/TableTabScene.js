@@ -19,7 +19,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import SaveIcon from '@material-ui/icons/Save';
 import AssignmentIcon from '@material-ui/icons/AssignmentInd';
-
+import firebase from 'firebase/app'
+import 'firebase/firestore'
 import { aoaToFile } from '../utils/excell-utils';
 import green from '@material-ui/core/colors/green';
 import 'react-responsive-ui/style.css';
@@ -124,7 +125,7 @@ const RowRenderer = ({ renderBaseRow, ...props }) => {
   return <div style={{ backgroundColor: color }}>{renderBaseRow(props)}</div>;
 };
 
-function TableTabScene({ rows, role, uid }) {
+function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManagers }) {
 
   const [selectedIndexes, setSelectedIndexes] = useState([]);
   const [filters, setFilters] = useState({});
@@ -138,10 +139,7 @@ function TableTabScene({ rows, role, uid }) {
   const [newStudent, setNewStudent] = useState({});
   const [originalRows, setOriginalRows] = useState([]);
 
-
-  console.log("original", originalRows);
-  console.log("copy", rowsCopy);
-
+  const classes = useStyles();
   const genders = [
     {
       value: 'ז',
@@ -153,11 +151,12 @@ function TableTabScene({ rows, role, uid }) {
     }
   ];
 
-
+  //console.log("main rows Table", coordinators);
   const fixStudentFields = (student) => {
     columns.forEach(({ key }) => {
+
       if (student.hasOwnProperty(key)) {
-        if (student[key] === null || student[key] === undefined)
+        if (student[key] === null || student[key] === undefined || key === 'dob')
           student[key] = ''
       }
       else {
@@ -169,6 +168,17 @@ function TableTabScene({ rows, role, uid }) {
 
   const fixStudentsFields = () => {
     return rowsCopy.map(fixStudentFields);
+  }
+
+  const getOptionsToAssign = (type) => {
+    let answer = [{ firstName: 'None' }];
+    if (type === 'tutors' && tutors.length !== 0)
+      answer = [...answer, ...tutors];
+    else if (type === 'coordinators' && coordinators.length !== 0)
+      answer = [...answer, ...coordinators];
+    else if (departmentManagers.length !== 0)
+      answer = [...answer, ...departmentManagers];
+    return answer;
   }
 
   const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
@@ -238,26 +248,35 @@ function TableTabScene({ rows, role, uid }) {
   const deleteRow = () => {
     if (selectedIndexes.length === 0)
       return;
-    if (!loading) {
-      setLoading(true);
-      const fids = []
-      selectedIndexes.forEach(idx => fids.push(rowsCopy[idx].fid))
-      // firestoreModule.deleteStudents(fids)
+    setLoading(true);
+    const fids = []
+    selectedIndexes.forEach(idx => fids.push(rowsCopy[idx].fid))
+    if (role === 'ceo')
       fids.forEach(id => firestoreModule.deleteStudent(id));
-      let newArr = rowsCopy.filter((row, i) => !selectedIndexes.includes(i));
-      while (selectedIndexes.length !== 0) {
-        selectedIndexes.shift();
+    else {
+      let dataToRemove = '';
+      let str = 'owners.' + role + 's';
+      if (role === 'tutor') {
+        dataToRemove = { studentStatus: 'normal', uid: uid };
+        fids.forEach(id => firestoreModule.getSpecificStudent(id).update({ [str]: firebase.firestore.FieldValue.arrayRemove(dataToRemove) }));
       }
-      rowsCopy = newArr;
-      setRows(rowsCopy);
-      setLoading(false);
-      setMsgState({
-        title: "מחיקת חניכים",
-        body: "!כל החניכים שנבחרו נמחקו בהצלחה",
-        visible: true
-      });
-      updateNums();
+      else
+        fids.forEach(id => firestoreModule.getSpecificStudent(id).update({ [str]: firebase.firestore.FieldValue.arrayRemove(uid) }));
     }
+
+    let newArr = rowsCopy.filter((row, i) => !selectedIndexes.includes(i));
+    while (selectedIndexes.length !== 0) {
+      selectedIndexes.shift();
+    }
+    rowsCopy = newArr;
+    setRows(rowsCopy);
+    setLoading(false);
+    setMsgState({
+      title: "מחיקת חניכים",
+      body: "!כל החניכים שנבחרו נמחקו בהצלחה",
+      visible: true
+    });
+    updateNums();
   };
 
   const removeUnnecessaryFields = (student) => {
@@ -276,11 +295,11 @@ function TableTabScene({ rows, role, uid }) {
     removeUnnecessaryFields(fixedStudent);
     handleCloseForm();
     if (role === 'tutor')
-      fixedStudent = { ...fixedStudent, 'owners': { 'tutors': [{ 'studentStatus': '', 'uid': uid }], 'coordinators': [], 'departmentManagers': [] } };
+      fixedStudent = { ...fixedStudent, 'owners': { 'tutors': [{ 'studentStatus': 'normal', 'uid': uid }], 'coordinators': [], 'departmentManagers': [] } };
     else if (role === 'coordinator')
-      fixedStudent = { ...fixedStudent, 'owners': { 'tutors': [], 'coordinators': [{ 'uid': uid }], 'departmentManagers': [] } };
+      fixedStudent = { ...fixedStudent, 'owners': { 'tutors': [], 'coordinators': [uid], 'departmentManagers': [] } };
     else if (role === 'departmentManager')
-      fixedStudent = { ...fixedStudent, 'owners': { 'tutors': [], 'coordinators': [], 'departmentManagers': [{ 'uid': uid }] } };
+      fixedStudent = { ...fixedStudent, 'owners': { 'tutors': [], 'coordinators': [], 'departmentManagers': [uid] } };
     else
       fixedStudent = { ...fixedStudent, 'owners': { 'tutors': [], 'coordinators': [], 'departmentManagers': [] } };
 
@@ -300,7 +319,6 @@ function TableTabScene({ rows, role, uid }) {
     });
   }
 
-  const classes = useStyles();
 
   const onRowsSelected = rows => {
     setSelectedIndexes(selectedIndexes.concat(
@@ -322,56 +340,11 @@ function TableTabScene({ rows, role, uid }) {
   const columns = Columns(role);
   const columnsToShow = [...columns];
 
-  //const tutorsOptions = [['none'],['madrikh', 't']];
-  const tutorsOptions = [
-    'None',
-    'מדריך א',
-    'מדריך ב',
-    'מדריך ג',
-    'מדריך ד',
-    'מדריך ה',
-    'מדריך ו',
-    'מדריך ז',
-    'מדריך ח',
-    'מדריך ט',
-    'מדריך י',
-    'מדריך כ',
-    'מדריך ל',
-    'מדריך מ',
-  ];
-  
-  const coordinatorsOptions = [
-    'None',
-    'רכז א',
-    'רכז ב',
-    'רכז ג',
-    'רכז ד',
-    'רכז ה',
-    'רכז ו',
-    'רכז ז',
-    'רכז ח',
-    'רכז ט',
-    'רכז י',
-    'רכז כ',
-    'רכז ל',
-    'רכז מ',
-  ];
-  const departmentManagersOptions = [
-    'None',
-    'מנהל  א',
-    'מנהל  ב',
-    'מנהל  ג',
-    'מנהל  ד',
-    'מנהל  ה',
-    'מנהל  ו',
-    'מנהל  ז',
-    'מנהל  ח',
-    'מנהל  ט',
-    'מנהל  י',
-    'מנהל  כ',
-    'מנהל  ל',
-    'מנהל  מ',
-  ];
+  let tutorsOptions = getOptionsToAssign('tutors');
+
+  let coordinatorsOptions = getOptionsToAssign('coordinators');
+
+  let departmentManagersOptions = getOptionsToAssign('departmentManagers');
 
   const studentToArr = (student) => columns.map(r => student[r.key]);
 
@@ -381,10 +354,96 @@ function TableTabScene({ rows, role, uid }) {
     aoaToFile({ fileName: "Students List.xlsx", aoa })
   }
 
+  const getTutorFromFid = (fid) => {
+    for (let i = 0; i < tutors.length; i++) {
+      if (tutors[i].fid === fid)
+        return tutors[i];
+    }
+    return undefined;
+  }
+
+  const getCoordinatorFromFid = (fid) => {
+    for (let i = 0; i < coordinators.length; i++) {
+      if (coordinators[i].fid === fid)
+        return coordinators[i];
+    }
+    return undefined;
+  }
+
+  const getDepartmentManagerFromFid = (fid) => {
+    for (let i = 0; i < departmentManagers.length; i++) {
+      if (departmentManagers[i].fid === fid)
+        return departmentManagers[i];
+    }
+    return undefined;
+  }
+
+  const getMissedDetailsForStudent = (student) => {
+
+    let newSt = { ...student };
+    console.log("st", newSt);
+    let status = '';
+    let tutor = '';
+    let coordinator = '';
+    let departmentManager = '';
+
+    if (newSt.owners !== null && newSt.owners !== undefined) {
+
+      if (newSt.owners.hasOwnProperty('tutors') && newSt.owners['tutors'].length > 0) {
+        let arr = newSt.owners['tutors'];
+        for (let i = 0; i < arr.length; i++) {
+          if (arr[i].studentStatus === 'normal') {
+            status = 'גויס';
+            let temp = getTutorFromFid(arr[i].uid);
+            if (temp !== undefined)
+              tutor = temp.firstName;
+            break;
+          }
+          else if (arr[i].studentStatus === 'potential') {
+            status = 'שובץ';
+            let temp = getTutorFromFid(arr[i].uid);
+            if (temp !== undefined)
+              tutor = temp.firstName;
+          }
+        }
+
+      }
+
+      if (newSt.owners.hasOwnProperty('coordinators') && newSt.owners['coordinators'].length > 0) {
+        let temp = getCoordinatorFromFid(newSt.owners['coordinators'][0]);
+        if (temp !== undefined)
+          coordinator = temp.firstName;
+      }
+
+
+      if (newSt.owners.hasOwnProperty('departmentManagers') && newSt.owners['departmentManagers'].length > 0) {
+        let temp = getDepartmentManagerFromFid(newSt.owners['departmentManagers'][0]);
+        if (temp !== undefined)
+          departmentManager = temp.firstName;
+      }
+ newSt = {
+        ...newSt, studentStatus: status,
+        tutor: tutor, departmentManager: departmentManager, coordinator: coordinator
+      };
+    }
+
+    return newSt;
+  }
+
+  const getMissedDetailsForAllStudents = () => {
+    return rowsCopy.map(getMissedDetailsForStudent);
+  }
+
   const firstTimeLoading = () => {
     if (loadingPage) {
       updateNums();
-      let newRows = fixStudentsFields()
+      let newRows = fixStudentsFields();
+      // while(tutors.length <=0 || coordinators.length <= 0 || departmentManagers.length <= 0){
+
+      // }
+      rowsCopy = [...newRows];
+      newRows = getMissedDetailsForAllStudents();
+      // toDo  to get the status and the tutors, coordinators, departmentManagers for students...
       setRows(newRows);
       setOriginalRows(newRows);
       setLoadingPage(false);
@@ -528,22 +587,36 @@ function TableTabScene({ rows, role, uid }) {
               if (selectedIndexes.length !== 0 && chosenOption !== 'Cancel') {
                 selectedIndexes.map(
                   (i) => {
-                    onGridRowsUpdated({ fromRow: i, toRow: i, updated: { tutor: chosenOption === 'None' ? '' : chosenOption } })
-                    onGridRowsUpdated({ fromRow: i, toRow: i, updated: { studentStatus: chosenOption === 'None' ? 'לא שובץ' : 'שובץ' } })
+                    if (chosenOption !== 'None') {
+                      let owners = rowsCopy[i].owners;
+                      if (owners.hasOwnProperty('tutors')) {
+                        owners = owners['tutors']
+                        let uids = owners.map(o => o.uid);
+                        if (!uids.includes(chosenOption))
+                          rowsCopy[i].owners['tutors'].push({ studentStatus: 'normal', uid: chosenOption });
+                      }
+                      else {
+                        owners = { ...owners, 'tutors': [] };
+                        owners['tutors'].push({ studentStatus: 'normal', uid: chosenOption });
+                        rowsCopy[i].owners = owners;
+                      }
+                    }
+                    else {
+                      rowsCopy[i].owners['tutors'] = [];
+                    }
+                    console.log("final", rowsCopy[i].owners['tutors']);
                   }
                 )
                 if (chosenOption !== 'None')
                   setMsgState({
                     title: "שיבוץ חניכים למדריך",
-                    body: "כל החניכים שנבחרו שובצו בהצלחה עבור " + chosenOption,
+                    body: "כל החניכים שנבחרו שובצו בהצלחה",
                     visible: true
                   });
                 while (selectedIndexes.length !== 0) {
                   selectedIndexes.shift();
                 }
-
               }
-
             }
             } />
 
@@ -558,21 +631,36 @@ function TableTabScene({ rows, role, uid }) {
               if (selectedIndexes.length !== 0 && chosenOption !== 'Cancel') {
                 selectedIndexes.map(
                   (i) => {
-                    onGridRowsUpdated({ fromRow: i, toRow: i, updated: { coordinator: chosenOption === 'None' ? '' : chosenOption } })
+                    if (chosenOption !== 'None') {
+                      let owners = rowsCopy[i].owners;
+                      if (owners.hasOwnProperty('coordinators')) {
+                        owners = owners['coordinators']
+                        let uids = owners.map(o => o.uid);
+                        if (!uids.includes(chosenOption))
+                          rowsCopy[i].owners['coordinators'].push(chosenOption);
+                      }
+                      else {
+                        owners = { ...owners, 'coordinators': [] };
+                        owners['coordinators'].push(chosenOption);
+                        rowsCopy[i].owners = owners;
+                      }
+                    }
+                    else {
+                      rowsCopy[i].owners['coordinators'] = [];
+                    }
+                    console.log("final", rowsCopy[i].owners['coordinators']);
                   }
                 )
                 if (chosenOption !== 'None')
                   setMsgState({
                     title: "שיבוץ חניכים לרכז",
-                    body: "כל החניכים שנבחרו שובצו בהצלחה עבור " + chosenOption,
+                    body: "כל החניכים שנבחרו שובצו בהצלחה",
                     visible: true
                   });
                 while (selectedIndexes.length !== 0) {
                   selectedIndexes.shift();
                 }
               }
-
-
             }} />
 
           {role === 'ceo' ? <Button variant="contained" color="primary" className={classes.button} onClick={() => selectedIndexes.length !== 0 ? setAssignmentDialogType('departmentManagers') : setAssignmentDialogType('')}>
@@ -586,7 +674,24 @@ function TableTabScene({ rows, role, uid }) {
               if (selectedIndexes.length !== 0 && chosenOption !== 'Cancel') {
                 selectedIndexes.map(
                   (i) => {
-                    onGridRowsUpdated({ fromRow: i, toRow: i, updated: { departmentManager: chosenOption === 'None' ? '' : chosenOption } })
+                    if (chosenOption !== 'None') {
+                      let owners = rowsCopy[i].owners;
+                      if (owners.hasOwnProperty('departmentManagers')) {
+                        owners = owners['departmentManagers']
+                        let uids = owners.map(o => o.uid);
+                        if (!uids.includes(chosenOption))
+                          rowsCopy[i].owners['departmentManagers'].push(chosenOption);
+                      }
+                      else {
+                        owners = { ...owners, 'departmentManagers': [] };
+                        owners['departmentManagers'].push(chosenOption);
+                        rowsCopy[i].owners = owners;
+                      }
+                    }
+                    else {
+                      rowsCopy[i].owners['departmentManagers'] = [];
+                    }
+                    console.log("final", rowsCopy[i].owners['departmentManagers']);
                   }
                 )
                 if (chosenOption !== 'None')
@@ -599,7 +704,6 @@ function TableTabScene({ rows, role, uid }) {
                   selectedIndexes.shift();
                 }
               }
-
             }} />
 
         </div>

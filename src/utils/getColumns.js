@@ -3,7 +3,7 @@ import { Filters, Editors } from "react-data-grid-addons";
 
 
 const formatter = ({ value }) => {
-    return <div style={{ textAlign: 'right' }}>{value}</div>
+    return <div style={{ textAlign: 'right' }}>{value}</div>;
 }
 
 const defaultColumnProperties = {
@@ -31,29 +31,21 @@ const TShirtSizes = [
 
 ];
 
-const statusOptions = [
-    { id: 'assinged', value: "שובץ" },
-    { id: 'notAssinged', value: "לא שובץ" },
-]
+
 const genderOptions = [
     { id: 'male', value: "ז" },
     { id: 'female', value: "נ" },
 
 ]
-const AssignmentEditor = <DropDownEditor options={statusOptions} />;
+
 const TShirtSizesEditor = <DropDownEditor options={TShirtSizes} />;
 const genderEditor = <DropDownEditor options={genderOptions} />;
-
-// const // headerRender = (text) => {
-// return <div style={{ textAlign: 'center' }}>{text}</div>
-// }
 
 const columns = [
     {
         key: "id",
         name: "No.",
         width: 40,
-        //// headerRenderer: // headerRender('No.'),
         filterRenderer: NumericFilter,
         editable: false
     },
@@ -225,8 +217,7 @@ const columns = [
         name: "איש צוות מטפל",
         width: 120,
         // headerRenderer: // headerRender('איש צוות מטפל'),
-        filterRenderer: AutoCompleteFilter,
-        editor: AssignmentEditor
+        filterRenderer: AutoCompleteFilter
     },
     {
         key: "comments",
@@ -240,7 +231,7 @@ const columns = [
         name: "סטטוס",
         // headerRenderer: // headerRender('סטטוס'),
         filterRenderer: AutoCompleteFilter,
-        editor: AssignmentEditor
+        editable: false
     },
 
     {
@@ -426,8 +417,7 @@ const departmentManagerColumns = [
         name: "איש צוות מטפל",
         width: 120,
         // headerRenderer: // headerRender('איש צוות מטפל'),
-        filterRenderer: AutoCompleteFilter,
-        editor: AssignmentEditor
+        filterRenderer: AutoCompleteFilter
     },
     {
         key: "comments",
@@ -441,7 +431,7 @@ const departmentManagerColumns = [
         name: "סטטוס",
         // headerRenderer: // headerRender('סטטוס'),
         filterRenderer: AutoCompleteFilter,
-        editor: AssignmentEditor
+        editable: false
     },
 
     {
@@ -619,8 +609,7 @@ const coordinatorColumns = [
         name: "איש צוות מטפל",
         width: 120,
         // headerRenderer: // headerRender('איש צוות מטפל'),
-        filterRenderer: AutoCompleteFilter,
-        editor: AssignmentEditor
+        filterRenderer: AutoCompleteFilter
     },
     {
         key: "comments",
@@ -634,7 +623,7 @@ const coordinatorColumns = [
         name: "סטטוס",
         // headerRenderer: // headerRender('סטטוס'),
         filterRenderer: AutoCompleteFilter,
-        editor: AssignmentEditor
+        editable: false
     },
 
     {
@@ -805,8 +794,7 @@ const tutorColumns = [
         name: "איש צוות מטפל",
         width: 120,
         // headerRenderer: // headerRender('איש צוות מטפל'),
-        filterRenderer: AutoCompleteFilter,
-        editor: AssignmentEditor
+        filterRenderer: AutoCompleteFilter
     },
     {
         key: "comments",
@@ -820,7 +808,7 @@ const tutorColumns = [
         name: "סטטוס",
         // headerRenderer: // headerRender('סטטוס'),
         filterRenderer: AutoCompleteFilter,
-        editor: AssignmentEditor
+        editable: false
     },
 
     {
@@ -839,10 +827,6 @@ const tutorColumns = [
 
 const Columns = (role) => {
 
-    // const temp = columns.map((row) => row.// headerRender = // headerRender(row.name));
-
-    // columns.forEach((row) => row['// headerRender'] = // headerRender('hey'));
-    // console.log("render", columns[0].// headerRender);
     if (role === "departmentManager")
         return departmentManagerColumns;
     else if (role === "coordinator")

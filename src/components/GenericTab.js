@@ -49,8 +49,6 @@ const {
     AutoCompleteFilter,
 } = Filters;
 
-
-
 const genderOptions = [
     { id: 'male', value: "ז" },
     { id: 'female', value: "נ" },
@@ -253,8 +251,9 @@ const RowRenderer = ({ renderBaseRow, ...props }) => {
     return <div style={{ backgroundColor: color }}>{renderBaseRow(props)}</div>;
 };
 
-function GenericTab({ rows, type, role, uid }) {
+function GenericTab({ rows, setMainRows, type, role, uid }) {
 
+    // console.log("generic", rows);
     const [selectedIndexes, setSelectedIndexes] = useState([]);
     const [filters, setFilters] = useState({});
     let [rowsCopy, setRows] = useState(rows);
@@ -266,7 +265,6 @@ function GenericTab({ rows, type, role, uid }) {
     const [newRow, setNewRow] = useState({});
     const [originalRows, setOriginalRows] = useState([]);
 
-    console.log("rows", rows);
 
     const fixRowFields = (row) => {
         columns.forEach(({ key }) => {
@@ -294,6 +292,7 @@ function GenericTab({ rows, type, role, uid }) {
         }
         rowsCopy = JSON.parse(JSON.stringify(newRows));
         setRows(newRows);
+        setMainRows(newRows);
     };
 
     const updateDate = () => {
@@ -323,6 +322,7 @@ function GenericTab({ rows, type, role, uid }) {
             rowsCopy[i]['id'] = i + 1;
         }
         setRows(rowsCopy);
+        setMainRows(rowsCopy);
     }
 
     const handleChange = name => event => {
@@ -359,6 +359,7 @@ function GenericTab({ rows, type, role, uid }) {
             }
             rowsCopy = newArr;
             setRows(rowsCopy);
+            setMainRows(rowsCopy);
             setLoading(false);
             if (type === 'tutors')
                 setMsgState({
@@ -385,7 +386,6 @@ function GenericTab({ rows, type, role, uid }) {
     const removeUnnecessaryFields = (student) => {
         delete student['check'];
         delete student['id'];
-        delete student['studentStatus'];
         delete student['fid'];
 
     }
@@ -394,40 +394,41 @@ function GenericTab({ rows, type, role, uid }) {
         removeUnnecessaryFields(fixedRow);
 
         if (role === 'coordinator') {
-            fixedRow = { ...fixedRow, 'owners': { 'tutors': [], 'coordinators': [], 'departmentManagers': [] }, 'role': 'tutor' };
-            fixedRow.owners['coordinators'][0] = uid;
+            fixedRow = { ...fixedRow, 'owners': { 'coordinators': [], 'departmentManagers': [] }, 'role': 'tutor' };
+            fixedRow.owners['coordinators'].push(uid);
         }
         else if (role === 'departmentManager') {
             if (type === 'tutors')
-                fixedRow = { ...fixedRow, 'owners': { 'tutors': [], 'coordinators': [], 'departmentManagers': [] }, 'role': 'tutor' };
+                fixedRow = { ...fixedRow, 'owners': { 'coordinators': [], 'departmentManagers': [] }, 'role': 'tutor' };
             else
-                fixedRow = { ...fixedRow, 'owners': { 'coordinators': [], 'departmentManagers': [] }, 'role': 'coordinator' };
-            fixedRow.owners['departmentManagers'][0] = uid;
+                fixedRow = { ...fixedRow, 'owners': { 'departmentManagers': [] }, 'role': 'coordinator' };
+            fixedRow.owners['departmentManagers'].push(uid);
         }
         else {
             if (type === 'tutors')
-                fixedRow = { ...fixedRow, 'owners': { 'tutors': [], 'coordinators': [], 'departmentManagers': [] }, 'role': 'tutor' };
+                fixedRow = { ...fixedRow, 'owners': { 'coordinators': [], 'departmentManagers': [] }, 'role': 'tutor' };
             else if (type === 'coordinators')
-                fixedRow = { ...fixedRow, 'owners': { 'coordinators': [], 'departmentManagers': [] }, 'role': 'coordinator' };
+                fixedRow = { ...fixedRow, 'owners': { 'departmentManagers': [] }, 'role': 'coordinator' };
             else
-                fixedRow = { ...fixedRow, 'owners': { 'departmentManagers': [] }, 'role': 'departmentManager' };
+                fixedRow = { ...fixedRow, 'role': 'departmentManager' };
         }
 
 
         handleCloseForm();
         firestoreModule.getUsers().add(fixedRow).then(ref => {
 
-            if (type === 'tutors')
-                fixedRow['owners']['tutors'].push(ref.id);
-            else if (type === 'coordinators')
-                fixedRow['owners']['coordinators'].push(uid)
-            else
-                fixedRow['owners']['departmentManagers'].push(uid)
+            // if (type === 'tutors')
+            //     fixedRow['owners']['tutors'].push(ref.id);
+            // else if (type === 'coordinators')
+            //     fixedRow['owners']['coordinators'].push(ref.uid)
+            // else
+            //     fixedRow['owners']['departmentManagers'].push(ref.uid)
             fixedRow = { ...fixedRow, 'fid': ref.id };
             fixedRow = fixRowFields(newRow);
             rowsCopy.unshift(fixedRow);
             updateNums();
             setRows(rowsCopy);
+            setMainRows(rowsCopy);
             if (type === 'tutors')
                 setMsgState({
                     title: "הוספת מדריך",
@@ -484,6 +485,7 @@ function GenericTab({ rows, type, role, uid }) {
             updateNums();
             let newRows = fixRowsFields()
             setRows(newRows);
+            setMainRows(rowsCopy);
             setOriginalRows(newRows);
             setLoadingPage(false);
         }

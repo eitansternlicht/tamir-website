@@ -15,45 +15,30 @@ const getTutors = (setRows, uid, setLoading, role) => {
   // uid = !firebase.auth().currentUser.uid
   //   ? tempUIDForTesting
   //   : !firebase.auth().currentUser.uid;
-
-  if (role === 'coordinator')
+let str = 'owners.' + role + 's';
+  if (role === 'ceo'){
     firestoreModule
-      .getUsers()
-      .where("owners.coordinators", 'array-contains', uid)
-      .onSnapshot(snapshot => {
-
-        let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
-        answer = answer.filter(row => row.role === 'tutor');
-        setRows(answer);
-        setLoading(false);
-        console.log("result", answer);
-
-        //console.log('results', snapshot.docs.map(doc => doc.data()))
-      });
-  else if (role === 'departmentManager')
+    .getUsers()
+    .onSnapshot(snapshot => {
+      let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
+      answer = answer.filter(row => row.role === 'tutor');
+      setRows(answer);
+      setLoading(false);
+    });
+  }
+  else{
     firestoreModule
-      .getUsers()
-      .where("owners.departmentManagers", 'array-contains', uid)
-      .onSnapshot(snapshot => {
-        setLoading(false);
-        let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
-        answer = answer.filter(row => row.role === 'tutor');
-        setRows(answer);
-        console.log("result", answer);
-        //console.log('results', snapshot.docs.map(doc => doc.data()))
-      });
-  else
-    firestoreModule
-      .getUsers()
-      .onSnapshot(snapshot => {
-        setLoading(false);
-        let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
-        answer = answer.filter(row => row.role === 'tutor');
-        setRows(answer);
-        console.log("result", answer);
-
-      });
-
+    .getUsers()
+    .where(str, 'array-contains', uid)
+    .onSnapshot(snapshot => {
+      let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
+      answer = answer.filter(row => row.role === 'tutor');
+      setRows(answer);
+      setLoading(false);
+    
+      //console.log('results', snapshot.docs.map(doc => doc.data()))
+    });
+  }
 }
 
 const getCoordinators = (setRows, uid, setLoading, role) => {
@@ -63,7 +48,6 @@ const getCoordinators = (setRows, uid, setLoading, role) => {
   //   : !firebase.auth().currentUser.uid;
 
   if (role === 'departmentManager')
-  
     firestoreModule
       .getUsers()
       .where("owners.departmentManagers", 'array-contains', uid)
@@ -71,10 +55,7 @@ const getCoordinators = (setRows, uid, setLoading, role) => {
         let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
         answer = answer.filter(row => row.role === 'coordinator');
         setRows(answer);
-        console.log('answer:', answer);
         setLoading(false);
-        console.log("result coo", answer);
-
       });
   else
     firestoreModule
@@ -84,8 +65,6 @@ const getCoordinators = (setRows, uid, setLoading, role) => {
         answer = answer.filter(row => row.role === 'coordinator');
         setRows(answer);
         setLoading(false);
-        console.log("result", answer);
-
       });
 
 }
@@ -95,12 +74,11 @@ const getDepartmentManagers = (setRows, setLoading) => {
   firestoreModule
     .getUsers()
     .onSnapshot(snapshot => {
-      setLoading(false);
+      
       let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
       answer = answer.filter(row => row.role === 'departmentManager');
       setRows(answer);
-      console.log("result", answer);
-      return answer;
+      setLoading(false);
       //console.log('results', snapshot.docs.map(doc => doc.data()))
     });
 

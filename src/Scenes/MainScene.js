@@ -42,11 +42,14 @@ const useStyles = makeStyles(theme => ({
 
     }
 }));
-const role = 'coordinator';
-const uid = 'JNthnYkT2FnN7crYVal6';
+const role = 'ceo';
+const uid = 'qIAOWJMzBXdSXHf20w8J';
 
 function MainScene() {
     const [loading, setLoading] = useState(true);
+    const [loadingTutors, setLoadingTutors] = useState(true);
+    const [loadingCoordinators, setLoadingCoordinators] = useState(true);
+    const [loadingDepartmentManagers, setLoadingDepartmentManagers] = useState(true);
     const [rows, setRows] = useState([]);
     const [coordinatorsRows, setCoordinatorsRows] = useState([]);
     const [tutorsRows, setTutorsRows] = useState([]);
@@ -55,14 +58,15 @@ function MainScene() {
     if (loading) {
         getData(setRows, setLoading)
         if (role !== 'tutor')
-            getTutors(setTutorsRows, uid, setLoading, role);
+            getTutors(setTutorsRows, uid, setLoadingTutors, role);
         if (role === 'departmentManager' || role === 'ceo')
-            getCoordinators(setCoordinatorsRows, uid, setLoading, role);
+            getCoordinators(setCoordinatorsRows, uid, setLoadingCoordinators, role);
         if (role === 'ceo')
-            getDepartmentManagers(setDepartmentManagersRows, setLoading);
+            getDepartmentManagers(setDepartmentManagersRows, setLoadingDepartmentManagers);
     }
 
     function handleChange(event, newValue) {
+
         setDisplayedTab(newValue);
     }
 
@@ -100,15 +104,15 @@ function MainScene() {
 
                 {displayedTab === 'TableTabScene' ?
                     <div className={classes.table}>
-                        {loading ? <></> : <TableTabScene rows={rows} role={role} uid={uid} />}
-                        {loading && <CircularProgress size={40} className={classes.buttonProgress} />}
+                        {loading || loadingTutors || loadingCoordinators || loadingDepartmentManagers ? <></> : <TableTabScene rows={rows} role={role} uid={uid} tutors={tutorsRows} coordinators={coordinatorsRows} departmentManagers={departmentManagersRows} />}
+                        {(loading || loadingTutors || loadingCoordinators || loadingDepartmentManagers) && <CircularProgress size={40} className={classes.buttonProgress} />}
                     </div> : <></>}
                 {displayedTab === 'TutorsTabScene' ?
-                    <GenericTab rows={tutorsRows} type="tutors" role={role} uid={uid} /> : <></>}
+                    <GenericTab rows={tutorsRows} setMainRows={setTutorsRows} type="tutors" role={role} uid={uid} /> : <></>}
                 {displayedTab === 'CoordinatorsTabScene' ?
-                    <GenericTab rows={coordinatorsRows} type="coordinators" role={role} uid={uid} /> : <></>}
+                    <GenericTab rows={coordinatorsRows} setMainRows={setCoordinatorsRows} type="coordinators" role={role} uid={uid} /> : <></>}
                 {displayedTab === 'DepartmentManagersTabScene' ?
-                    <GenericTab rows={departmentManagersRows} type="departmentManagers" role={role} uid={uid} /> : <></>}
+                    <GenericTab rows={departmentManagersRows} setMainRows={setDepartmentManagersRows} type="departmentManagers" role={role} uid={uid} /> : <></>}
             </div>
         </div>
     );

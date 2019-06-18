@@ -12,11 +12,11 @@ function getStudents() {
     return firestoreDb.collection(collections.students);
 }
 
-// function getSpecificStudent() {
+function getSpecificStudent(studentId) {
+    return firestoreDb.collection(collections.students).doc(studentId);
+}
 
-// }
-
-function getUsers(){
+function getUsers() {
     return firestoreDb.collection(collections.users);
 }
 
@@ -38,6 +38,7 @@ const getModule = () => {
         deleteStudent,
         getStudents,
         deleteUser,
+        getSpecificStudent,
         getUsers
     };
 }

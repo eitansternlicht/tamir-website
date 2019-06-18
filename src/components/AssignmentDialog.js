@@ -1,18 +1,18 @@
 
 import React, { useState } from 'react';
 
-import { makeStyles, 
+import {
+    makeStyles,
     Button,
-     List,
-     Radio,
-      Dialog, 
-      DialogTitle, 
-      DialogContent, 
-      DialogActions,
-      RadioGroup,
-      FormControlLabel
-      
-    } from '@material-ui/core/';
+    List,
+    Radio,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    RadioGroup,
+    FormControlLabel
+} from '@material-ui/core/';
 
 function AssignmentRow(props) {
     const { title, optionsArr, onClose, value: valueProp, open, ...other } = props;
@@ -62,9 +62,20 @@ function AssignmentRow(props) {
                     className={classes.options}
 
                 >
-                    {optionsArr.map(option => (
-                        <FormControlLabel value={option} key={option} control={<Radio  color="primary"/>} label={option} labelPlacement="start" />
-                    ))}
+                    {optionsArr.map(option => {
+
+                        let label = '';
+                        if (option.firstName === 'None') {
+                            label = option.firstName
+                            return <FormControlLabel value={option.firstName} key={option.fid} control={<Radio color="primary" />} label={label} labelPlacement="start" />
+                        }
+                        else {
+                            label = option.neighborhood + ', ' + option.city + ', ' + option.firstName + ' ' + option.lastName;
+                            return <FormControlLabel value={option.fid} key={option.fid} control={<Radio color="primary" />} label={label} labelPlacement="start" />
+                        }
+
+                    }
+                    )}
                 </RadioGroup>
             </DialogContent>
             <DialogActions>
@@ -106,13 +117,13 @@ function AssignmentDialog({ title, optionsArr, visible, handleClose }) {
         <div className={classes.root}>
             <List component="div" role="list">
                 <AssignmentRow
-                    classes={{paper: classes.paper,}}
+                    classes={{ paper: classes.paper, }}
                     optionsArr={optionsArr}
                     title={title}
                     keepMounted
                     open={visible}
                     onClose={handleClose}
-                    value={optionsArr[0]}
+                    value={'None'}
                 />
             </List>
         </div>
