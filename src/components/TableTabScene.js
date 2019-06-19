@@ -177,7 +177,13 @@ function TableTabScene({
     columns.forEach(({ key }) => {
       if (student.hasOwnProperty(key)) {
         if (key === 'lastModified' && student[key] !== undefined && student[key] !== null) {
-          student[key] = moment(student[key].toDate()).format('DD/MM/YYYY HH:MM');
+          console.log('eitan', student[key]);
+          student[key] =
+            typeof student[key] === 'string'
+              ? student[key]
+              : student[key] instanceof Date
+              ? moment(student[key]).format('DD/MM/YYYY HH:MM')
+              : moment(student[key].toDate()).format('DD/MM/YYYY HH:MM');
         }
 
         if (student[key] === null || student[key] === undefined || key === 'dob') student[key] = '';
@@ -215,7 +221,8 @@ function TableTabScene({
   };
 
   const updateDate = () => {
-    return new Date().toLocaleString(); //Current Date
+    return moment(new Date()).format('DD/MM/YYYY HH:MM');
+    // .toLocaleString(); //Current Date
     // if (day < 10) {
     //   day = '0' + day;
     // }
