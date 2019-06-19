@@ -477,12 +477,8 @@ function TableTabScene({
     if (loadingPage) {
       updateNums();
       let newRows = fixStudentsFields(rowsCopy);
-      // while(tutors.length <=0 || coordinators.length <= 0 || departmentManagers.length <= 0){
-
-      // }
       rowsCopy = [...newRows];
       newRows = getMissedDetailsForAllStudents();
-      // toDo  to get the status and the tutors, coordinators, departmentManagers for students...
       setRows(newRows);
       setMainRows(newRows);
       setOriginalRows(newRows);
