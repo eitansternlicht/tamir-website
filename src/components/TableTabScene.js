@@ -130,9 +130,15 @@ function getRows(rows, filters) {
   return selectors.getRows({ rows, filters });
 }
 
-const RowRenderer = ({ renderBaseRow, ...props }) => {
+const RowRenderer = ({ row, renderBaseRow, ...props }) => {
+  const rowToRender = {
+    ...row,
+    lastModified: moment(row.lastModified).format('DD/MM/YYYY HH:MM:SS')
+  };
   const color = props.idx % 2 ? '#eee' : '#555';
-  return <div style={{ backgroundColor: color }}>{renderBaseRow(props)}</div>;
+  return (
+    <div style={{ backgroundColor: color }}>{renderBaseRow({ ...props, row: rowToRender })}</div>
+  );
 };
 
 function TableTabScene({
@@ -177,16 +183,11 @@ function TableTabScene({
     columns.forEach(({ key }) => {
       if (student.hasOwnProperty(key)) {
         if (key === 'lastModified' && student[key] !== undefined && student[key] !== null) {
-          console.log('eitan', student[key]);
-          student[key] =
-            typeof student[key] === 'string'
-              ? student[key]
-              : student[key] instanceof Date
-              ? moment(student[key]).format('DD/MM/YYYY HH:MM')
-              : moment(student[key].toDate()).format('DD/MM/YYYY HH:MM');
+          student[key] = student[key] instanceof Date ? student[key] : student[key].toDate();
         }
-
-        if (student[key] === null || student[key] === undefined || key === 'dob') student[key] = '';
+        if (student[key] === null || student[key] === undefined || key === 'dob') {
+          student[key] = '';
+        }
       } else {
         student = { ...student, [key]: '' };
       }
@@ -210,18 +211,23 @@ function TableTabScene({
   const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
     setSaveButtonColor('secondary');
     const newRows = JSON.parse(JSON.stringify(rowsCopy));
-    for (let i = fromRow; i <= toRow; i++) {
-      newRows[i] = { ...rowsCopy[i], ...updated };
-      newRows[i]['lastModified'] = updateDate();
+
+    for (let i = 0; i < newRows.length; i++) {
+      if (i >= fromRow && i <= toRow) {
+        newRows[i] = { ...rowsCopy[i], ...updated };
+        newRows[i].lastModified = updateDate();
+      } else {
+        newRows[i].lastModified = new Date(newRows[i].lastModified);
+      }
     }
-    
-    rowsCopy = JSON.parse(JSON.stringify(newRows));
+
     setRows(newRows);
     setMainRows(newRows);
   };
 
   const updateDate = () => {
-    return moment(new Date()).format('DD/MM/YYYY HH:MM');
+    return new Date();
+    // return moment(new Date()).format('DD/MM/YYYY HH:MM');
     // .toLocaleString(); //Current Date
     // if (day < 10) {
     //   day = '0' + day;
@@ -327,7 +333,8 @@ function TableTabScene({
     delete student['tutor'];
     delete student['coordinator'];
     delete student['departmentManager'];
-    student['lastModified'] = new Date(student['lastModified']);
+    delete student['lastModified'];
+    //student['lastModified'] = new Date(student['lastModified']);
   };
 
   const getOwners = (fixedStudent, role) => {
