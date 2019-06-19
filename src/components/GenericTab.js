@@ -157,15 +157,23 @@ const genders = [
 const useStyles = makeStyles(theme => ({
     actionsContainer: {
         display: 'flex',
-        flexDirection: 'row-reverse',
+        flexDirection: 'row-reverse'
     },
     actions: {
         display: 'flex',
         margin: theme.spacing(1),
-        position: 'relative',
         flexDirection: 'column',
         padding: 5,
+        marginTop: 20
+    },
+    saveContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        margin: theme.spacing(1),
+        marginRight: 'auto',
+        padding: 5,
         marginTop: 20,
+        Size: 50
     },
     button: {
         margin: theme.spacing(1),
@@ -251,9 +259,9 @@ const RowRenderer = ({ renderBaseRow, ...props }) => {
     return <div style={{ backgroundColor: color }}>{renderBaseRow(props)}</div>;
 };
 
-function GenericTab({ rows, setMainRows, type, role, uid }) {
+function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveButtonColor, type, role, uid }) {
 
-    // console.log("generic", rows);
+
     const [selectedIndexes, setSelectedIndexes] = useState([]);
     const [filters, setFilters] = useState({});
     let [rowsCopy, setRows] = useState(rows);
@@ -263,7 +271,8 @@ function GenericTab({ rows, setMainRows, type, role, uid }) {
     const [openForm, setOpenForm] = useState(false);
     let filteredRows = getRows(rowsCopy, filters);
     const [newRow, setNewRow] = useState({});
-    const [originalRows, setOriginalRows] = useState([]);
+    let [originalRows, setOriginalRows] = useState([]);
+    const [loadingSave, setLoadingSave] = useState(false);
 
 
     const fixRowFields = (row) => {
@@ -285,6 +294,7 @@ function GenericTab({ rows, setMainRows, type, role, uid }) {
 
     const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
 
+        setGenericSaveButtonColor('secondary');
         const newRows = JSON.parse(JSON.stringify(rowsCopy));
         for (let i = fromRow; i <= toRow; i++) {
             newRows[i] = { ...rowsCopy[i], ...updated };
@@ -380,20 +390,18 @@ function GenericTab({ rows, setMainRows, type, role, uid }) {
                     body: "!כל המנהלים שנבחרו נמחקו בהצלחה",
                     visible: true
                 });
+            setGenericSaveButtonColor('secondary');
             updateNums();
         }
     };
 
-    const removeUnnecessaryFields = (student) => {
-        delete student['check'];
-        delete student['id'];
-        delete student['fid'];
-
+    const removeUnnecessaryFields = (row) => {
+        delete row['check'];
+        delete row['id'];
+        delete row['fid'];
     }
-    const addRow = () => {
-        let fixedRow = fixRowFields(newRow);
-        removeUnnecessaryFields(fixedRow);
 
+    const getOwners = (fixedRow, role) => {
         if (role === 'coordinator') {
             fixedRow = { ...fixedRow, 'owners': { 'coordinators': [], 'departmentManagers': [] }, 'role': 'tutor', lastModified: updateDate() };
             fixedRow.owners['coordinators'].push(uid);
@@ -413,13 +421,20 @@ function GenericTab({ rows, setMainRows, type, role, uid }) {
             else
                 fixedRow = { ...fixedRow, 'role': 'departmentManager', lastModified: updateDate() };
         }
-
+        return fixedRow;
+    }
+    const addRow = () => {
+        let fixedRow = fixRowFields(newRow);
+        removeUnnecessaryFields(fixedRow);
+        fixedRow = getOwners(fixedRow, role);
 
         handleCloseForm();
         firestoreModule.getUsers().add(fixedRow).then(ref => {
 
             fixedRow = { ...fixedRow, 'fid': ref.id };
-            fixedRow = fixRowFields(newRow);
+            fixedRow = fixRowFields(fixedRow);
+            fixedRow = getOwners(fixedRow, role);
+
             rowsCopy.unshift(fixedRow);
             updateNums();
             setRows(rowsCopy);
@@ -442,6 +457,7 @@ function GenericTab({ rows, setMainRows, type, role, uid }) {
                     body: "!המנהל הוסף בהצלחה",
                     visible: true
                 });
+            setGenericSaveButtonColor('secondary');
         }).catch(function (error) {
             console.log("Error adding", error);
         });
@@ -478,7 +494,7 @@ function GenericTab({ rows, setMainRows, type, role, uid }) {
     const firstTimeLoading = () => {
         if (loadingPage) {
             updateNums();
-            let newRows = fixRowsFields(rowsCopy)
+            let newRows = fixRowsFields(rowsCopy);
             setRows(newRows);
             setMainRows(rowsCopy);
             setOriginalRows(newRows);
@@ -487,6 +503,63 @@ function GenericTab({ rows, setMainRows, type, role, uid }) {
     }
     if (loadingPage)
         firstTimeLoading();
+
+    const deleteUnnecessaryRow = () => {
+        let fids = rowsCopy.map(row => row.fid);
+        originalRows = originalRows.filter(row => fids.includes(row.fid));
+        setOriginalRows(originalRows);
+
+    };
+
+
+    const getRowsToUpdate = () => {
+        let ids = [];
+        let rows = [];
+        rowsCopy.map(row => ids.push({ id: row.id - 1, fid: row.fid }));
+        for (let i = 0; i < originalRows.length; i++) {
+            for (let j = 0; j < ids.length; j++) {
+                if (originalRows[i].fid === ids[j].fid) {
+                    if (rowsCopy[ids[j].id] !== undefined) {
+                        if (
+                            new Date(originalRows[i].lastModified).getTime() !==
+                            new Date(rowsCopy[ids[j].id].lastModified).getTime()
+                        )
+                            rows.push(rowsCopy[ids[j].id]);
+                    }
+                }
+            }
+        }
+        return rows;
+    };
+
+    const makeUpdate = arr => {
+        arr.forEach(row => {
+            let temp = { ...row };
+            removeUnnecessaryFields(temp);
+            firestoreModule.getSpecificUser(row.fid).update(temp);
+        });
+    };
+
+    const saveUpdates = () => {
+        setLoadingSave(true);
+        if (originalRows.length !== rowsCopy.length) deleteUnnecessaryRow();
+        let arr = getRowsToUpdate();
+        if (arr.length > 0)
+            makeUpdate(arr);
+        let newRows = fixRowsFields(rowsCopy);
+        setRows(newRows);
+        setOriginalRows(newRows);
+        setMainRows(newRows);
+        updateNums();
+        setLoadingSave(false);
+        setGenericSaveButtonColor('default');
+        setMsgState({
+            title: 'שמירת שינויים',
+            body: 'כל השינויים נשמרו בהצלחה',
+            visible: true
+        });
+    };
+
 
     return (
         <div>
@@ -640,6 +713,28 @@ function GenericTab({ rows, setMainRows, type, role, uid }) {
                         ייצא לאקסל
           <SaveIcon />
                     </Button>
+                </div>
+
+                <div className={classes.saveContainer}>
+                    {/* <ButtonGroup
+            variant="contained"
+            color="secondary"
+            size="large"
+            aria-label="Large contained secondary button group"
+          > */}
+                    <Button
+                        variant="contained"
+                        color={genericSaveButtonColor}
+                        className={classes.button}
+                        size="large"
+                        onClick={() => saveUpdates()}
+                        disabled={loadingSave}>
+                        שמור שינויים
+            <SaveIcon />
+                    </Button>
+                    {/* </ButtonGroup> */}
+
+                    {loadingSave && <CircularProgress size={24} className={classes.buttonProgress} />}
                 </div>
             </div>
 

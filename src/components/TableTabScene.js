@@ -13,7 +13,7 @@ import {
   MenuItem,
   TextField
 } from '@material-ui/core/';
-
+//import ButtonGroup from '@material-ui/core/ButtonGroup';
 import { MsgToShow, AssignmentDialog } from '.';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
@@ -29,11 +29,11 @@ import { firestoreModule } from '../Firebase/Firebase';
 import { Columns } from '../utils/getColumns';
 
 const useStyles = makeStyles(theme => ({
-  wrapper: {
-    display: 'flex',
-    flex: 2,
-    flexDirection: 'row-reverse'
-  },
+  // wrapper: {
+  //   display: 'flex',
+  //   flex: 2,
+  //   flexDirection: 'row-reverse'
+  // },
   actionsContainer: {
     display: 'flex',
     flexDirection: 'row-reverse'
@@ -170,11 +170,16 @@ function TableTabScene({
     }
   ];
 
-  //console.log("main rows Table", coordinators);
   const fixStudentFields = student => {
     columns.forEach(({ key }) => {
       if (student.hasOwnProperty(key)) {
-        if (student[key] === null || student[key] === undefined || key === 'dob') student[key] = '';
+        if(key === 'lastModified' && student[key] !== undefined && student[key] !== null){
+          student[key] = student[key].toLocaleString();
+        }
+
+        if (student[key] === null || student[key] === undefined || key === 'dob' ) 
+          student[key] = '';
+        
       } else {
         student = { ...student, [key]: '' };
       }
@@ -313,13 +318,10 @@ function TableTabScene({
     delete student['tutor'];
     delete student['coordinator'];
     delete student['departmentManager'];
+    student['lastModified'] = new Date(student['lastModified']);
   };
 
-  console.log('row', rowsCopy, 'original', originalRows);
-  const addStudent = () => {
-    let fixedStudent = fixStudentFields(newStudent);
-    removeUnnecessaryFields(fixedStudent);
-    handleCloseForm();
+  const getOwners = (fixedStudent, role) => {
     if (role === 'tutor')
       fixedStudent = {
         ...fixedStudent,
@@ -344,6 +346,14 @@ function TableTabScene({
         ...fixedStudent,
         owners: { tutors: [], coordinators: [], departmentManagers: [] }
       };
+    return fixedStudent;
+  }
+
+  const addStudent = () => {
+    let fixedStudent = fixStudentFields(newStudent);
+    removeUnnecessaryFields(fixedStudent);
+    handleCloseForm();
+    fixedStudent = getOwners(fixedStudent, role);
 
     firestoreModule
       .getStudents()
@@ -351,18 +361,20 @@ function TableTabScene({
       .then(ref => {
         fixedStudent = fixStudentFields(newStudent);
         fixedStudent = { ...fixedStudent, fid: ref.id };
+        fixedStudent = getOwners(fixedStudent, role);
         rowsCopy.unshift(fixedStudent);
         updateNums();
         rowsCopy = getMissedDetailsForAllStudents();
         setRows(rowsCopy);
         setMainRows(rowsCopy);
+        setSaveButtonColor('secondary');
         setMsgState({
           title: 'הוספת חניך',
           body: '!החניך הוסף בהצלחה',
           visible: true
         });
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log('Error adding student', error);
       });
   };
@@ -470,18 +482,18 @@ function TableTabScene({
   };
 
   const firstTimeLoading = () => {
-    if (loadingPage) {
-      updateNums();
-      let newRows = fixStudentsFields(rowsCopy);
-      rowsCopy = [...newRows];
-      newRows = getMissedDetailsForAllStudents();
-      setRows(newRows);
-      setMainRows(newRows);
-      setOriginalRows(newRows);
-      setLoadingPage(false);
-    }
+    updateNums();
+    let newRows = fixStudentsFields(rowsCopy);
+    rowsCopy = [...newRows];
+    newRows = getMissedDetailsForAllStudents();
+    setRows(newRows);
+    setMainRows(newRows);
+    setOriginalRows(newRows);
+    setLoadingPage(false);
   };
-  firstTimeLoading();
+
+  if (loadingPage)
+    firstTimeLoading();
 
   const deleteUnnecessaryStudent = () => {
     let fids = rowsCopy.map(row => row.fid);
@@ -492,16 +504,16 @@ function TableTabScene({
   const getStudentsToUpdate = () => {
     let ids = [];
     let students = [];
-    rowsCopy.map(row => ids.push({ id: row.id, fid: row.fid }));
+    rowsCopy.map(row => ids.push({ id: row.id - 1, fid: row.fid }));
     for (let i = 0; i < originalRows.length; i++) {
       for (let j = 0; j < ids.length; j++) {
         if (originalRows[i].fid === ids[j].fid) {
-          if (rowsCopy[ids[j].id - 1] !== undefined) {
+          if (rowsCopy[ids[j].id] !== undefined) {
             if (
               new Date(originalRows[i].lastModified).getTime() !==
-              new Date(rowsCopy[ids[j].id - 1].lastModified).getTime()
+              new Date(rowsCopy[ids[j].id].lastModified).getTime()
             )
-              students.push(rowsCopy[ids[j].id - 1]);
+              students.push(rowsCopy[ids[j].id]);
           }
         }
       }
@@ -512,8 +524,8 @@ function TableTabScene({
   const makeUpdate = arr => {
     arr.forEach(student => {
       let temp = { ...student };
-      removeUnnecessaryFields(student);
-      firestoreModule.getSpecificStudent(temp.fid).update(student);
+      removeUnnecessaryFields(temp);
+      firestoreModule.getSpecificStudent(student.fid).update(temp);
     });
   };
 
@@ -521,17 +533,27 @@ function TableTabScene({
     setLoadingSave(true);
     if (originalRows.length !== rowsCopy.length) deleteUnnecessaryStudent();
     let arr = getStudentsToUpdate();
-    makeUpdate(arr);
-    rowsCopy = getMissedDetailsForAllStudents();
-    setRows(rowsCopy);
-    setOriginalRows(rowsCopy);
+
+    if (arr.length > 0)
+      makeUpdate(arr);
+    let newRows = fixStudentsFields(rowsCopy);
+    rowsCopy = [...newRows];
+    newRows = getMissedDetailsForAllStudents();
+
+    setRows(newRows);
+    setOriginalRows(newRows);
+    setMainRows(newRows);
+    updateNums();
     setLoadingSave(false);
     setSaveButtonColor('default');
-    console.log('or', originalRows, 'copy', rowsCopy);
-    filteredRows = getRows(rowsCopy, filters);
-    updateNums();
+    setMsgState({
+      title: 'שמירת שינויים',
+      body: 'כל השינויים נשמרו בהצלחה',
+      visible: true
+    });
   };
 
+  console.log("co", rowsCopy, "or", originalRows);
   return (
     <div>
       <ReactDataGrid
@@ -675,8 +697,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-            <></>
-          )}
+              <></>
+            )}
 
           <AssignmentDialog
             title="בחר מדריך"
@@ -704,9 +726,9 @@ function TableTabScene({
                   } else {
                     rowsCopy[i].owners['tutors'] = [];
                   }
-                  firestoreModule
-                    .getSpecificStudent(rowsCopy[i].fid)
-                    .update({ owners: rowsCopy[i].owners });
+                  // firestoreModule
+                  //   .getSpecificStudent(rowsCopy[i].fid)
+                  //   .update({ owners: rowsCopy[i].owners });
                   rowsCopy[i].lastModified = updateDate();
                   rowsCopy = getMissedDetailsForAllStudents();
                   setRows(rowsCopy);
@@ -721,6 +743,7 @@ function TableTabScene({
                 while (selectedIndexes.length !== 0) {
                   selectedIndexes.shift();
                 }
+                setSaveButtonColor('secondary');
               }
             }}
           />
@@ -739,8 +762,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-            <></>
-          )}
+              <></>
+            )}
 
           <AssignmentDialog
             title="בחר רכז"
@@ -765,9 +788,9 @@ function TableTabScene({
                   } else {
                     rowsCopy[i].owners['coordinators'] = [];
                   }
-                  firestoreModule
-                    .getSpecificStudent(rowsCopy[i].fid)
-                    .update({ owners: rowsCopy[i].owners });
+                  // firestoreModule
+                  //   .getSpecificStudent(rowsCopy[i].fid)
+                  //   .update({ owners: rowsCopy[i].owners });
                   rowsCopy[i].lastModified = updateDate();
                   rowsCopy = getMissedDetailsForAllStudents();
                   setRows(rowsCopy);
@@ -779,9 +802,11 @@ function TableTabScene({
                     body: 'כל החניכים שנבחרו שובצו בהצלחה',
                     visible: true
                   });
+
                 while (selectedIndexes.length !== 0) {
                   selectedIndexes.shift();
                 }
+                setSaveButtonColor('secondary');
               }
             }}
           />
@@ -800,8 +825,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-            <></>
-          )}
+              <></>
+            )}
 
           <AssignmentDialog
             title="בחר מנהל מחלקה"
@@ -826,9 +851,9 @@ function TableTabScene({
                   } else {
                     rowsCopy[i].owners['departmentManagers'] = [];
                   }
-                  firestoreModule
-                    .getSpecificStudent(rowsCopy[i].fid)
-                    .update({ owners: rowsCopy[i].owners });
+                  // firestoreModule
+                  //   .getSpecificStudent(rowsCopy[i].fid)
+                  //   .update({ owners: rowsCopy[i].owners });
                   rowsCopy[i].lastModified = updateDate();
                   rowsCopy = getMissedDetailsForAllStudents();
                   setRows(rowsCopy);
@@ -843,6 +868,7 @@ function TableTabScene({
                 while (selectedIndexes.length !== 0) {
                   selectedIndexes.shift();
                 }
+                setSaveButtonColor('secondary');
               }
             }}
           />
@@ -892,7 +918,7 @@ function TableTabScene({
             שמור שינויים
             <SaveIcon />
           </Button>
-          {/* //</ButtonGroup> */}
+          {/* </ButtonGroup> */}
 
           {loadingSave && <CircularProgress size={24} className={classes.buttonProgress} />}
         </div>
