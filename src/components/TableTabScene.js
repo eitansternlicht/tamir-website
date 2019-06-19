@@ -41,19 +41,15 @@ const useStyles = makeStyles(theme => ({
   actions: {
     display: 'flex',
     margin: theme.spacing(1),
-    position: 'relative',
     flexDirection: 'column',
     padding: 5,
     marginTop: 20
   },
   saveContainer: {
     display: 'flex',
-    margin: theme.spacing(1),
-    position: 'relative',
-    alignSelf: 'flex-center',
-    alignContent: 'left',
-    alignItems: 'left',
     flexDirection: 'column',
+    margin: theme.spacing(1),
+    marginRight: 'auto',
     padding: 5,
     marginTop: 20
   },
