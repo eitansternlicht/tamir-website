@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { TableTabScene } from '../components';
-import { getData } from '../utils/createRowData';
 import { makeStyles, CircularProgress, Paper, Typography, Tab, Tabs, AppBar } from '@material-ui/core/';
 import green from '@material-ui/core/colors/green';
 import { GenericTab } from '../components/GenericTab';
@@ -50,13 +49,15 @@ function MainScene() {
     const [loadingTutors, setLoadingTutors] = useState(true);
     const [loadingCoordinators, setLoadingCoordinators] = useState(true);
     const [loadingDepartmentManagers, setLoadingDepartmentManagers] = useState(true);
-    const [rows, setRows] = useState([]);
+    const [studentRows, setStudentRows] = useState([]);
+    const [saveButtonColor, setSaveButtonColor] = useState('default');
     const [coordinatorsRows, setCoordinatorsRows] = useState([]);
     const [tutorsRows, setTutorsRows] = useState([]);
     const [departmentManagersRows, setDepartmentManagersRows] = useState([]);
     const [displayedTab, setDisplayedTab] = useState('TableTabScene');
+
     if (loading) {
-        getStudents(setRows, setLoading)
+        getStudents(setStudentRows, setLoading)
         if (role !== 'tutor')
             getTutors(setTutorsRows, uid, setLoadingTutors, role);
         if (role === 'departmentManager' || role === 'ceo')
@@ -104,7 +105,7 @@ function MainScene() {
 
                 {displayedTab === 'TableTabScene' ?
                     <div className={classes.table}>
-                        {loading || loadingTutors || loadingCoordinators || loadingDepartmentManagers ? <></> : <TableTabScene rows={rows} role={role} uid={uid} tutors={tutorsRows} coordinators={coordinatorsRows} departmentManagers={departmentManagersRows} />}
+                        {loading || loadingTutors || loadingCoordinators || loadingDepartmentManagers ? <></> : <TableTabScene rows={studentRows} setMainRows={setStudentRows} saveButtonColor={saveButtonColor} setSaveButtonColor={setSaveButtonColor} role={role} uid={uid} tutors={tutorsRows} coordinators={coordinatorsRows} departmentManagers={departmentManagersRows} />}
                         {(loading || loadingTutors || loadingCoordinators || loadingDepartmentManagers) && <CircularProgress size={40} className={classes.buttonProgress} />}
                     </div> : <></>}
                 {displayedTab === 'TutorsTabScene' ?

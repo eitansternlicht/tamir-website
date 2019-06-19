@@ -279,8 +279,8 @@ function GenericTab({ rows, setMainRows, type, role, uid }) {
         return row;
     }
 
-    const fixRowsFields = () => {
-        return rowsCopy.map(fixRowFields);
+    const fixRowsFields = (arr) => {
+        return arr.map(fixRowFields);
     }
 
     const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
@@ -477,7 +477,7 @@ function GenericTab({ rows, setMainRows, type, role, uid }) {
     const firstTimeLoading = () => {
         if (loadingPage) {
             updateNums();
-            let newRows = fixRowsFields()
+            let newRows = fixRowsFields(rowsCopy)
             setRows(newRows);
             setMainRows(rowsCopy);
             setOriginalRows(newRows);

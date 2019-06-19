@@ -11,9 +11,9 @@ import {
   DialogContentText,
   CircularProgress,
   MenuItem,
-  TextField,
-
+  TextField
 } from '@material-ui/core/';
+
 import { MsgToShow, AssignmentDialog } from '.';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
@@ -29,6 +29,11 @@ import { firestoreModule } from '../Firebase/Firebase'
 import { Columns } from '../utils/getColumns'
 
 const useStyles = makeStyles(theme => ({
+  wrapper: {
+    display: 'flex',
+    flex: 2,
+    flexDirection: 'row-reverse',
+  },
   actionsContainer: {
     display: 'flex',
     flexDirection: 'row-reverse',
@@ -41,9 +46,21 @@ const useStyles = makeStyles(theme => ({
     padding: 5,
     marginTop: 20,
   },
+  saveContainer: {
+    display: 'flex',
+    margin: theme.spacing(1),
+    position: 'relative',
+    alignSelf: 'flex-center',
+    alignContent: 'left',
+    alignItems: 'left',
+    flexDirection: 'column',
+    padding: 5,
+    marginTop: 20,
+  },
   button: {
     margin: theme.spacing(1),
-    textAlign: 'right',
+    textAlign: 'center',
+    alignContent: 'center',
   },
   formTitle: {
     textAlign: 'center',
@@ -57,9 +74,7 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(1),
     textAlign: 'right',
     width: 150,
-
   },
-
   icon: {
     margin: theme.spacing(1),
   },
@@ -125,7 +140,7 @@ const RowRenderer = ({ renderBaseRow, ...props }) => {
   return <div style={{ backgroundColor: color }}>{renderBaseRow(props)}</div>;
 };
 
-function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManagers }) {
+function TableTabScene({ rows, setMainRows, setSaveButtonColor, saveButtonColor, role, uid, tutors, coordinators, departmentManagers }) {
 
   const [selectedIndexes, setSelectedIndexes] = useState([]);
   const [filters, setFilters] = useState({});
@@ -138,6 +153,7 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
   let filteredRows = getRows(rowsCopy, filters);
   const [newStudent, setNewStudent] = useState({});
   let [originalRows, setOriginalRows] = useState([]);
+  const [loadingSave, setLoadingSave] = useState(false);
 
   const classes = useStyles();
   const genders = [
@@ -166,8 +182,8 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
     return student;
   }
 
-  const fixStudentsFields = () => {
-    return rowsCopy.map(fixStudentFields);
+  const fixStudentsFields = (arr) => {
+    return arr.map(fixStudentFields);
   }
 
   const getOptionsToAssign = (type) => {
@@ -183,6 +199,7 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
 
   const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
 
+    setSaveButtonColor('secondary');
     const newRows = JSON.parse(JSON.stringify(rowsCopy));
     for (let i = fromRow; i <= toRow; i++) {
       newRows[i] = { ...rowsCopy[i], ...updated };
@@ -190,32 +207,33 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
     }
     rowsCopy = JSON.parse(JSON.stringify(newRows));
     setRows(newRows);
+    setMainRows(newRows);
   };
 
   const updateDate = () => {
-    let day = new Date().getDate(); //Current Date
-    if (day < 10) {
-      day = '0' + day;
-    }
-    let month = new Date().getMonth() + 1; //Current Month
-    if (month < 10) {
-      month = '0' + month
-    }
-    let year = new Date().getFullYear(); //Current Year
-    let hours = new Date().getHours(); //Current Hours
-    if (hours < 10) {
-      hours = '0' + hours;
-    }
-    let min = new Date().getMinutes(); //Current Minutes
-    if (min < 10) {
-      min = '0' + min;
-    }
-    let sec = new Date().getSeconds(); //Current Seconds
-    if (sec < 10) {
-      sec = '0' + sec;
-    }
+    return new Date().toLocaleString(); //Current Date
+    // if (day < 10) {
+    //   day = '0' + day;
+    // }
+    // let month = new Date().getMonth() + 1; //Current Month
+    // if (month < 10) {
+    //   month = '0' + month
+    // }
+    // let year = new Date().getFullYear(); //Current Year
+    // let hours = new Date().getHours(); //Current Hours
+    // if (hours < 10) {
+    //   hours = '0' + hours;
+    // }
+    // let min = new Date().getMinutes(); //Current Minutes
+    // if (min < 10) {
+    //   min = '0' + min;
+    // }
+    // let sec = new Date().getSeconds(); //Current Seconds
+    // if (sec < 10) {
+    //   sec = '0' + sec;
+    // }
 
-    return day + '/' + month + '/' + year + ' ' + hours + ':' + min;
+    // return day + '/' + month + '/' + year + ' ' + hours + ':' + min;
   }
 
   const updateNums = () => {
@@ -223,6 +241,7 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
       rowsCopy[i]['id'] = i + 1;
     }
     setRows(rowsCopy);
+    setMainRows(rowsCopy);
   }
 
   const handleChange = name => event => {
@@ -270,7 +289,9 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
     }
     rowsCopy = newArr;
     setRows(rowsCopy);
+    setMainRows(rowsCopy);
     setLoading(false);
+    setSaveButtonColor('secondary');
     setMsgState({
       title: "מחיקת חניכים",
       body: "!כל החניכים שנבחרו נמחקו בהצלחה",
@@ -309,8 +330,9 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
       fixedStudent = { ...fixedStudent, 'fid': ref.id };
       rowsCopy.unshift(fixedStudent);
       updateNums();
+      rowsCopy = getMissedDetailsForAllStudents()
       setRows(rowsCopy);
-      setRows(getMissedDetailsForAllStudents());
+      setMainRows(rowsCopy);
       setMsgState({
         title: "הוספת חניך",
         body: "!החניך הוסף בהצלחה",
@@ -438,7 +460,7 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
   const firstTimeLoading = () => {
     if (loadingPage) {
       updateNums();
-      let newRows = fixStudentsFields();
+      let newRows = fixStudentsFields(rowsCopy);
       // while(tutors.length <=0 || coordinators.length <= 0 || departmentManagers.length <= 0){
 
       // }
@@ -446,11 +468,55 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
       newRows = getMissedDetailsForAllStudents();
       // toDo  to get the status and the tutors, coordinators, departmentManagers for students...
       setRows(newRows);
+      setMainRows(newRows);
       setOriginalRows(newRows);
       setLoadingPage(false);
     }
   }
   firstTimeLoading();
+
+  const deleteUnnecessaryStudent = () => {
+    let fids = rowsCopy.map(row => row.fid);
+    originalRows = originalRows.filter(row => fids.includes(row.fid))
+    setOriginalRows(originalRows);
+  }
+
+  const getStudentsToUpdate = () => {
+    let ids = [];
+    let students = [];
+    rowsCopy.map(row => ids.push({ id: row.id, fid: row.fid }));
+    for (let i = 0; i < originalRows.length; i++) {
+      for (let j = 0; j < ids.length; j++) {
+        if (originalRows[i].fid === ids[j].fid) {
+          if (rowsCopy[ids[j].id - 1] !== undefined) {
+            if (new Date(originalRows[i].lastModified).getTime() !== new Date(rowsCopy[ids[j].id - 1].lastModified).getTime())
+              students.push(rowsCopy[ids[j].id - 1]);
+          }
+        }
+      }
+    }
+    return students;
+  }
+
+  const makeUpdate = (arr) => {
+    arr.forEach(student => {
+      let temp = { ...student };
+      removeUnnecessaryFields(student);
+      firestoreModule.getSpecificStudent(temp.fid).update(student)
+    });
+  }
+
+  const saveUpdates = () => {
+    setLoadingSave(true);
+    originalRows = fixStudentsFields(originalRows)
+    if (originalRows.length !== rowsCopy.length)
+      deleteUnnecessaryStudent();
+    let arr = getStudentsToUpdate();
+    makeUpdate(arr);
+    setOriginalRows(rowsCopy)
+    setLoadingSave(false);
+    setSaveButtonColor('default');
+  }
 
   return (
     <div>
@@ -485,6 +551,9 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
       <span style={{ textAlign: 'center', alignContent: 'center', alignSelf: 'center', font: 30 }} >
         {selectedIndexes.length} {rowText} selected
       </span>
+
+
+
 
       <div className={classes.actionsContainer}>
         <div className={classes.actions}>
@@ -608,7 +677,9 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
                     }
                     firestoreModule.getSpecificStudent(rowsCopy[i].fid).update({ 'owners': rowsCopy[i].owners });
                     rowsCopy[i].lastModified = updateDate();
-                    setRows(getMissedDetailsForAllStudents());
+                    rowsCopy = getMissedDetailsForAllStudents()
+                    setRows(rowsCopy);
+                    setMainRows(rowsCopy);
                   }
                 )
                 if (chosenOption !== 'None')
@@ -656,7 +727,9 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
                     }
                     firestoreModule.getSpecificStudent(rowsCopy[i].fid).update({ 'owners': rowsCopy[i].owners });
                     rowsCopy[i].lastModified = updateDate();
-                    setRows(getMissedDetailsForAllStudents());
+                    rowsCopy = getMissedDetailsForAllStudents()
+                    setRows(rowsCopy);
+                    setMainRows(rowsCopy);
                   }
                 )
                 if (chosenOption !== 'None')
@@ -701,7 +774,9 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
                     }
                     firestoreModule.getSpecificStudent(rowsCopy[i].fid).update({ 'owners': rowsCopy[i].owners });
                     rowsCopy[i].lastModified = updateDate();
-                    setRows(getMissedDetailsForAllStudents());
+                    rowsCopy = getMissedDetailsForAllStudents()
+                    setRows(rowsCopy);
+                    setMainRows(rowsCopy);
                   }
                 )
                 if (chosenOption !== 'None')
@@ -742,7 +817,35 @@ function TableTabScene({ rows, role, uid, tutors, coordinators, departmentManage
           <SaveIcon />
           </Button>
         </div>
+
+        <div className={classes.saveContainer}>
+          {/* <ButtonGroup
+            variant="contained"
+            color="secondary"
+            size="large"
+            aria-label="Large contained secondary button group"
+          > */}
+          <Button variant="contained" color={saveButtonColor}
+            className={classes.button}
+            size="large"
+            onClick={() => saveUpdates()}
+            disabled={loadingSave}
+          >
+            שמור שינויים
+            <SaveIcon />
+          </Button>
+          {/* //</ButtonGroup> */}
+
+          {loadingSave && <CircularProgress size={24} className={classes.buttonProgress} />}
+        </div>
+
       </div>
+
+
+
+
+
+
 
     </div>
   );
