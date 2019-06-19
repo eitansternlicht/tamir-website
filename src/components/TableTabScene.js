@@ -209,6 +209,7 @@ function TableTabScene({
       newRows[i] = { ...rowsCopy[i], ...updated };
       newRows[i]['lastModified'] = updateDate();
     }
+    
     rowsCopy = JSON.parse(JSON.stringify(newRows));
     setRows(newRows);
     setMainRows(newRows);
