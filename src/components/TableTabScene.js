@@ -27,6 +27,7 @@ import 'react-responsive-ui/style.css';
 import PhoneInput from 'react-phone-number-input/react-responsive-ui';
 import { firestoreModule } from '../Firebase/Firebase';
 import { Columns } from '../utils/getColumns';
+import moment from 'moment';
 
 const useStyles = makeStyles(theme => ({
   // wrapper: {
@@ -157,7 +158,7 @@ function TableTabScene({
   const [openForm, setOpenForm] = useState(false);
   let filteredRows = getRows(rowsCopy, filters);
   const [newStudent, setNewStudent] = useState({});
- // let [originalRows, setOriginalRows] = useState([]);
+  // let [originalRows, setOriginalRows] = useState([]);
   const [loadingSave, setLoadingSave] = useState(false);
 
   const classes = useStyles();
@@ -175,13 +176,11 @@ function TableTabScene({
   const fixStudentFields = student => {
     columns.forEach(({ key }) => {
       if (student.hasOwnProperty(key)) {
-        if(key === 'lastModified' && student[key] !== undefined && student[key] !== null){
-          student[key] = student[key].toLocaleString();
+        if (key === 'lastModified' && student[key] !== undefined && student[key] !== null) {
+          student[key] = moment(student[key].toDate()).format('DD/MM/YYYY HH:MM');
         }
 
-        if (student[key] === null || student[key] === undefined || key === 'dob' ) 
-          student[key] = '';
-        
+        if (student[key] === null || student[key] === undefined || key === 'dob') student[key] = '';
       } else {
         student = { ...student, [key]: '' };
       }
@@ -349,7 +348,7 @@ function TableTabScene({
         owners: { tutors: [], coordinators: [], departmentManagers: [] }
       };
     return fixedStudent;
-  }
+  };
 
   const addStudent = () => {
     let fixedStudent = fixStudentFields(newStudent);
@@ -376,7 +375,7 @@ function TableTabScene({
           visible: true
         });
       })
-      .catch(function (error) {
+      .catch(function(error) {
         console.log('Error adding student', error);
       });
   };
@@ -494,8 +493,7 @@ function TableTabScene({
     setLoadingPage(false);
   };
 
-  if (loadingPage)
-    firstTimeLoading();
+  if (loadingPage) firstTimeLoading();
 
   const deleteUnnecessaryStudent = () => {
     let fids = rowsCopy.map(row => row.fid);
@@ -536,8 +534,7 @@ function TableTabScene({
     if (originalRows.length !== rowsCopy.length) deleteUnnecessaryStudent();
     let arr = getStudentsToUpdate();
 
-    if (arr.length > 0)
-      makeUpdate(arr);
+    if (arr.length > 0) makeUpdate(arr);
     let newRows = fixStudentsFields(rowsCopy);
     rowsCopy = [...newRows];
     newRows = getMissedDetailsForAllStudents();
@@ -549,14 +546,14 @@ function TableTabScene({
     setLoadingSave(false);
     setSaveButtonColor('default');
     if (arr.length > 0)
-    setMsgState({
-      title: 'שמירת שינויים',
-      body: 'כל השינויים נשמרו בהצלחה',
-      visible: true
-    });
+      setMsgState({
+        title: 'שמירת שינויים',
+        body: 'כל השינויים נשמרו בהצלחה',
+        visible: true
+      });
   };
 
-  console.log("co", rowsCopy, "or", originalRows);
+  console.log('co', rowsCopy, 'or', originalRows);
   return (
     <div>
       <ReactDataGrid
@@ -700,8 +697,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-              <></>
-            )}
+            <></>
+          )}
 
           <AssignmentDialog
             title="בחר מדריך"
@@ -765,8 +762,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-              <></>
-            )}
+            <></>
+          )}
 
           <AssignmentDialog
             title="בחר רכז"
@@ -828,8 +825,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-              <></>
-            )}
+            <></>
+          )}
 
           <AssignmentDialog
             title="בחר מנהל מחלקה"
