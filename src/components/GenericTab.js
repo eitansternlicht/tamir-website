@@ -14,7 +14,7 @@ import {
     TextField,
 
 } from '@material-ui/core/';
-import { MsgToShow, AssignmentDialog } from '.';
+import { MsgToShow } from '.';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import SaveIcon from '@material-ui/icons/Save';
@@ -22,7 +22,8 @@ import { aoaToFile } from '../utils/excell-utils';
 import green from '@material-ui/core/colors/green';
 import 'react-responsive-ui/style.css';
 import PhoneInput from 'react-phone-number-input/react-responsive-ui';
-import { firestoreModule } from '../Firebase/Firebase'
+import { firestoreModule } from '../Firebase/Firebase';
+import moment from 'moment';
 
 
 
@@ -254,9 +255,15 @@ function getRows(rows, filters) {
 }
 
 
-const RowRenderer = ({ renderBaseRow, ...props }) => {
-    const color = props.idx % 2 ? "#eee" : "#555";
-    return <div style={{ backgroundColor: color }}>{renderBaseRow(props)}</div>;
+const RowRenderer = ({ row, renderBaseRow, ...props }) => {
+    const rowToRender = {
+        ...row,
+        lastModified: moment(row.lastModified).format('DD/MM/YYYY HH:MM:SS')
+    };
+    const color = props.idx % 2 ? '#eee' : '#555';
+    return (
+        <div style={{ backgroundColor: color }}>{renderBaseRow({ ...props, row: rowToRender })}</div>
+    );
 };
 
 function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveButtonColor, type, role, uid }) {
@@ -278,13 +285,16 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
     const fixRowFields = (row) => {
         columns.forEach(({ key }) => {
             if (row.hasOwnProperty(key)) {
-                if (row[key] === null || row[key] === undefined)
-                    row[key] = ''
-            }
-            else {
+                if (key === 'lastModified' && row[key] !== undefined && row[key] !== null) {
+                    row[key] = row[key] instanceof Date ? row[key] : row[key].toDate();
+                }
+                if (row[key] === null || row[key] === undefined || key === 'dob') {
+                    row[key] = '';
+                }
+            } else {
                 row = { ...row, [key]: '' };
             }
-        })
+        });
         return row;
     }
 
@@ -296,36 +306,21 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
 
         setGenericSaveButtonColor('secondary');
         const newRows = JSON.parse(JSON.stringify(rowsCopy));
-        for (let i = fromRow; i <= toRow; i++) {
-            newRows[i] = { ...rowsCopy[i], ...updated };
-            newRows[i]['lastModified'] = updateDate();
+        for (let i = 0; i < newRows.length; i++) {
+            if (i >= fromRow && i <= toRow) {
+                newRows[i] = { ...rowsCopy[i], ...updated };
+                newRows[i].lastModified = updateDate();
+            } else {
+                newRows[i].lastModified = new Date(newRows[i].lastModified);
+            }
         }
-        rowsCopy = JSON.parse(JSON.stringify(newRows));
         setRows(newRows);
         setMainRows(newRows);
     };
 
     const updateDate = () => {
-        // let day = new Date().getDate(); //Current Date
-        // if (day < 10) {
-        //     day = '0' + day;
-        // }
-        // let month = new Date().getMonth() + 1; //Current Month
-        // if (month < 10) {
-        //     month = '0' + month
-        // }
-        // let year = new Date().getFullYear(); //Current Year
-        // let hours = new Date().getHours(); //Current Hours
-        // if (hours < 10) {
-        //     hours = '0' + hours;
-        // }
-        // let min = new Date().getMinutes(); //Current Minutes
-        // if (min < 10) {
-        //     min = '0' + min;
-        // }
 
-        // return day + '/' + month + '/' + year + ' ' + hours + ':' + min;
-        return new Date().toLocaleString();
+        return new Date();
     }
 
     const updateNums = () => {
@@ -399,6 +394,7 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
         delete row['check'];
         delete row['id'];
         delete row['fid'];
+
     }
 
     const getOwners = (fixedRow, role) => {
@@ -423,12 +419,13 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
         }
         return fixedRow;
     }
+
     const addRow = () => {
         let fixedRow = fixRowFields(newRow);
         removeUnnecessaryFields(fixedRow);
         fixedRow = getOwners(fixedRow, role);
 
-        handleCloseForm();
+
         firestoreModule.getUsers().add(fixedRow).then(ref => {
 
             fixedRow = { ...fixedRow, 'fid': ref.id };
@@ -436,6 +433,7 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
             fixedRow = getOwners(fixedRow, role);
 
             rowsCopy.unshift(fixedRow);
+            handleCloseForm();
             updateNums();
             setRows(rowsCopy);
             setMainRows(rowsCopy);
@@ -492,14 +490,15 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
     }
 
     const firstTimeLoading = () => {
-        if (loadingPage) {
-            updateNums();
-            let newRows = fixRowsFields(rowsCopy);
-            setRows(newRows);
-            setMainRows(rowsCopy);
-            setOriginalRows(newRows);
-            setLoadingPage(false);
-        }
+
+        updateNums();
+        let newRows = fixRowsFields(rowsCopy);
+
+        setRows([...newRows]);
+        setMainRows([...rowsCopy]);
+        setOriginalRows([...newRows]);
+        setLoadingPage(false);
+
     }
     if (loadingPage)
         firstTimeLoading();
@@ -507,7 +506,7 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
     const deleteUnnecessaryRow = () => {
         let fids = rowsCopy.map(row => row.fid);
         originalRows = originalRows.filter(row => fids.includes(row.fid));
-        setOriginalRows(originalRows);
+        setOriginalRows([...originalRows]);
 
     };
 
@@ -554,11 +553,11 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
         setLoadingSave(false);
         setGenericSaveButtonColor('default');
         if (arr.length > 0)
-        setMsgState({
-            title: 'שמירת שינויים',
-            body: 'כל השינויים נשמרו בהצלחה',
-            visible: true
-        });
+            setMsgState({
+                title: 'שמירת שינויים',
+                body: 'כל השינויים נשמרו בהצלחה',
+                visible: true
+            });
     };
 
 
@@ -644,9 +643,8 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
                                     required
                                     country="IL"
                                     label="מס' טלפון"
-                                    placeholder="052-555-5555"
+                                    placeholder="נייד"
                                     className={classes.textField}
-                                    placeholder="Enter phone number"
                                     value={newRow['phone']}
                                     onChange={handleChangePhone('phone')}
                                 />

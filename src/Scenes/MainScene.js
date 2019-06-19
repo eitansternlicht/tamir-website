@@ -63,7 +63,7 @@ function MainScene() {
 
     if (loading) {
         getStudents(setStudentsRows, setLoading);
-        getStudents(setOriginalRows, setLoading);
+        //getStudents(setOriginalRows, setLoading);
         //originalRows = (JSON.parse(JSON.stringify(studentsRows)))
         if (role !== 'tutor')
             getTutors(setTutorsRows, uid, setLoadingTutors, role);
@@ -102,11 +102,11 @@ function MainScene() {
 
                     >
 
-                        <Tab value="ReportsTabScene" label="דוחות" />
-                        {role === 'ceo' ? <Tab value="DepartmentManagersTabScene" label="מנהלי מחלקות" /> : <></>}
-                        {role === 'departmentManager' || role === 'ceo' ? <Tab value="CoordinatorsTabScene" label="רכזים" /> : <></>}
-                        {role !== 'tutor' ? <Tab value="TutorsTabScene" label="מדריכים" /> : <></>}
-                        <Tab value="TableTabScene" label="חניכים" />
+                        <Tab key={0} value="ReportsTabScene" label="דוחות" />
+                        {role === 'ceo' ? <Tab key={1} value="DepartmentManagersTabScene" label="מנהלי מחלקות" /> : <></>}
+                        {role === 'departmentManager' || role === 'ceo' ? <Tab key={2} value="CoordinatorsTabScene" label="רכזים" /> : <></>}
+                        {role !== 'tutor' ? <Tab key={3} value="TutorsTabScene" label="מדריכים" /> : <></>}
+                        <Tab key={4} value="TableTabScene" label="חניכים" />
                     </Tabs>
                 </AppBar>
 
@@ -116,7 +116,7 @@ function MainScene() {
                         {(loading || loadingTutors || loadingCoordinators || loadingDepartmentManagers) && <CircularProgress size={40} className={classes.buttonProgress} />}
                     </div> : <></>}
                 {displayedTab === 'TutorsTabScene' ?
-                    <GenericTab  rows={tutorsRows} setMainRows={setTutorsRows} genericSaveButtonColor={tutorsSaveButtonColor} setGenericSaveButtonColor={setTutorsSaveButtonColor} type="tutors" role={role} uid={uid} /> : <></>}
+                    <GenericTab rows={tutorsRows} setMainRows={setTutorsRows} genericSaveButtonColor={tutorsSaveButtonColor} setGenericSaveButtonColor={setTutorsSaveButtonColor} type="tutors" role={role} uid={uid} /> : <></>}
                 {displayedTab === 'CoordinatorsTabScene' ?
                     <GenericTab rows={coordinatorsRows} setMainRows={setCoordinatorsRows} genericSaveButtonColor={coordinatorsSaveButtonColor} setGenericSaveButtonColor={setCoordinatorsSaveButtonColor} type="coordinators" role={role} uid={uid} /> : <></>}
                 {displayedTab === 'DepartmentManagersTabScene' ?

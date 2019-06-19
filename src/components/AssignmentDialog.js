@@ -67,7 +67,7 @@ function AssignmentRow(props) {
                         let label = '';
                         if (option.firstName === 'None') {
                             label = option.firstName
-                            return <FormControlLabel value={option.firstName} key={option.fid} control={<Radio color="primary" />} label={label} labelPlacement="start" />
+                            return <FormControlLabel value={option.firstName} key={0} control={<Radio color="primary" />} label={label} labelPlacement="start" />
                         }
                         else {
                             label = option.neighborhood + ', ' + option.city + ', ' + option.firstName + ' ' + option.lastName;

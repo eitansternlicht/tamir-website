@@ -1,5 +1,4 @@
 import { firestoreModule } from '../Firebase/Firebase';
-import firebase from 'firebase/app'
 
 const getStudents = (setRows, setLoading) => {
   firestoreModule

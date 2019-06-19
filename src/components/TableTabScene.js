@@ -227,30 +227,7 @@ function TableTabScene({
 
   const updateDate = () => {
     return new Date();
-    // return moment(new Date()).format('DD/MM/YYYY HH:MM');
-    // .toLocaleString(); //Current Date
-    // if (day < 10) {
-    //   day = '0' + day;
-    // }
-    // let month = new Date().getMonth() + 1; //Current Month
-    // if (month < 10) {
-    //   month = '0' + month
-    // }
-    // let year = new Date().getFullYear(); //Current Year
-    // let hours = new Date().getHours(); //Current Hours
-    // if (hours < 10) {
-    //   hours = '0' + hours;
-    // }
-    // let min = new Date().getMinutes(); //Current Minutes
-    // if (min < 10) {
-    //   min = '0' + min;
-    // }
-    // let sec = new Date().getSeconds(); //Current Seconds
-    // if (sec < 10) {
-    //   sec = '0' + sec;
-    // }
 
-    // return day + '/' + month + '/' + year + ' ' + hours + ':' + min;
   };
 
   const updateNums = () => {
@@ -333,8 +310,6 @@ function TableTabScene({
     delete student['tutor'];
     delete student['coordinator'];
     delete student['departmentManager'];
-    delete student['lastModified'];
-    //student['lastModified'] = new Date(student['lastModified']);
   };
 
   const getOwners = (fixedStudent, role) => {
@@ -368,7 +343,6 @@ function TableTabScene({
   const addStudent = () => {
     let fixedStudent = fixStudentFields(newStudent);
     removeUnnecessaryFields(fixedStudent);
-    handleCloseForm();
     fixedStudent = getOwners(fixedStudent, role);
 
     firestoreModule
@@ -379,6 +353,7 @@ function TableTabScene({
         fixedStudent = { ...fixedStudent, fid: ref.id };
         fixedStudent = getOwners(fixedStudent, role);
         rowsCopy.unshift(fixedStudent);
+        handleCloseForm();
         updateNums();
         rowsCopy = getMissedDetailsForAllStudents();
         setRows(rowsCopy);
@@ -390,7 +365,7 @@ function TableTabScene({
           visible: true
         });
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log('Error adding student', error);
       });
   };
@@ -631,7 +606,7 @@ function TableTabScene({
                   : נא למלא את כל השדות
                 </DialogContentText>
                 <TextField
-                  required
+                  //required
                   autoFocus
                   margin="dense"
                   id="firstName"
@@ -642,7 +617,7 @@ function TableTabScene({
                   onChange={handleChange('firstName')}
                 />
                 <TextField
-                  required
+                  //required
                   autoFocus
                   margin="dense"
                   id="lastName"
@@ -654,17 +629,17 @@ function TableTabScene({
                 />
 
                 <PhoneInput
-                  required
+                  //required
                   country="IL"
                   label="מס' טלפון"
                   className={classes.textField}
-                  placeholder="Enter phone number"
-                  value={newStudent['phone']}
+                  placeholder="נייד"
+                  //value={newStudent.phone}
                   onChange={handleChangePhone('phone')}
                 />
 
                 <TextField
-                  required
+                  //required
                   autoFocus
                   select
                   id="gender"
@@ -712,8 +687,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-            <></>
-          )}
+              <></>
+            )}
 
           <AssignmentDialog
             title="בחר מדריך"
@@ -741,13 +716,14 @@ function TableTabScene({
                   } else {
                     rowsCopy[i].owners['tutors'] = [];
                   }
-                  // firestoreModule
-                  //   .getSpecificStudent(rowsCopy[i].fid)
-                  //   .update({ owners: rowsCopy[i].owners });
+                  firestoreModule
+                    .getSpecificStudent(rowsCopy[i].fid)
+                    .update({ owners: rowsCopy[i].owners });
                   rowsCopy[i].lastModified = updateDate();
                   rowsCopy = getMissedDetailsForAllStudents();
                   setRows(rowsCopy);
                   setMainRows(rowsCopy);
+                  return [];
                 });
                 if (chosenOption !== 'None')
                   setMsgState({
@@ -760,6 +736,7 @@ function TableTabScene({
                 }
                 setSaveButtonColor('secondary');
               }
+
             }}
           />
 
@@ -777,8 +754,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-            <></>
-          )}
+              <></>
+            )}
 
           <AssignmentDialog
             title="בחר רכז"
@@ -792,8 +769,7 @@ function TableTabScene({
                     let owners = rowsCopy[i].owners;
                     if (owners.hasOwnProperty('coordinators')) {
                       owners = owners['coordinators'];
-                      let uids = owners.map(o => o.uid);
-                      if (!uids.includes(chosenOption))
+                      if (!owners.includes(chosenOption))
                         rowsCopy[i].owners['coordinators'].push(chosenOption);
                     } else {
                       owners = { ...owners, coordinators: [] };
@@ -803,13 +779,14 @@ function TableTabScene({
                   } else {
                     rowsCopy[i].owners['coordinators'] = [];
                   }
-                  // firestoreModule
-                  //   .getSpecificStudent(rowsCopy[i].fid)
-                  //   .update({ owners: rowsCopy[i].owners });
+                  firestoreModule
+                    .getSpecificStudent(rowsCopy[i].fid)
+                    .update({ owners: rowsCopy[i].owners });
                   rowsCopy[i].lastModified = updateDate();
                   rowsCopy = getMissedDetailsForAllStudents();
                   setRows(rowsCopy);
                   setMainRows(rowsCopy);
+                  return [];
                 });
                 if (chosenOption !== 'None')
                   setMsgState({
@@ -823,6 +800,7 @@ function TableTabScene({
                 }
                 setSaveButtonColor('secondary');
               }
+              return;
             }}
           />
 
@@ -840,8 +818,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-            <></>
-          )}
+              <></>
+            )}
 
           <AssignmentDialog
             title="בחר מנהל מחלקה"
@@ -855,8 +833,8 @@ function TableTabScene({
                     let owners = rowsCopy[i].owners;
                     if (owners.hasOwnProperty('departmentManagers')) {
                       owners = owners['departmentManagers'];
-                      let uids = owners.map(o => o.uid);
-                      if (!uids.includes(chosenOption))
+                      
+                      if (!owners.includes(chosenOption))
                         rowsCopy[i].owners['departmentManagers'].push(chosenOption);
                     } else {
                       owners = { ...owners, departmentManagers: [] };
@@ -866,13 +844,14 @@ function TableTabScene({
                   } else {
                     rowsCopy[i].owners['departmentManagers'] = [];
                   }
-                  // firestoreModule
-                  //   .getSpecificStudent(rowsCopy[i].fid)
-                  //   .update({ owners: rowsCopy[i].owners });
+                  firestoreModule
+                    .getSpecificStudent(rowsCopy[i].fid)
+                    .update({ owners: rowsCopy[i].owners });
                   rowsCopy[i].lastModified = updateDate();
                   rowsCopy = getMissedDetailsForAllStudents();
                   setRows(rowsCopy);
                   setMainRows(rowsCopy);
+                  return [];
                 });
                 if (chosenOption !== 'None')
                   setMsgState({
@@ -885,6 +864,7 @@ function TableTabScene({
                 }
                 setSaveButtonColor('secondary');
               }
+              return;
             }}
           />
         </div>
@@ -902,7 +882,6 @@ function TableTabScene({
 
           {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
 
-          {/* <MsgToShow {...msgState} handleClose={() => setMsgState({ ...msgState, visible: false })} /> */}
         </div>
 
         <div className={classes.actions}>
@@ -917,23 +896,18 @@ function TableTabScene({
         </div>
 
         <div className={classes.saveContainer}>
-          {/* <ButtonGroup
-            variant="contained"
-            color="secondary"
-            size="large"
-            aria-label="Large contained secondary button group"
-          > */}
+
           <Button
             variant="contained"
             color={saveButtonColor}
             className={classes.button}
             size="large"
-            onClick={() => saveUpdates()}
+            onClick={() => saveButtonColor === 'secondary' ? saveUpdates() : {}}
             disabled={loadingSave}>
             שמור שינויים
             <SaveIcon />
           </Button>
-          {/* </ButtonGroup> */}
+
 
           {loadingSave && <CircularProgress size={24} className={classes.buttonProgress} />}
         </div>
