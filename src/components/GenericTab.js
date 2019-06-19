@@ -296,25 +296,26 @@ function GenericTab({ rows, setMainRows, type, role, uid }) {
     };
 
     const updateDate = () => {
-        let day = new Date().getDate(); //Current Date
-        if (day < 10) {
-            day = '0' + day;
-        }
-        let month = new Date().getMonth() + 1; //Current Month
-        if (month < 10) {
-            month = '0' + month
-        }
-        let year = new Date().getFullYear(); //Current Year
-        let hours = new Date().getHours(); //Current Hours
-        if (hours < 10) {
-            hours = '0' + hours;
-        }
-        let min = new Date().getMinutes(); //Current Minutes
-        if (min < 10) {
-            min = '0' + min;
-        }
+        // let day = new Date().getDate(); //Current Date
+        // if (day < 10) {
+        //     day = '0' + day;
+        // }
+        // let month = new Date().getMonth() + 1; //Current Month
+        // if (month < 10) {
+        //     month = '0' + month
+        // }
+        // let year = new Date().getFullYear(); //Current Year
+        // let hours = new Date().getHours(); //Current Hours
+        // if (hours < 10) {
+        //     hours = '0' + hours;
+        // }
+        // let min = new Date().getMinutes(); //Current Minutes
+        // if (min < 10) {
+        //     min = '0' + min;
+        // }
 
-        return day + '/' + month + '/' + year + ' ' + hours + ':' + min;
+        // return day + '/' + month + '/' + year + ' ' + hours + ':' + min;
+        return new Date().toLocaleString();
     }
 
     const updateNums = () => {

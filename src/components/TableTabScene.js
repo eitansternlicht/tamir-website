@@ -508,14 +508,17 @@ function TableTabScene({ rows, setMainRows, setSaveButtonColor, saveButtonColor,
 
   const saveUpdates = () => {
     setLoadingSave(true);
-    originalRows = fixStudentsFields(originalRows)
     if (originalRows.length !== rowsCopy.length)
       deleteUnnecessaryStudent();
     let arr = getStudentsToUpdate();
     makeUpdate(arr);
-    setOriginalRows(rowsCopy)
+    rowsCopy = getMissedDetailsForAllStudents()
+    setRows(rowsCopy);
+    setOriginalRows(rowsCopy);
     setLoadingSave(false);
     setSaveButtonColor('default');
+    console.log("or", originalRows, "copy", rowsCopy);
+    filteredRows = getRows(rowsCopy, filters);
   }
 
   return (
