@@ -503,8 +503,8 @@ function TableTabScene({
     rowsCopy = [...newRows];
     newRows = getMissedDetailsForAllStudents();
     setRows(newRows);
-    setMainRows(newRows);
-    setOriginalRows(JSON.parse(JSON.stringify(newRows)));
+    setMainRows([...newRows]);
+    setOriginalRows([...newRows]);
     setLoadingPage(false);
   };
 
@@ -513,7 +513,7 @@ function TableTabScene({
   const deleteUnnecessaryStudent = () => {
     let fids = rowsCopy.map(row => row.fid);
     originalRows = originalRows.filter(row => fids.includes(row.fid));
-    setOriginalRows(originalRows);
+    setOriginalRows([...originalRows]);
   };
 
   const getStudentsToUpdate = () => {
@@ -555,8 +555,8 @@ function TableTabScene({
     newRows = getMissedDetailsForAllStudents();
 
     setRows(newRows);
-    setOriginalRows(JSON.parse(JSON.stringify(newRows)));
-    setMainRows(newRows);
+    setOriginalRows([...newRows]);
+    setMainRows([...newRows]);
     updateNums();
     setLoadingSave(false);
     setSaveButtonColor('default');
