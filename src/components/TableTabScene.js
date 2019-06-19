@@ -135,6 +135,8 @@ const RowRenderer = ({ renderBaseRow, ...props }) => {
 };
 
 function TableTabScene({
+  originalRows,
+  setOriginalRows,
   rows,
   setMainRows,
   setSaveButtonColor,
@@ -155,7 +157,7 @@ function TableTabScene({
   const [openForm, setOpenForm] = useState(false);
   let filteredRows = getRows(rowsCopy, filters);
   const [newStudent, setNewStudent] = useState({});
-  let [originalRows, setOriginalRows] = useState([]);
+ // let [originalRows, setOriginalRows] = useState([]);
   const [loadingSave, setLoadingSave] = useState(false);
 
   const classes = useStyles();
@@ -488,7 +490,7 @@ function TableTabScene({
     newRows = getMissedDetailsForAllStudents();
     setRows(newRows);
     setMainRows(newRows);
-    setOriginalRows(newRows);
+    setOriginalRows(JSON.parse(JSON.stringify(newRows)));
     setLoadingPage(false);
   };
 
@@ -541,11 +543,12 @@ function TableTabScene({
     newRows = getMissedDetailsForAllStudents();
 
     setRows(newRows);
-    setOriginalRows(newRows);
+    setOriginalRows(JSON.parse(JSON.stringify(newRows)));
     setMainRows(newRows);
     updateNums();
     setLoadingSave(false);
     setSaveButtonColor('default');
+    if (arr.length > 0)
     setMsgState({
       title: 'שמירת שינויים',
       body: 'כל השינויים נשמרו בהצלחה',

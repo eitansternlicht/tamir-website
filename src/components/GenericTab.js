@@ -553,6 +553,7 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
         updateNums();
         setLoadingSave(false);
         setGenericSaveButtonColor('default');
+        if (arr.length > 0)
         setMsgState({
             title: 'שמירת שינויים',
             body: 'כל השינויים נשמרו בהצלחה',
