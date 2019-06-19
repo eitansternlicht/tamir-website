@@ -177,8 +177,15 @@ const useStyles = makeStyles(theme => ({
         Size: 50
     },
     button: {
+        borderRadius: 5,
+        fontFamily: 'Arial',
+        fontSize: 18,
+        padding: 4,
         margin: theme.spacing(1),
-        textAlign: 'right',
+        textAlign: 'center',
+        alignContent: 'center',
+        margin: theme.spacing(1),
+        textAlign: 'right'
     },
     formTitle: {
         textAlign: 'center',
@@ -280,6 +287,7 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
     const [newRow, setNewRow] = useState({});
     let [originalRows, setOriginalRows] = useState([]);
     const [loadingSave, setLoadingSave] = useState(false);
+    const [openDeleteCheck, setOpenDeleteCheck] = useState(false);
 
 
     const fixRowFields = (row) => {
@@ -349,6 +357,13 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
         setNewRow({});
     }
 
+    function handleOpenCheckDelete() {
+        if (selectedIndexes.length > 0)
+            setOpenDeleteCheck(true);
+    }
+    function handleCloseCheckDelete() {
+        setOpenDeleteCheck(false);
+    }
 
     const deleteRow = () => {
         if (selectedIndexes.length === 0)
@@ -367,6 +382,7 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
             setRows(rowsCopy);
             setMainRows(rowsCopy);
             setLoading(false);
+            handleCloseCheckDelete();
             if (type === 'tutors')
                 setMsgState({
                     title: "מחיקת מדריכם",
@@ -596,7 +612,7 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
 
             <div className={classes.actionsContainer}>
                 <div className={classes.actions}>
-                    <Button variant="contained" color="primary" className={classes.button} onClick={() => handleClickOpenForm()} >
+                    <Button variant="contained" color="primary" className={classes.button} onClick={() => handleClickOpenForm()} size='large'>
                         {type === 'tutors' && "הוסף מדריך"}
                         {type === 'coordinators' && "הוסף רכז שכונה"}
                         {type === 'departmentManagers' && "הוסף מנהל מחלקה"}
@@ -674,11 +690,11 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
 
                             </DialogContent>
                             <DialogActions>
-                                <Button onClick={handleCloseForm} color="primary">
-                                    Cancel
+                                <Button onClick={handleCloseForm} color="secondary" size='large' >
+                                    בטל
                                 </Button>
-                                <Button onClick={() => addRow()} color="primary">
-                                    Save
+                                <Button onClick={() => addRow()} color="primary" size='large'>
+                                    אשר
                                 </Button>
                             </DialogActions>
                         </form>
@@ -688,9 +704,9 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
 
 
                 <div className={classes.actions}>
-                    <Button variant="contained" color="primary"
+                    <Button variant="contained" color="primary" size='large'
                         className={classes.button}
-                        onClick={() => deleteRow()}
+                        onClick={handleOpenCheckDelete}
                         disabled={loading}
                     >
                         {type === 'tutors' && "מחק מדריכים בחורים"}
@@ -699,6 +715,35 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
                         <DeleteIcon />
                     </Button>
 
+                    <Dialog
+                        disableBackdropClick
+                        disableEscapeKeyDown
+                        open={openDeleteCheck}
+                        onClose={handleCloseCheckDelete}
+
+                    >
+                        <DialogTitle className={classes.formTitle}>
+                            {type === 'tutors' && "מחיקת מדריכים"}
+                            {type === 'coordinators' && "מחיקת רכזים"}
+                            {type === 'departmentManagers' && "מחיקת מנהלים"}
+                        </DialogTitle>
+                        <DialogContent>
+                            <DialogContentText className={classes.formText}>
+                                {type === 'tutors' && "אתה עומד למחוק את כל המדריכים שנבחרו"}
+                                {type === 'coordinators' && "אתה עומד למחוק את כל הרכזים שנבחרו"}
+                                {type === 'departmentManagers' && "אתה עומד למחוק את כל המנהלים שנבחרו"}
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleCloseCheckDelete} color="primary" className={classes.button} size='large'>
+                                בטל
+          </Button>
+                            <Button onClick={deleteRow} color="secondary" className={classes.button} size='large'>
+                                אשר
+          </Button>
+                        </DialogActions>
+                    </Dialog>
+
                     {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
 
                     {/* <MsgToShow {...msgState} handleClose={() => setMsgState({ ...msgState, visible: false })} /> */}
@@ -706,7 +751,7 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
                 </div>
 
                 <div className={classes.actions}>
-                    <Button variant="contained" color="primary"
+                    <Button variant="contained" color="primary" size='large'
                         className={classes.button}
                         onClick={() => exportToExcel()}>
                         ייצא לאקסל
@@ -722,7 +767,7 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
             aria-label="Large contained secondary button group"
           > */}
                     <Button
-                        variant="contained"
+                        variant="contained" size='large'
                         color={genericSaveButtonColor}
                         className={classes.button}
                         size="large"

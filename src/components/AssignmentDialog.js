@@ -79,11 +79,11 @@ function AssignmentRow(props) {
                 </RadioGroup>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleCancel} color="primary">
-                    Cancel
+                <Button onClick={handleCancel} color="secondary" className={classes.button} size='large'>
+                    בטל
           </Button>
-                <Button onClick={handleOk} color="primary">
-                    Ok
+                <Button onClick={handleOk} color="primary" className={classes.button} size='large'>
+                    שבץ
           </Button>
             </DialogActions>
         </Dialog>
@@ -95,6 +95,30 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
         maxWidth: 360,
         backgroundColor: theme.palette.background.paper,
+    },
+    // label: {
+    //     textTransform: 'capitalize',
+    //   },
+    button: {
+        //backgroundImage: 'linear-gradient(45deg, #2193b0   , #6dd5ed )',
+        //backgroundColor: 'linear-gradient(45deg, #bdc3c7   30%, # #2c3e50 80%)',
+        borderRadius: 5,
+        //color: 'white',
+        fontFamily: 'Arial',
+        fontSize: 18,
+        // left: 0,
+        // top: 0,
+        // color: "#000",
+        padding: 4,
+        // textAlign: 'center',
+        // background: "#fff",
+
+        // boxShadow: '0 3 5 2 #ccc',
+        height: 40,
+
+        // alignContent: 'center',
+        width: 60,
+        // boxShadow: '0 3px 5px 2px '
     },
     paper: {
         width: '80%',

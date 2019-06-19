@@ -11,7 +11,8 @@ import {
   DialogContentText,
   CircularProgress,
   MenuItem,
-  TextField
+  TextField,
+  Slide
 } from '@material-ui/core/';
 //import ButtonGroup from '@material-ui/core/ButtonGroup';
 import { MsgToShow, AssignmentDialog } from '.';
@@ -55,6 +56,14 @@ const useStyles = makeStyles(theme => ({
     marginTop: 20
   },
   button: {
+    borderRadius: 5,
+    //color: 'white',
+    fontFamily: 'Arial',
+    fontSize: 18,
+    // left: 0,
+    // top: 0,
+    // color: "#000",
+    padding: 4,
     margin: theme.spacing(1),
     textAlign: 'center',
     alignContent: 'center'
@@ -166,6 +175,7 @@ function TableTabScene({
   const [newStudent, setNewStudent] = useState({});
   // let [originalRows, setOriginalRows] = useState([]);
   const [loadingSave, setLoadingSave] = useState(false);
+  const [openDeleteCheck, setOpenDeleteCheck] = useState(false);
 
   const classes = useStyles();
   const genders = [
@@ -261,6 +271,15 @@ function TableTabScene({
     setNewStudent({});
   }
 
+  function handleOpenCheckDelete() {
+    if (selectedIndexes.length > 0)
+      setOpenDeleteCheck(true);
+  }
+  function handleCloseCheckDelete() {
+    setOpenDeleteCheck(false);
+  }
+
+
   const deleteRow = () => {
     if (selectedIndexes.length === 0) return;
     setLoading(true);
@@ -293,6 +312,7 @@ function TableTabScene({
     setRows(rowsCopy);
     setMainRows(rowsCopy);
     setLoading(false);
+    handleCloseCheckDelete();
     setSaveButtonColor('secondary');
     setMsgState({
       title: 'מחיקת חניכים',
@@ -579,6 +599,7 @@ function TableTabScene({
       <div className={classes.actionsContainer}>
         <div className={classes.actions}>
           <Button
+            size='large'
             variant="contained"
             color="primary"
             className={classes.button}
@@ -661,11 +682,11 @@ function TableTabScene({
                 </TextField>
               </DialogContent>
               <DialogActions>
-                <Button onClick={handleCloseForm} color="primary">
-                  Cancel
+                <Button onClick={handleCloseForm} color="secondary" className={classes.button} size='large'>
+                  בטל
                 </Button>
-                <Button onClick={() => addStudent()} color="primary">
-                  Save
+                <Button onClick={() => addStudent()} color="primary" className={classes.button} size='large'>
+                  הוסף
                 </Button>
               </DialogActions>
             </form>
@@ -675,6 +696,7 @@ function TableTabScene({
         <div className={classes.actions}>
           {role !== 'tutor' ? (
             <Button
+              size='large'
               variant="contained"
               color="primary"
               className={classes.button}
@@ -742,6 +764,7 @@ function TableTabScene({
 
           {role === 'departmentManager' || role === 'ceo' ? (
             <Button
+              size='large'
               variant="contained"
               color="primary"
               className={classes.button}
@@ -806,6 +829,7 @@ function TableTabScene({
 
           {role === 'ceo' ? (
             <Button
+              size='large'
               variant="contained"
               color="primary"
               className={classes.button}
@@ -833,7 +857,7 @@ function TableTabScene({
                     let owners = rowsCopy[i].owners;
                     if (owners.hasOwnProperty('departmentManagers')) {
                       owners = owners['departmentManagers'];
-                      
+
                       if (!owners.includes(chosenOption))
                         rowsCopy[i].owners['departmentManagers'].push(chosenOption);
                     } else {
@@ -871,14 +895,37 @@ function TableTabScene({
 
         <div className={classes.actions}>
           <Button
+            size='large'
             variant="contained"
             color="primary"
             className={classes.button}
-            onClick={() => deleteRow()}
+            onClick={handleOpenCheckDelete}
             disabled={loading}>
             מחק חניכים בחורים
             <DeleteIcon />
           </Button>
+          <Dialog
+            disableBackdropClick
+            disableEscapeKeyDown
+            open={openDeleteCheck}
+            onClose={handleCloseCheckDelete}
+
+          >
+            <DialogTitle className={classes.formTitle}>{"מחיקת חניכים"}</DialogTitle>
+            <DialogContent>
+              <DialogContentText className={classes.formText}>
+                אתה עומד למחוק את כל החניכים שנבחרו
+          </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseCheckDelete} color="primary" className={classes.button} size='large'>
+                בטל
+          </Button>
+              <Button onClick={deleteRow} color="secondary" className={classes.button} size='large'>
+                אשר
+          </Button>
+            </DialogActions>
+          </Dialog>
 
           {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
 
@@ -886,6 +933,7 @@ function TableTabScene({
 
         <div className={classes.actions}>
           <Button
+            size='large'
             variant="contained"
             color="primary"
             className={classes.button}
@@ -898,6 +946,7 @@ function TableTabScene({
         <div className={classes.saveContainer}>
 
           <Button
+            size='large'
             variant="contained"
             color={saveButtonColor}
             className={classes.button}
