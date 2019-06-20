@@ -57,15 +57,11 @@ const genderOptions = [
 ]
 const genderEditor = <DropDownEditor options={genderOptions} />;
 
-// const headerRender = (text) => {
-//     return <div style={{ textAlign: 'center' }}>{text}</div>
-// }
 const columns = [
     {
         key: "id",
         name: "No.",
         width: 40,
-        //headerRenderer: headerRender('No.'),
         filterRenderer: NumericFilter,
         editable: false
     },
@@ -73,67 +69,57 @@ const columns = [
         key: "lastName",
         name: "שם משפחה",
         width: 100,
-        //headerRenderer: headerRender('שם משפחה'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "firstName",
         name: "שם פרטי",
-        //headerRenderer: headerRender('שם פרטי'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "phone",
         name: "נייד",
         width: 130,
-        //headerRenderer: headerRender('נייד'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "gender",
         name: "מין",
         editor: genderEditor,
-        // headerRenderer: headerRender('מין'),
         filterRenderer: AutoCompleteFilter
     },
 
     {
         key: "address",
         name: "כתובת",
-        //headerRenderer: headerRender('כתובת'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "neighborhood",
         name: "שכונה",
-        //headerRenderer: headerRender('שכונה'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "govID",
         name: "תעודת זהות",
         width: 100,
-        //headerRenderer: headerRender('תעודת זהות'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "city",
         name: "עיר",
-        //headerRenderer: headerRender('עיר'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "email",
         name: "מייל",
         width: 110,
-        //headerRenderer: headerRender('מייל'),
         filterRenderer: AutoCompleteFilter
     },
 
     {
         key: "lastModified",
         name: "שינוי אחרון",
-        //headerRenderer: headerRender('שינוי אחרון'),
         filterRenderer: AutoCompleteFilter,
         editable: false,
         width: 160
