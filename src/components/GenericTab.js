@@ -273,7 +273,7 @@ const RowRenderer = ({ row, renderBaseRow, ...props }) => {
     );
 };
 
-function GenericTab({originalRows, setOriginalRows, rows, setMainRows, genericSaveButtonColor, setGenericSaveButtonColor, type, role, uid }) {
+function GenericTab({ originalRows, setOriginalRows, rows, setMainRows, genericSaveButtonColor, setGenericSaveButtonColor, type, role, uid }) {
 
 
     const [selectedIndexes, setSelectedIndexes] = useState([]);
@@ -289,6 +289,14 @@ function GenericTab({originalRows, setOriginalRows, rows, setMainRows, genericSa
     const [loadingSave, setLoadingSave] = useState(false);
     const [openDeleteCheck, setOpenDeleteCheck] = useState(false);
 
+
+
+    const removeEmptyFields = obj => entriesToObj(Object.entries(obj).filter(([, v]) => v));
+    const entriesToObj = entries =>
+        entries.reduce((prev, curr) => {
+            const [key, val] = curr;
+            return { ...prev, [key]: val };
+        }, {});
 
     const fixRowFields = (row) => {
         columns.forEach(({ key }) => {
@@ -440,8 +448,7 @@ function GenericTab({originalRows, setOriginalRows, rows, setMainRows, genericSa
         let fixedRow = fixRowFields(newRow);
         removeUnnecessaryFields(fixedRow);
         fixedRow = getOwners(fixedRow, role);
-
-
+        fixedRows = removeEmptyFields(fixedRow);
         firestoreModule.getUsers().add(fixedRow).then(ref => {
 
             fixedRow = { ...fixedRow, 'fid': ref.id };
@@ -550,6 +557,7 @@ function GenericTab({originalRows, setOriginalRows, rows, setMainRows, genericSa
         arr.forEach(row => {
             let temp = { ...row };
             removeUnnecessaryFields(temp);
+            temp = removeEmptyFields(temp);
             firestoreModule.getSpecificUser(row.fid).update(temp);
         });
     };
@@ -567,11 +575,11 @@ function GenericTab({originalRows, setOriginalRows, rows, setMainRows, genericSa
         updateNums();
         setLoadingSave(false);
         setGenericSaveButtonColor('default');
-            setMsgState({
-                title: 'שמירת שינויים',
-                body: 'כל השינויים נשמרו בהצלחה',
-                visible: true
-            });
+        setMsgState({
+            title: 'שמירת שינויים',
+            body: 'כל השינויים נשמרו בהצלחה',
+            visible: true
+        });
     };
 
 

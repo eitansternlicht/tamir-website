@@ -189,6 +189,13 @@ function TableTabScene({
     }
   ];
 
+  const removeEmptyFields = obj => entriesToObj(Object.entries(obj).filter(([, v]) => v));
+  const entriesToObj = entries =>
+    entries.reduce((prev, curr) => {
+      const [key, val] = curr;
+      return { ...prev, [key]: val };
+    }, {});
+
   const fixStudentFields = student => {
     columns.forEach(({ key }) => {
       if (student.hasOwnProperty(key)) {
@@ -364,7 +371,7 @@ function TableTabScene({
     let fixedStudent = fixStudentFields(newStudent);
     removeUnnecessaryFields(fixedStudent);
     fixedStudent = getOwners(fixedStudent, role);
-
+    fixedStudent = removeEmptyFields(fixedStudent);
     firestoreModule
       .getStudents()
       .add(fixedStudent)
@@ -535,6 +542,7 @@ function TableTabScene({
     arr.forEach(student => {
       let temp = { ...student };
       removeUnnecessaryFields(temp);
+      temp = removeEmptyFields(temp);
       firestoreModule.getSpecificStudent(student.fid).update(temp);
     });
   };
