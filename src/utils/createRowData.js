@@ -1,12 +1,31 @@
 import { firestoreModule } from '../Firebase/Firebase';
 
-const getStudents = (setRows, setLoading) => {
+const getStudents = (setRows, setLoading, uid, role) => {
+  let str = 'owners.' + role + 's';
+  if(role === 'ceo')
   firestoreModule
-    .getStudents()
-    .onSnapshot(querySnapshot => {
-      setRows(querySnapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id })))
-      setLoading(false);
-    });
+      .getStudents()
+      .onSnapshot(querySnapshot => {
+        setRows(querySnapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id })))
+        setLoading(false);
+      });
+  else if (role === 'tutor')
+    firestoreModule
+      .getStudents()
+      .where(str, 'array-contains', { uid })
+      .onSnapshot(querySnapshot => {
+        setRows(querySnapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id })))
+        setLoading(false);
+      });
+      else{
+        firestoreModule
+      .getStudents()
+      .where(str, 'array-contains', uid)
+      .onSnapshot(querySnapshot => {
+        setRows(querySnapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id })))
+        setLoading(false);
+      });
+      }
 };
 
 const getTutors = (setRows, uid, setLoading, role) => {
@@ -14,29 +33,29 @@ const getTutors = (setRows, uid, setLoading, role) => {
   // uid = !firebase.auth().currentUser.uid
   //   ? tempUIDForTesting
   //   : !firebase.auth().currentUser.uid;
-let str = 'owners.' + role + 's';
-  if (role === 'ceo'){
+  let str = 'owners.' + role + 's';
+  if (role === 'ceo') {
     firestoreModule
-    .getUsers()
-    .onSnapshot(snapshot => {
-      let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
-      answer = answer.filter(row => row.role === 'tutor');
-      setRows(answer);
-      setLoading(false);
-    });
+      .getUsers()
+      .onSnapshot(snapshot => {
+        let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
+        answer = answer.filter(row => row.role === 'tutor');
+        setRows(answer);
+        setLoading(false);
+      });
   }
-  else{
+  else {
     firestoreModule
-    .getUsers()
-    .where(str, 'array-contains', uid)
-    .onSnapshot(snapshot => {
-      let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
-      answer = answer.filter(row => row.role === 'tutor');
-      setRows(answer);
-      setLoading(false);
-    
-      //console.log('results', snapshot.docs.map(doc => doc.data()))
-    });
+      .getUsers()
+      .where(str, 'array-contains', uid)
+      .onSnapshot(snapshot => {
+        let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
+        answer = answer.filter(row => row.role === 'tutor');
+        setRows(answer);
+        setLoading(false);
+
+        //console.log('results', snapshot.docs.map(doc => doc.data()))
+      });
   }
 }
 
@@ -73,7 +92,7 @@ const getDepartmentManagers = (setRows, setLoading) => {
   firestoreModule
     .getUsers()
     .onSnapshot(snapshot => {
-      
+
       let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
       answer = answer.filter(row => row.role === 'departmentManager');
       setRows(answer);

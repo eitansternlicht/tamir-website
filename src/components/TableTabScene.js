@@ -195,7 +195,7 @@ function TableTabScene({
         if (key === 'lastModified' && student[key] !== undefined && student[key] !== null) {
           student[key] = student[key] instanceof Date ? student[key] : student[key].toDate();
         }
-        if (student[key] === null || student[key] === undefined || key === 'dob') {
+        if (student[key] === null || student[key] === undefined || student[key] === 'dob') {
           student[key] = '';
         }
       } else {
@@ -499,7 +499,7 @@ function TableTabScene({
     newRows = getMissedDetailsForAllStudents();
     setRows(newRows);
     setMainRows([...newRows]);
-    setOriginalRows([...newRows]);
+    // setOriginalRows([...newRows]);
     setLoadingPage(false);
   };
 
@@ -555,12 +555,11 @@ function TableTabScene({
     updateNums();
     setLoadingSave(false);
     setSaveButtonColor('default');
-    if (arr.length > 0)
-      setMsgState({
-        title: 'שמירת שינויים',
-        body: 'כל השינויים נשמרו בהצלחה',
-        visible: true
-      });
+    setMsgState({
+      title: 'שמירת שינויים',
+      body: 'כל השינויים נשמרו בהצלחה',
+      visible: true
+    });
   };
 
   console.log('co', rowsCopy, 'or', originalRows);

@@ -273,7 +273,7 @@ const RowRenderer = ({ row, renderBaseRow, ...props }) => {
     );
 };
 
-function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveButtonColor, type, role, uid }) {
+function GenericTab({originalRows, setOriginalRows, rows, setMainRows, genericSaveButtonColor, setGenericSaveButtonColor, type, role, uid }) {
 
 
     const [selectedIndexes, setSelectedIndexes] = useState([]);
@@ -285,7 +285,7 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
     const [openForm, setOpenForm] = useState(false);
     let filteredRows = getRows(rowsCopy, filters);
     const [newRow, setNewRow] = useState({});
-    let [originalRows, setOriginalRows] = useState([]);
+    // let [originalRows, setOriginalRows] = useState([]);
     const [loadingSave, setLoadingSave] = useState(false);
     const [openDeleteCheck, setOpenDeleteCheck] = useState(false);
 
@@ -509,10 +509,9 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
 
         updateNums();
         let newRows = fixRowsFields(rowsCopy);
-
         setRows([...newRows]);
         setMainRows([...rowsCopy]);
-        setOriginalRows([...newRows]);
+        //setOriginalRows([...newRows]);
         setLoadingPage(false);
 
     }
@@ -568,7 +567,6 @@ function GenericTab({ rows, setMainRows, genericSaveButtonColor, setGenericSaveB
         updateNums();
         setLoadingSave(false);
         setGenericSaveButtonColor('default');
-        if (arr.length > 0)
             setMsgState({
                 title: 'שמירת שינויים',
                 body: 'כל השינויים נשמרו בהצלחה',

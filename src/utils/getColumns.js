@@ -1,10 +1,156 @@
-import React from "react";
+// import 'date-fns';
+import React from 'react';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+// import DateFnsUtils from '@date-io/date-fns';
+import {
+    MuiPickersUtilsProvider,
+    KeyboardTimePicker,
+    KeyboardDatePicker,
+} from '@material-ui/pickers';
 import { Filters, Editors } from "react-data-grid-addons";
+import { TextField } from '@material-ui/core';
+import ReactDOM from "react-dom";
+import 'react-dates/initialize';
+
+import { SingleDatePicker } from 'react-dates';
+
+
+
+const useStyles = makeStyles({
+    grid: {
+        width: '60%',
+    },
+});
+
+//   export default function MaterialUIPickers() {
+//     // The first commit of Material-UI
+//     const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
+
+//     const classes = useStyles();
+
+//     function handleDateChange(date) {
+//       setSelectedDate(date);
+//     }
+
+//     return (
+//       <MuiPickersUtilsProvider utils={DateFnsUtils}>
+//         <Grid container className={classes.grid} justify="space-around">
+//           <KeyboardDatePicker
+//             margin="normal"
+//             id="mui-pickers-date"
+//             label="Date picker"
+//             value={selectedDate}
+//             onChange={handleDateChange}
+//             KeyboardButtonProps={{
+//               'aria-label': 'change date',
+//             }}
+//           />
+//           <KeyboardTimePicker
+//             margin="normal"
+//             id="mui-pickers-time"
+//             label="Time picker"
+//             value={selectedDate}
+//             onChange={handleDateChange}
+//             KeyboardButtonProps={{
+//               'aria-label': 'change time',
+//             }}
+//           />
+//         </Grid>
+//       </MuiPickersUtilsProvider>
+//     );
+//   }
+
+class BirthDayEditor extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            // focused: false,
+            dob: props.value
+        };
+        // this.handleOnChange = this.handleOnChange.bind(this);
+        // this.onFocusChange = this.onFocusChange.bind(this);
+    }
+
+
+    // const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
+
+    // const classes = useStyles();
+
+    // handleDateChange(date) {
+    //     //   setSelectedDate(date);
+    //     console.log("date", date);
+    //     this.setState({ dob: date }, () => this.props.onCommit());
+    // }
+
+    getValue() {
+        return { dob: this.state.dob };
+    }
+
+    getInputNode() {
+        return ReactDOM.findDOMNode(this).getElementsByTagName("input")[0];
+    }
+
+    handleChangeComplete = event => {
+        // console.log("dob", dob.target.value);
+        this.setState({ dob: event.target.value }, () => this.props.onCommit());
+    };
+
+    render() {
+        return (
+            <form  >
+                <TextField
+                    id="date"
+                    label="Birthday"
+                    style={{
+                        width: 200,
+                    }}
+                    type="date"
+                    defaultValue="30-06-2019"
+                    value={this.state.dob}
+                    onChange={this.handleChangeComplete}
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                />
+            </form>
+        );
+    }
+
+    // utils={DateFnsUtils}
+
+    // render() {
+    //     return (
+    //         <div>
+    //             <Grid container
+    //                 style={{
+    //                     width: '60%',
+    //                 }}
+    //             // justify="space-around">
+    //             >
+    //                 <SingleDatePicker
+    //                     date={this.state.dob} // momentPropTypes.momentObj or null
+    //                     onDateChange={date => this.setState({ dob: date })} // PropTypes.func.isRequired
+    //                     focused={this.state.focused} // PropTypes.bool
+    //                     onFocusChange={({ focused }) => this.setState({ focused })} // PropTypes.func.isRequired
+    //                 //id="your_unique_id" // PropTypes.string.isRequired,
+    //                 />
+    //             </Grid>
+    //         </div>
+    //     );
+
+    // }
+
+}
+
+
 
 
 const formatter = ({ value }) => {
     return <div style={{ textAlign: 'right' }}>{value}</div>;
 }
+
 
 const defaultColumnProperties = {
     filterable: true,
@@ -16,7 +162,9 @@ const defaultColumnProperties = {
 
 };
 
+
 const { DropDownEditor } = Editors;
+
 const {
     NumericFilter,
     AutoCompleteFilter,
@@ -28,7 +176,6 @@ const TShirtSizes = [
     { id: "medium", value: "M" },
     { id: "large", value: "L" },
     { id: "xLarge", value: "XL" }
-
 ];
 
 
@@ -37,6 +184,19 @@ const genderOptions = [
     { id: 'female', value: "נ" },
 
 ]
+
+// const BirthDayEditor = <TextField
+//     id="date"
+//     label="Birthday"
+//     style={{
+//         width: 200,
+//     }}
+//     type="date"
+//     defaultValue="2019-06-30"
+//     InputLabelProps={{
+//         shrink: true,
+//     }}
+// />;
 
 const TShirtSizesEditor = <DropDownEditor options={TShirtSizes} />;
 const genderEditor = <DropDownEditor options={genderOptions} />;
@@ -136,6 +296,7 @@ const columns = [
     {
         key: "dob",
         name: "תאריך לידה",
+        editor: BirthDayEditor,
         width: 100,
         // headerRenderer: // headerRender('תאריך לידה'),
         filterRenderer: AutoCompleteFilter

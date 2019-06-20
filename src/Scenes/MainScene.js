@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TableTabScene } from '../components';
-import { makeStyles, CircularProgress, Paper, Typography, Tab, Tabs, AppBar } from '@material-ui/core/';
+import { makeStyles, Paper, Typography, Tab, Tabs, AppBar } from '@material-ui/core/';
 import green from '@material-ui/core/colors/green';
 import { GenericTab } from '../components/GenericTab';
 import { getStudents, getTutors, getCoordinators, getDepartmentManagers } from '../utils/createRowData';
@@ -58,19 +58,27 @@ function MainScene() {
     const [tutorsRows, setTutorsRows] = useState([]);
     const [departmentManagersRows, setDepartmentManagersRows] = useState([]);
     const [displayedTab, setDisplayedTab] = useState('TableTabScene');
-    //const [originalStudentsRows, setOriginalStudentsRows] = useState([]]);
-    let [originalRows, setOriginalRows] = useState([]);
+    const [originalRows, setOriginalRows] = useState([]);
+    const [tutorsOriginalRows, setTutorsOriginalRows] = useState([]);
+    const [coordinatorsOriginalRows, setCoordinatorsOriginalRows] = useState([]);
+    const [departmentManagersOriginalRows, setDepartmentManagersOriginalRows] = useState([]);
 
     if (loading) {
-        getStudents(setStudentsRows, setLoading);
-        //getStudents(setOriginalRows, setLoading);
-        //originalRows = (JSON.parse(JSON.stringify(studentsRows)))
-        if (role !== 'tutor')
+        getStudents(setStudentsRows, setLoading, uid, role);
+        getStudents(setOriginalRows, setLoading, uid, role);
+        if (role !== 'tutor') {
             getTutors(setTutorsRows, uid, setLoadingTutors, role);
-        if (role === 'departmentManager' || role === 'ceo')
+            getTutors(setTutorsOriginalRows, uid, setLoadingTutors, role);
+        }
+        if (role === 'departmentManager' || role === 'ceo') {
             getCoordinators(setCoordinatorsRows, uid, setLoadingCoordinators, role);
-        if (role === 'ceo')
+            getCoordinators(setCoordinatorsOriginalRows, uid, setLoadingCoordinators, role);
+        }
+        if (role === 'ceo') {
             getDepartmentManagers(setDepartmentManagersRows, setLoadingDepartmentManagers);
+            getDepartmentManagers(setDepartmentManagersOriginalRows, setLoadingDepartmentManagers);
+        }
+
     }
 
     function handleChange(event, newValue) {
@@ -103,24 +111,39 @@ function MainScene() {
                     >
 
                         <Tab key={0} value="ReportsTabScene" label="דוחות" />
-                        {role === 'ceo' ? <Tab key={1} value="DepartmentManagersTabScene" label="מנהלי מחלקות" /> : <></>}
-                        {role === 'departmentManager' || role === 'ceo' ? <Tab key={2} value="CoordinatorsTabScene" label="רכזים" /> : <></>}
-                        {role !== 'tutor' ? <Tab key={3} value="TutorsTabScene" label="מדריכים" /> : <></>}
+                        {role === 'ceo' ? <Tab key={1} value="DepartmentManagersTabScene" label="מנהלי מחלקות" /> : null}
+                        {role === 'departmentManager' || role === 'ceo' ? <Tab key={2} value="CoordinatorsTabScene" label="רכזים" /> : null}
+                        {role !== 'tutor' ? <Tab key={3} value="TutorsTabScene" label="מדריכים" /> : null}
                         <Tab key={4} value="TableTabScene" label="חניכים" />
                     </Tabs>
                 </AppBar>
 
                 {displayedTab === 'TableTabScene' ?
                     <div className={classes.table}>
-                        {loading || loadingTutors || loadingCoordinators || loadingDepartmentManagers ? <></> : <TableTabScene originalRows={originalRows} setOriginalRows={setOriginalRows} rows={studentsRows} setMainRows={setStudentsRows} saveButtonColor={saveButtonColor} setSaveButtonColor={setSaveButtonColor} role={role} uid={uid} tutors={tutorsRows} coordinators={coordinatorsRows} departmentManagers={departmentManagersRows} />}
-                        {(loading || loadingTutors || loadingCoordinators || loadingDepartmentManagers) && <CircularProgress size={40} className={classes.buttonProgress} />}
-                    </div> : <></>}
+                        {role === 'tutor' && !loading ? <TableTabScene originalRows={originalRows} setOriginalRows={setOriginalRows} rows={studentsRows} setMainRows={setStudentsRows} saveButtonColor={saveButtonColor} setSaveButtonColor={setSaveButtonColor} role={role} uid={uid} tutors={tutorsRows} coordinators={coordinatorsRows} departmentManagers={departmentManagersRows} /> : null}
+                    </div> : null}
+
+                {displayedTab === 'TableTabScene' ?
+                    <div className={classes.table}>
+                        {role === 'coordinator' && !loading && !loadingTutors ? <TableTabScene originalRows={originalRows} setOriginalRows={setOriginalRows} rows={studentsRows} setMainRows={setStudentsRows} saveButtonColor={saveButtonColor} setSaveButtonColor={setSaveButtonColor} role={role} uid={uid} tutors={tutorsRows} coordinators={coordinatorsRows} departmentManagers={departmentManagersRows} /> : null}
+                    </div> : null}
+
+                {displayedTab === 'TableTabScene' ?
+                    <div className={classes.table}>
+                        {role === 'departmentManager' && !loading && !loadingTutors && !loadingCoordinators ? <TableTabScene originalRows={originalRows} setOriginalRows={setOriginalRows} rows={studentsRows} setMainRows={setStudentsRows} saveButtonColor={saveButtonColor} setSaveButtonColor={setSaveButtonColor} role={role} uid={uid} tutors={tutorsRows} coordinators={coordinatorsRows} departmentManagers={departmentManagersRows} /> : null}
+                    </div> : null}
+
+                {displayedTab === 'TableTabScene' ?
+                    <div className={classes.table}>
+                        {role === 'ceo' && !loading && !loadingTutors && !loadingCoordinators && !loadingDepartmentManagers ? <TableTabScene originalRows={originalRows} setOriginalRows={setOriginalRows} rows={studentsRows} setMainRows={setStudentsRows} saveButtonColor={saveButtonColor} setSaveButtonColor={setSaveButtonColor} role={role} uid={uid} tutors={tutorsRows} coordinators={coordinatorsRows} departmentManagers={departmentManagersRows} /> : null}
+                    </div> : null}
+
                 {displayedTab === 'TutorsTabScene' ?
-                    <GenericTab rows={tutorsRows} setMainRows={setTutorsRows} genericSaveButtonColor={tutorsSaveButtonColor} setGenericSaveButtonColor={setTutorsSaveButtonColor} type="tutors" role={role} uid={uid} /> : <></>}
+                    <div className={classes.table}> <GenericTab originalRows={tutorsOriginalRows} setOriginalRows={setTutorsOriginalRows} rows={tutorsRows} setMainRows={setTutorsRows} genericSaveButtonColor={tutorsSaveButtonColor} setGenericSaveButtonColor={setTutorsSaveButtonColor} type="tutors" role={role} uid={uid} /> </div> : null}
                 {displayedTab === 'CoordinatorsTabScene' ?
-                    <GenericTab rows={coordinatorsRows} setMainRows={setCoordinatorsRows} genericSaveButtonColor={coordinatorsSaveButtonColor} setGenericSaveButtonColor={setCoordinatorsSaveButtonColor} type="coordinators" role={role} uid={uid} /> : <></>}
+                    <div className={classes.table}>  <GenericTab originalRows={coordinatorsOriginalRows} setOriginalRows={setCoordinatorsOriginalRows} rows={coordinatorsRows} setMainRows={setCoordinatorsRows} genericSaveButtonColor={coordinatorsSaveButtonColor} setGenericSaveButtonColor={setCoordinatorsSaveButtonColor} type="coordinators" role={role} uid={uid} /> </div> : null}
                 {displayedTab === 'DepartmentManagersTabScene' ?
-                    <GenericTab rows={departmentManagersRows} setMainRows={setDepartmentManagersRows} genericSaveButtonColor={departmentManagersSaveButtonColor} setGenericSaveButtonColor={setDepartmentManagersSaveButtonColor} type="departmentManagers" role={role} uid={uid} /> : <></>}
+                    <div className={classes.table}>  <GenericTab originalRows={departmentManagersOriginalRows} setOriginalRows={setDepartmentManagersOriginalRows} rows={departmentManagersRows} setMainRows={setDepartmentManagersRows} genericSaveButtonColor={departmentManagersSaveButtonColor} setGenericSaveButtonColor={setDepartmentManagersSaveButtonColor} type="departmentManagers" role={role} uid={uid} /> </div> : null}
             </div>
         </div>
     );
