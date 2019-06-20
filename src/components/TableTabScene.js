@@ -87,14 +87,6 @@ const useStyles = makeStyles(theme => ({
   buttonProgress: {
     color: green[500],
     position: 'absolute',
-    top: '15%',
-    left: '50%',
-    marginTop: -12,
-    marginLeft: -12
-  },
-  buttonAddProgress: {
-    color: green[500],
-    position: 'absolute',
     top: '50%',
     left: '50%',
     marginTop: -12,
@@ -624,7 +616,7 @@ function TableTabScene({
             onClick={() => handleClickOpenForm()}>
             הוסף חניך
             <AddIcon />
-            {loadingAdd && <CircularProgress size={24} className={classes.buttonAddProgress} />}
+            {loadingAdd && <CircularProgress size={24} className={classes.buttonProgress} />}
           </Button>
 
           <MsgToShow
@@ -924,7 +916,7 @@ function TableTabScene({
             onClick={handleOpenCheckDelete}
             disabled={loading}>
             מחק חניכים בחורים
-            {loading && <CircularProgress size={24} className={classes.buttonAddProgress} />}
+            {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
             <DeleteIcon />
           </Button>
           <Dialog
@@ -978,7 +970,7 @@ function TableTabScene({
             disabled={loadingSave}>
             שמור שינויים
             <SaveIcon />
-            {loadingSave && <CircularProgress size={24} className={classes.buttonAddProgress} />}
+            {loadingSave && <CircularProgress size={24} className={classes.buttonProgress} />}
           </Button>
 
 
