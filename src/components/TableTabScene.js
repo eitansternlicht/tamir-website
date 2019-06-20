@@ -92,6 +92,14 @@ const useStyles = makeStyles(theme => ({
     marginTop: -12,
     marginLeft: -12
   },
+  buttonAddProgress: {
+    color: green[500],
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12
+  },
   menu: {
     width: 150
   },
@@ -173,7 +181,7 @@ function TableTabScene({
   const [openForm, setOpenForm] = useState(false);
   let filteredRows = getRows(rowsCopy, filters);
   const [newStudent, setNewStudent] = useState({});
-  // let [originalRows, setOriginalRows] = useState([]);
+  const [loadingAdd, setLoadingAdd] = useState(false);
   const [loadingSave, setLoadingSave] = useState(false);
   const [openDeleteCheck, setOpenDeleteCheck] = useState(false);
 
@@ -368,6 +376,8 @@ function TableTabScene({
   };
 
   const addStudent = () => {
+    setLoadingAdd(true);
+    handleCloseForm();
     let fixedStudent = fixStudentFields(newStudent);
     removeUnnecessaryFields(fixedStudent);
     fixedStudent = getOwners(fixedStudent, role);
@@ -380,12 +390,12 @@ function TableTabScene({
         fixedStudent = { ...fixedStudent, fid: ref.id };
         fixedStudent = getOwners(fixedStudent, role);
         rowsCopy.unshift(fixedStudent);
-        handleCloseForm();
         updateNums();
         rowsCopy = getMissedDetailsForAllStudents();
         setRows(rowsCopy);
         setMainRows(rowsCopy);
         setSaveButtonColor('secondary');
+        setLoadingAdd(false);
         setMsgState({
           title: 'הוספת חניך',
           body: '!החניך הוסף בהצלחה',
@@ -606,6 +616,7 @@ function TableTabScene({
       <div className={classes.actionsContainer}>
         <div className={classes.actions}>
           <Button
+            disabled={loadingAdd}
             size='large'
             variant="contained"
             color="primary"
@@ -613,7 +624,9 @@ function TableTabScene({
             onClick={() => handleClickOpenForm()}>
             הוסף חניך
             <AddIcon />
+            {loadingAdd && <CircularProgress size={24} className={classes.buttonAddProgress} />}
           </Button>
+
           <MsgToShow
             {...msgState}
             handleClose={() => setMsgState({ ...msgState, visible: false })}
@@ -698,6 +711,8 @@ function TableTabScene({
               </DialogActions>
             </form>
           </Dialog>
+
+
         </div>
 
         <div className={classes.actions}>
@@ -909,6 +924,7 @@ function TableTabScene({
             onClick={handleOpenCheckDelete}
             disabled={loading}>
             מחק חניכים בחורים
+            {loading && <CircularProgress size={24} className={classes.buttonAddProgress} />}
             <DeleteIcon />
           </Button>
           <Dialog
@@ -934,7 +950,7 @@ function TableTabScene({
             </DialogActions>
           </Dialog>
 
-          {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
+
 
         </div>
 
@@ -962,10 +978,11 @@ function TableTabScene({
             disabled={loadingSave}>
             שמור שינויים
             <SaveIcon />
+            {loadingSave && <CircularProgress size={24} className={classes.buttonAddProgress} />}
           </Button>
 
 
-          {loadingSave && <CircularProgress size={24} className={classes.buttonProgress} />}
+
         </div>
       </div>
     </div>

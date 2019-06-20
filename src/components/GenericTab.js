@@ -208,7 +208,7 @@ const useStyles = makeStyles(theme => ({
     buttonProgress: {
         color: green[500],
         position: 'absolute',
-        top: '15%',
+        top: '50%',
         left: '50%',
         marginTop: -12,
         marginLeft: -12,
@@ -285,8 +285,8 @@ function GenericTab({ originalRows, setOriginalRows, rows, setMainRows, genericS
     const [openForm, setOpenForm] = useState(false);
     let filteredRows = getRows(rowsCopy, filters);
     const [newRow, setNewRow] = useState({});
-    // let [originalRows, setOriginalRows] = useState([]);
     const [loadingSave, setLoadingSave] = useState(false);
+    const [loadingAdd, setLoadingAdd] = useState(false);
     const [openDeleteCheck, setOpenDeleteCheck] = useState(false);
 
 
@@ -445,10 +445,12 @@ function GenericTab({ originalRows, setOriginalRows, rows, setMainRows, genericS
     }
 
     const addRow = () => {
+        setLoadingAdd(true);
+        handleCloseForm();
         let fixedRow = fixRowFields(newRow);
         removeUnnecessaryFields(fixedRow);
         fixedRow = getOwners(fixedRow, role);
-        fixedRows = removeEmptyFields(fixedRow);
+        fixedRow = removeEmptyFields(fixedRow);
         firestoreModule.getUsers().add(fixedRow).then(ref => {
 
             fixedRow = { ...fixedRow, 'fid': ref.id };
@@ -456,7 +458,7 @@ function GenericTab({ originalRows, setOriginalRows, rows, setMainRows, genericS
             fixedRow = getOwners(fixedRow, role);
 
             rowsCopy.unshift(fixedRow);
-            handleCloseForm();
+
             updateNums();
             setRows(rowsCopy);
             setMainRows(rowsCopy);
@@ -479,6 +481,7 @@ function GenericTab({ originalRows, setOriginalRows, rows, setMainRows, genericS
                     visible: true
                 });
             setGenericSaveButtonColor('secondary');
+            setLoadingAdd(false);
         }).catch(function (error) {
             console.log("Error adding", error);
         });
@@ -518,7 +521,6 @@ function GenericTab({ originalRows, setOriginalRows, rows, setMainRows, genericS
         let newRows = fixRowsFields(rowsCopy);
         setRows([...newRows]);
         setMainRows([...rowsCopy]);
-        //setOriginalRows([...newRows]);
         setLoadingPage(false);
 
     }
@@ -618,11 +620,13 @@ function GenericTab({ originalRows, setOriginalRows, rows, setMainRows, genericS
 
             <div className={classes.actionsContainer}>
                 <div className={classes.actions}>
-                    <Button variant="contained" color="primary" className={classes.button} onClick={() => handleClickOpenForm()} size='large'>
+                    <Button disabled={loadingAdd} variant="contained" color="primary" className={classes.button} onClick={() => handleClickOpenForm()} size='large'>
                         {type === 'tutors' && "הוסף מדריך"}
                         {type === 'coordinators' && "הוסף רכז שכונה"}
                         {type === 'departmentManagers' && "הוסף מנהל מחלקה"}
                         <AddIcon />
+                        {loadingAdd && <CircularProgress size={24} className={classes.buttonProgress} />}
+
                     </Button>
                     <MsgToShow {...msgState} handleClose={() => setMsgState({ ...msgState, visible: false })} />
 
@@ -718,6 +722,8 @@ function GenericTab({ originalRows, setOriginalRows, rows, setMainRows, genericS
                         {type === 'tutors' && "מחק מדריכים בחורים"}
                         {type === 'coordinators' && "מחק רכזים בחורים"}
                         {type === 'departmentManagers' && "מחק מנהלים בחורים"}
+                        {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
+
                         <DeleteIcon />
                     </Button>
 
@@ -750,7 +756,6 @@ function GenericTab({ originalRows, setOriginalRows, rows, setMainRows, genericS
                         </DialogActions>
                     </Dialog>
 
-                    {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
 
                     {/* <MsgToShow {...msgState} handleClose={() => setMsgState({ ...msgState, visible: false })} /> */}
 
@@ -781,10 +786,11 @@ function GenericTab({ originalRows, setOriginalRows, rows, setMainRows, genericS
                         disabled={loadingSave}>
                         שמור שינויים
             <SaveIcon />
+                        {loadingSave && <CircularProgress size={24} className={classes.buttonProgress} />}
                     </Button>
                     {/* </ButtonGroup> */}
 
-                    {loadingSave && <CircularProgress size={24} className={classes.buttonProgress} />}
+
                 </div>
             </div>
 
