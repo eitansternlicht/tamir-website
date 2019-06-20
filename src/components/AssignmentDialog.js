@@ -70,7 +70,11 @@ function AssignmentRow(props) {
                             return <FormControlLabel value={option.firstName} key={0} control={<Radio color="primary" />} label={label} labelPlacement="start" />
                         }
                         else {
-                            label = option.neighborhood + ', ' + option.city + ', ' + option.firstName + ' ' + option.lastName;
+                            if (option.neighborhood !== undefined && option.neighborhood !== null)
+                                label += option.neighborhood;
+                            if (option.city !== undefined && option.city !== null)
+                                label += ', ' + option.city + ', ';
+                            label += option.firstName + ' ' + option.lastName;
                             return <FormControlLabel value={option.fid} key={option.fid} control={<Radio color="primary" />} label={label} labelPlacement="start" />
                         }
 
