@@ -24,11 +24,39 @@ import 'react-responsive-ui/style.css';
 import PhoneInput from 'react-phone-number-input/react-responsive-ui';
 import { firestoreModule } from '../Firebase/Firebase';
 import moment from 'moment';
-
-
-
+import ReactDOM from "react-dom";
 import { Filters, Editors } from "react-data-grid-addons";
 
+class phoneEditor extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            phone: props.value
+        };
+    }
+    getValue() {
+        return { phone: this.state.phone };
+    }
+    getInputNode() {
+        return ReactDOM.findDOMNode(this).getElementsByTagName("input")[0];
+    }
+    handleChangePhone = name => value => {
+        this.setState({ ...this.state, [name]: value });
+    };
+    render() {
+        return (
+            <form  >
+                <PhoneInput
+                    country="IL"
+                    placeholder="נייד"
+                    value={this.state.phone}
+                    onChange={this.handleChangePhone('phone')}
+                />
+            </form>
+        );
+    }
+}
 
 const formatter = ({ value }) => {
     return <div style={{ textAlign: 'right' }}>{value}</div>
@@ -80,6 +108,7 @@ const columns = [
         key: "phone",
         name: "נייד",
         width: 130,
+        editor: phoneEditor,
         filterRenderer: AutoCompleteFilter
     },
     {
@@ -495,6 +524,7 @@ function GenericTab({ originalRows, setOriginalRows, rows, setMainRows, genericS
 
     const rowToArr = (row) => columns.map(r => row[r.key]);
 
+
     const exportToExcel = () => {
         const columnNames = columns.map(r => r.name);
         const aoa = [columnNames].concat(rowsCopy.map(rowToArr));
@@ -502,13 +532,11 @@ function GenericTab({ originalRows, setOriginalRows, rows, setMainRows, genericS
     }
 
     const firstTimeLoading = () => {
-
         updateNums();
         let newRows = fixRowsFields(rowsCopy);
         setRows([...newRows]);
         setMainRows([...rowsCopy]);
         setLoadingPage(false);
-
     }
     if (loadingPage)
         firstTimeLoading();

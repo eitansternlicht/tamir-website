@@ -12,8 +12,10 @@ import { Filters, Editors } from "react-data-grid-addons";
 import { TextField } from '@material-ui/core';
 import ReactDOM from "react-dom";
 import 'react-dates/initialize';
-
+import PhoneInput from 'react-phone-number-input/react-responsive-ui';
 import { SingleDatePicker } from 'react-dates';
+
+
 
 
 
@@ -144,13 +146,43 @@ class BirthDayEditor extends React.Component {
 
 }
 
+class phoneEditor extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            phone: props.value
+        };
+    }
+    getValue() {
+        return { phone: this.state.phone };
+    }
+    getInputNode() {
+        return ReactDOM.findDOMNode(this).getElementsByTagName("input")[0];
+    }
+    handleChangePhone = name => value => {
+        this.setState({ ...this.state, [name]: value });
+    };
+    render() {
+        return (
+            <form  >
+                <PhoneInput
+                    country="IL"
+                    placeholder="נייד"
+                    value={this.state.phone}
+                    onChange={this.handleChangePhone('phone')}
+                />
+            </form>
+        );
+    }
+}
+
 
 
 
 const formatter = ({ value }) => {
     return <div style={{ textAlign: 'right' }}>{value}</div>;
 }
-
 
 const defaultColumnProperties = {
     filterable: true,
@@ -237,6 +269,7 @@ const columns = [
         key: "phone",
         name: "נייד",
         width: 130,
+        editor: phoneEditor,
         formatter: false,
         filterRenderer: AutoCompleteFilter
     },
@@ -395,7 +428,6 @@ const departmentManagerColumns = [
         key: "id",
         name: "No.",
         width: 40,
-        //// headerRenderer: // headerRender('No.'),
         filterRenderer: NumericFilter,
         editable: false
     },
@@ -403,42 +435,37 @@ const departmentManagerColumns = [
         key: "lastName",
         name: "שם משפחה",
         width: 100,
-        // // headerRenderer: // headerRender('שם משפחה'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "firstName",
         name: "שם פרטי",
-        //// headerRenderer: // headerRender('שם פרטי'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "groups",
         name: "קבוצות",
         width: 100,
-        // // headerRenderer: // headerRender('קבוצות'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "phone",
         name: "נייד",
         width: 130,
+        editor: phoneEditor,
         formatter: false,
-        // // headerRenderer: // headerRender('נייד'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "gender",
         name: "מין",
         editor: genderEditor,
-        // // headerRenderer: // headerRender('מין'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "tutor",
         name: "מדריך",
         editable: false,
-        // // headerRenderer: // headerRender('מדריך'),
         filterRenderer: AutoCompleteFilter
     },
     {
@@ -446,67 +473,59 @@ const departmentManagerColumns = [
         name: "רכז שכונה",
         editable: false,
         width: 100,
-        //// headerRenderer: // headerRender('רכז שכונה'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "schoolGrade",
         name: "כיתה",
         width: 110,
-        // headerRenderer: // headerRender('כיתה'),
+        editor: classEditor,
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "school",
         name: "מוסד לימודים",
         width: 110,
-        // headerRenderer: // headerRender('מוסד לימודים'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "address",
         name: "כתובת",
-        // headerRenderer: // headerRender('כתובת'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "neighborhood",
         name: "שכונה",
-        // headerRenderer: // headerRender('שכונה'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "dob",
         name: "תאריך לידה",
+        editor: BirthDayEditor,
         width: 100,
-        // headerRenderer: // headerRender('תאריך לידה'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "govID",
         name: "תעודת זהות",
         width: 100,
-        // headerRenderer: // headerRender('תעודת זהות'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "city",
         name: "עיר",
-        // headerRenderer: // headerRender('עיר'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "email",
         name: "מייל",
         width: 110,
-        // headerRenderer: // headerRender('מייל'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "shirtSize",
         name: "מידת חולצה",
         width: 100,
-        // headerRenderer: // headerRender('מידת חולצה'),
         filterRenderer: AutoCompleteFilter,
         editor: TShirtSizesEditor
     },
@@ -515,35 +534,30 @@ const departmentManagerColumns = [
         key: "friends",
         name: "חברים",
         width: 120,
-        // headerRenderer: // headerRender('חברים'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "socialCircle",
         name: "מעגל חברתי",
         width: 110,
-        // headerRenderer: // headerRender('מעגל חברתי'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "youthGroup",
         name: "תנועת נוער",
         width: 100,
-        // headerRenderer: // headerRender('תנועת נוער'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "interests",
         name: "תחומי עניין",
         width: 100,
-        // headerRenderer: // headerRender('תחומי עניין'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "specialIssues",
         name: "בעיות מיוחדות",
         width: 110,
-        // headerRenderer: // headerRender('בעיות מיוחדות'),
         filterRenderer: AutoCompleteFilter
     },
 
@@ -551,27 +565,23 @@ const departmentManagerColumns = [
         key: "prefferedDays",
         name: "ימים מועדפים",
         width: 110,
-        // headerRenderer: // headerRender('ימים מועדפים'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "staffMemberAppointed",
         name: "איש צוות מטפל",
         width: 120,
-        // headerRenderer: // headerRender('איש צוות מטפל'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "comments",
         name: "הערות",
-        // headerRenderer: // headerRender('הערות'),
         filterRenderer: AutoCompleteFilter
     },
 
     {
         key: "studentStatus",
         name: "סטטוס",
-        // headerRenderer: // headerRender('סטטוס'),
         filterRenderer: AutoCompleteFilter,
         editable: false
     },
@@ -579,7 +589,6 @@ const departmentManagerColumns = [
     {
         key: "lastModified",
         name: "שינוי אחרון",
-        // headerRenderer: // headerRender('שינוי אחרון'),
         filterRenderer: AutoCompleteFilter,
         editable: false,
         width: 160
@@ -595,7 +604,6 @@ const coordinatorColumns = [
         key: "id",
         name: "No.",
         width: 40,
-        //// headerRenderer: // headerRender('No.'),
         filterRenderer: NumericFilter,
         editable: false
     },
@@ -603,102 +611,90 @@ const coordinatorColumns = [
         key: "lastName",
         name: "שם משפחה",
         width: 100,
-        // // headerRenderer: // headerRender('שם משפחה'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "firstName",
         name: "שם פרטי",
-        //// headerRenderer: // headerRender('שם פרטי'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "groups",
         name: "קבוצות",
         width: 100,
-        // // headerRenderer: // headerRender('קבוצות'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "phone",
         name: "נייד",
         width: 130,
+        editor: phoneEditor,
         formatter: false,
-        // // headerRenderer: // headerRender('נייד'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "gender",
         name: "מין",
         editor: genderEditor,
-        // // headerRenderer: // headerRender('מין'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "tutor",
         name: "מדריך",
         editable: false,
-        // // headerRenderer: // headerRender('מדריך'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "schoolGrade",
         name: "כיתה",
         width: 110,
-        // headerRenderer: // headerRender('כיתה'),
+        editor: classEditor,
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "school",
         name: "מוסד לימודים",
         width: 110,
-        // headerRenderer: // headerRender('מוסד לימודים'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "address",
         name: "כתובת",
-        // headerRenderer: // headerRender('כתובת'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "neighborhood",
         name: "שכונה",
-        // headerRenderer: // headerRender('שכונה'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "dob",
         name: "תאריך לידה",
+        editor: BirthDayEditor,
         width: 100,
-        // headerRenderer: // headerRender('תאריך לידה'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "govID",
         name: "תעודת זהות",
         width: 100,
-        // headerRenderer: // headerRender('תעודת זהות'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "city",
         name: "עיר",
-        // headerRenderer: // headerRender('עיר'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "email",
         name: "מייל",
         width: 110,
-        // headerRenderer: // headerRender('מייל'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "shirtSize",
         name: "מידת חולצה",
         width: 100,
-        // headerRenderer: // headerRender('מידת חולצה'),
         filterRenderer: AutoCompleteFilter,
         editor: TShirtSizesEditor
     },
@@ -707,35 +703,30 @@ const coordinatorColumns = [
         key: "friends",
         name: "חברים",
         width: 120,
-        // headerRenderer: // headerRender('חברים'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "socialCircle",
         name: "מעגל חברתי",
         width: 110,
-        // headerRenderer: // headerRender('מעגל חברתי'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "youthGroup",
         name: "תנועת נוער",
         width: 100,
-        // headerRenderer: // headerRender('תנועת נוער'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "interests",
         name: "תחומי עניין",
         width: 100,
-        // headerRenderer: // headerRender('תחומי עניין'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "specialIssues",
         name: "בעיות מיוחדות",
         width: 110,
-        // headerRenderer: // headerRender('בעיות מיוחדות'),
         filterRenderer: AutoCompleteFilter
     },
 
@@ -743,27 +734,23 @@ const coordinatorColumns = [
         key: "prefferedDays",
         name: "ימים מועדפים",
         width: 110,
-        // headerRenderer: // headerRender('ימים מועדפים'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "staffMemberAppointed",
         name: "איש צוות מטפל",
         width: 120,
-        // headerRenderer: // headerRender('איש צוות מטפל'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "comments",
         name: "הערות",
-        // headerRenderer: // headerRender('הערות'),
         filterRenderer: AutoCompleteFilter
     },
 
     {
         key: "studentStatus",
         name: "סטטוס",
-        // headerRenderer: // headerRender('סטטוס'),
         filterRenderer: AutoCompleteFilter,
         editable: false
     },
@@ -771,7 +758,6 @@ const coordinatorColumns = [
     {
         key: "lastModified",
         name: "שינוי אחרון",
-        // headerRenderer: // headerRender('שינוי אחרון'),
         filterRenderer: AutoCompleteFilter,
         editable: false,
         width: 160
@@ -787,7 +773,6 @@ const tutorColumns = [
         key: "id",
         name: "No.",
         width: 40,
-        //// headerRenderer: // headerRender('No.'),
         filterRenderer: NumericFilter,
         editable: false
     },
@@ -795,95 +780,84 @@ const tutorColumns = [
         key: "lastName",
         name: "שם משפחה",
         width: 100,
-        // // headerRenderer: // headerRender('שם משפחה'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "firstName",
         name: "שם פרטי",
-        //// headerRenderer: // headerRender('שם פרטי'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "groups",
         name: "קבוצות",
         width: 100,
-        // // headerRenderer: // headerRender('קבוצות'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "phone",
         name: "נייד",
         width: 130,
+        editor: phoneEditor,
         formatter: false,
-        // // headerRenderer: // headerRender('נייד'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "gender",
         name: "מין",
         editor: genderEditor,
-        // // headerRenderer: // headerRender('מין'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "schoolGrade",
         name: "כיתה",
         width: 110,
-        // headerRenderer: // headerRender('כיתה'),
+        editor: classEditor,
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "school",
         name: "מוסד לימודים",
         width: 110,
-        // headerRenderer: // headerRender('מוסד לימודים'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "address",
         name: "כתובת",
-        // headerRenderer: // headerRender('כתובת'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "neighborhood",
         name: "שכונה",
-        // headerRenderer: // headerRender('שכונה'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "dob",
         name: "תאריך לידה",
+        editor: BirthDayEditor,
         width: 100,
-        // headerRenderer: // headerRender('תאריך לידה'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "govID",
         name: "תעודת זהות",
         width: 100,
-        // headerRenderer: // headerRender('תעודת זהות'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "city",
         name: "עיר",
-        // headerRenderer: // headerRender('עיר'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "email",
         name: "מייל",
         width: 110,
-        // headerRenderer: // headerRender('מייל'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "shirtSize",
         name: "מידת חולצה",
         width: 100,
-        // headerRenderer: // headerRender('מידת חולצה'),
         filterRenderer: AutoCompleteFilter,
         editor: TShirtSizesEditor
     },
@@ -892,35 +866,30 @@ const tutorColumns = [
         key: "friends",
         name: "חברים",
         width: 120,
-        // headerRenderer: // headerRender('חברים'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "socialCircle",
         name: "מעגל חברתי",
         width: 110,
-        // headerRenderer: // headerRender('מעגל חברתי'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "youthGroup",
         name: "תנועת נוער",
         width: 100,
-        // headerRenderer: // headerRender('תנועת נוער'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "interests",
         name: "תחומי עניין",
         width: 100,
-        // headerRenderer: // headerRender('תחומי עניין'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "specialIssues",
         name: "בעיות מיוחדות",
         width: 110,
-        // headerRenderer: // headerRender('בעיות מיוחדות'),
         filterRenderer: AutoCompleteFilter
     },
 
@@ -928,27 +897,23 @@ const tutorColumns = [
         key: "prefferedDays",
         name: "ימים מועדפים",
         width: 110,
-        // headerRenderer: // headerRender('ימים מועדפים'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "staffMemberAppointed",
         name: "איש צוות מטפל",
         width: 120,
-        // headerRenderer: // headerRender('איש צוות מטפל'),
         filterRenderer: AutoCompleteFilter
     },
     {
         key: "comments",
         name: "הערות",
-        // headerRenderer: // headerRender('הערות'),
         filterRenderer: AutoCompleteFilter
     },
 
     {
         key: "studentStatus",
         name: "סטטוס",
-        // headerRenderer: // headerRender('סטטוס'),
         filterRenderer: AutoCompleteFilter,
         editable: false
     },
@@ -956,7 +921,6 @@ const tutorColumns = [
     {
         key: "lastModified",
         name: "שינוי אחרון",
-        // headerRenderer: // headerRender('שינוי אחרון'),
         filterRenderer: AutoCompleteFilter,
         editable: false,
         width: 160
