@@ -972,9 +972,6 @@ function TableTabScene({
             <SaveIcon />
             {loadingSave && <CircularProgress size={24} className={classes.buttonProgress} />}
           </Button>
-
-
-
         </div>
       </div>
     </div>
