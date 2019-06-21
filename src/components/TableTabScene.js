@@ -25,6 +25,7 @@ import 'firebase/firestore';
 import { aoaToFile } from '../utils/excell-utils';
 import green from '@material-ui/core/colors/green';
 import 'react-responsive-ui/style.css';
+//import MuiPhoneNumber from '@material-ui/material-ui-phone-number';
 import PhoneInput from 'react-phone-number-input/react-responsive-ui';
 import { firestoreModule } from '../Firebase/Firebase';
 import { Columns } from '../utils/getColumns';
@@ -142,7 +143,8 @@ function getRows(rows, filters) {
 const RowRenderer = ({ row, renderBaseRow, ...props }) => {
   const rowToRender = {
     ...row,
-    lastModified: moment(row.lastModified).format('DD/MM/YYYY HH:MM:SS')
+    lastModified: moment(row.lastModified).format('DD/MM/YYYY HH:MM:SS'),
+    dob: row.dob === '' ? '' : moment(row.dob).format('DD/MM/YYYY')
   };
   const color = props.idx % 2 ? '#eee' : '#555';
   return (
@@ -199,10 +201,10 @@ function TableTabScene({
   const fixStudentFields = student => {
     columns.forEach(({ key }) => {
       if (student.hasOwnProperty(key)) {
-        if (key === 'lastModified' && student[key] !== undefined && student[key] !== null) {
+        if ((key === 'lastModified' || key === 'dob') && student[key] !== undefined && student[key] !== null) {
           student[key] = student[key] instanceof Date ? student[key] : student[key].toDate();
         }
-        if (student[key] === null || student[key] === undefined || student[key] === 'dob') {
+        if (student[key] === null || student[key] === undefined) {
           student[key] = '';
         }
       } else {
@@ -549,16 +551,29 @@ function TableTabScene({
     });
   };
 
+  const fixStudentDOB = student => {
+    if (student.hasOwnProperty('dob')) {
+      if (student.dob !== undefined && student.dob !== null) {
+        student.dob = student.dob instanceof Date ? student.dob : new Date(student.dob);
+      }
+    }
+
+    return student;
+  };
+
+  const fixStudentsDOB = arr => {
+    return arr.map(fixStudentDOB);
+  };
+
   const saveUpdates = () => {
     setLoadingSave(true);
     if (originalRows.length !== rowsCopy.length) deleteUnnecessaryStudent();
     let arr = getStudentsToUpdate();
-
+    arr = fixStudentsDOB(arr);
     if (arr.length > 0) makeUpdate(arr);
     let newRows = fixStudentsFields(rowsCopy);
     rowsCopy = [...newRows];
     newRows = getMissedDetailsForAllStudents();
-
     setRows(newRows);
     setOriginalRows([...newRows]);
     setMainRows([...newRows]);
@@ -630,7 +645,7 @@ function TableTabScene({
             open={openForm}
             onClose={handleCloseForm}
             aria-labelledby="form-dialog-title">
-            <form validate="true" className={classes.container} autoComplete="on">
+            <form validate="true" className={classes.container} autoComplete="on" onSubmit={() => console.log('hey')}>
               <DialogTitle id="form-dialog-title" className={classes.formTitle}>
                 הוספת חניך
               </DialogTitle>
@@ -639,8 +654,9 @@ function TableTabScene({
                   : נא למלא את כל השדות
                 </DialogContentText>
                 <TextField
-                  //required
+                  required
                   autoFocus
+                  variant="outlined"
                   margin="dense"
                   id="firstName"
                   className={classes.textField}
@@ -650,8 +666,9 @@ function TableTabScene({
                   onChange={handleChange('firstName')}
                 />
                 <TextField
-                  //required
-                  autoFocus
+                  required
+                  variant="outlined"
+
                   margin="dense"
                   id="lastName"
                   className={classes.textField}
@@ -661,22 +678,13 @@ function TableTabScene({
                   onChange={handleChange('lastName')}
                 />
 
-                <PhoneInput
-                  //required
-                  country="IL"
-                  label="מס' טלפון"
-                  className={classes.textField}
-                  placeholder="נייד"
-                  //value={newStudent.phone}
-                  onChange={handleChangePhone('phone')}
-                />
-
                 <TextField
-                  //required
-                  autoFocus
+                  required
+                  variant="outlined"
+
                   select
                   id="gender"
-                  margin="normal"
+                  margin="dense"
                   label="מין"
                   className={classes.textField}
                   onChange={handleChange('gender')}
@@ -692,12 +700,24 @@ function TableTabScene({
                     </MenuItem>
                   ))}
                 </TextField>
+
+                <PhoneInput
+                  required
+
+                  country="IL"
+                  label="מס' טלפון"
+                  className={classes.textField}
+                  placeholder="נייד"
+                  value={newStudent.phone}
+                  onChange={handleChangePhone('phone')}
+                />
+
               </DialogContent>
               <DialogActions>
                 <Button onClick={handleCloseForm} color="secondary" className={classes.button} size='large'>
                   בטל
                 </Button>
-                <Button onClick={() => addStudent()} color="primary" className={classes.button} size='large'>
+                <Button type='submit' onClick={() => addStudent()} color="primary" className={classes.button} size='large'>
                   הוסף
                 </Button>
               </DialogActions>

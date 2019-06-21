@@ -659,6 +659,7 @@ function GenericTab({ originalRows, setOriginalRows, rows, setMainRows, genericS
                                 <TextField
                                     required
                                     autoFocus
+                                    variant="outlined"
                                     margin="dense"
                                     id="firstName"
                                     className={classes.textField}
@@ -669,7 +670,7 @@ function GenericTab({ originalRows, setOriginalRows, rows, setMainRows, genericS
                                 />
                                 <TextField
                                     required
-                                    autoFocus
+                                    variant="outlined"
                                     margin="dense"
                                     id="lastName"
                                     className={classes.textField}
@@ -679,22 +680,13 @@ function GenericTab({ originalRows, setOriginalRows, rows, setMainRows, genericS
                                     onChange={handleChange('lastName')}
                                 />
 
-                                <PhoneInput
-                                    required
-                                    country="IL"
-                                    label="מס' טלפון"
-                                    placeholder="נייד"
-                                    className={classes.textField}
-                                    value={newRow['phone']}
-                                    onChange={handleChangePhone('phone')}
-                                />
-
                                 <TextField
                                     required
-                                    autoFocus
+
                                     select
                                     id="gender"
-                                    margin="normal"
+                                    variant="outlined"
+                                    margin="dens"
                                     label="מין"
                                     className={classes.textField}
                                     onChange={handleChange('gender')}
@@ -711,6 +703,17 @@ function GenericTab({ originalRows, setOriginalRows, rows, setMainRows, genericS
                                         </MenuItem>
                                     ))}
                                 </TextField>
+                                <PhoneInput
+                                    required
+                                    country="IL"
+                                    label="מס' טלפון"
+                                    placeholder="נייד"
+                                    className={classes.textField}
+                                    value={newRow['phone']}
+                                    onChange={handleChangePhone('phone')}
+                                />
+
+
 
                             </DialogContent>
                             <DialogActions>

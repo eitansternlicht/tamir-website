@@ -12,6 +12,7 @@
     "faker": "^4.1.0",
     "firebase": "^6.2.0",
     "gh-pages": "^2.0.1",
+    "material-ui-phone-number": "^2.0.0",
     "moment": "^2.24.0",
     "react": "^16.8.6",
     "react-data-grid": "^6.1.0",

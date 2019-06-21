@@ -15,53 +15,11 @@ import 'react-dates/initialize';
 import PhoneInput from 'react-phone-number-input/react-responsive-ui';
 import { SingleDatePicker } from 'react-dates';
 
-
-
-
-
 const useStyles = makeStyles({
     grid: {
         width: '60%',
     },
 });
-
-//   export default function MaterialUIPickers() {
-//     // The first commit of Material-UI
-//     const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
-
-//     const classes = useStyles();
-
-//     function handleDateChange(date) {
-//       setSelectedDate(date);
-//     }
-
-//     return (
-//       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-//         <Grid container className={classes.grid} justify="space-around">
-//           <KeyboardDatePicker
-//             margin="normal"
-//             id="mui-pickers-date"
-//             label="Date picker"
-//             value={selectedDate}
-//             onChange={handleDateChange}
-//             KeyboardButtonProps={{
-//               'aria-label': 'change date',
-//             }}
-//           />
-//           <KeyboardTimePicker
-//             margin="normal"
-//             id="mui-pickers-time"
-//             label="Time picker"
-//             value={selectedDate}
-//             onChange={handleDateChange}
-//             KeyboardButtonProps={{
-//               'aria-label': 'change time',
-//             }}
-//           />
-//         </Grid>
-//       </MuiPickersUtilsProvider>
-//     );
-//   }
 
 class BirthDayEditor extends React.Component {
 
@@ -95,8 +53,8 @@ class BirthDayEditor extends React.Component {
     }
 
     handleChangeComplete = event => {
-        // console.log("dob", dob.target.value);
-        this.setState({ dob: event.target.value }, () => this.props.onCommit());
+        console.log("event", typeof event.target.value )
+        this.setState({ dob: event.target.value}, () => this.props.onCommit());
     };
 
     render() {
@@ -177,9 +135,6 @@ class phoneEditor extends React.Component {
     }
 }
 
-
-
-
 const formatter = ({ value }) => {
     return <div style={{ textAlign: 'right' }}>{value}</div>;
 }
@@ -193,7 +148,6 @@ const defaultColumnProperties = {
     minWidth: 50
 
 };
-
 
 const { DropDownEditor } = Editors;
 
@@ -214,7 +168,7 @@ const TShirtSizes = [
     { id: "xSmall", value: "XXXL" }
 ];
 
-const classOptions = [
+const gradeOptions = [
     { id: "1", value: "א" },
     { id: "2", value: "ב" },
     { id: "3", value: "ג" },
@@ -229,16 +183,14 @@ const classOptions = [
     { id: "12", value: "יב" },
 ];
 
-
 const genderOptions = [
     { id: 'male', value: "ז" },
     { id: 'female', value: "נ" }
 ]
 
-
 const TShirtSizesEditor = <DropDownEditor options={TShirtSizes} />;
 const genderEditor = <DropDownEditor options={genderOptions} />;
-const classEditor = <DropDownEditor options={classOptions} />;
+const classEditor = <DropDownEditor options={gradeOptions} />;
 
 const columns = [
     {
