@@ -47,8 +47,8 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center'
   }
 }));
-const role = 'ceo';
-const uid = 'qIAOWJMzBXdSXHf20w8J';
+const role = 'departmentManager';
+const uid = '9WowTnrHzkXm8jvsfNxD';
 
 const uiConfig = {
   signInFlow: 'popup',
@@ -123,6 +123,83 @@ const MainScene = () => {
 
   const classes = useStyles();
 
+  function getAppropriateStudentsRows() {
+    if (role === 'tutor' && !loading) {
+      return (
+        <TableTabScene
+          originalRows={originalRows}
+          setOriginalRows={setOriginalRows}
+          rows={studentsRows}
+          setMainRows={setStudentsRows}
+          saveButtonColor={saveButtonColor}
+          setSaveButtonColor={setSaveButtonColor}
+          role={role}
+          uid={uid}
+          tutors={tutorsRows}
+          coordinators={coordinatorsRows}
+          departmentManagers={departmentManagersRows}
+        />
+      );
+    }
+    else if (role === 'coordinator' && !loading && !loadingTutors) {
+      return (
+        <TableTabScene
+          originalRows={originalRows}
+          setOriginalRows={setOriginalRows}
+          rows={studentsRows}
+          setMainRows={setStudentsRows}
+          saveButtonColor={saveButtonColor}
+          setSaveButtonColor={setSaveButtonColor}
+          role={role}
+          uid={uid}
+          tutors={tutorsRows}
+          coordinators={coordinatorsRows}
+          departmentManagers={departmentManagersRows}
+        />
+      );
+    }
+    else if (role === 'departmentManager' && !loading && !loadingTutors && !loadingCoordinators) {
+      return (
+        <TableTabScene
+          originalRows={originalRows}
+          setOriginalRows={setOriginalRows}
+          rows={studentsRows}
+          setMainRows={setStudentsRows}
+          saveButtonColor={saveButtonColor}
+          setSaveButtonColor={setSaveButtonColor}
+          role={role}
+          uid={uid}
+          tutors={tutorsRows}
+          coordinators={coordinatorsRows}
+          departmentManagers={departmentManagersRows}
+        />
+      );
+    }
+    else if (role === 'ceo' &&
+      !loading &&
+      !loadingTutors &&
+      !loadingCoordinators &&
+      !loadingDepartmentManagers) {
+      return (
+        <TableTabScene
+          originalRows={originalRows}
+          setOriginalRows={setOriginalRows}
+          rows={studentsRows}
+          setMainRows={setStudentsRows}
+          saveButtonColor={saveButtonColor}
+          setSaveButtonColor={setSaveButtonColor}
+          role={role}
+          uid={uid}
+          tutors={tutorsRows}
+          coordinators={coordinatorsRows}
+          departmentManagers={departmentManagersRows}
+        />
+      );
+    }
+    else
+      return null;
+
+  }
   return !isSignedIn ? (
     <div style={{ padding: 50 }}>
       <Typography variant="h5" component="h5" style={{ textAlign: 'right', paddingBottom: 10 }}>
@@ -134,178 +211,101 @@ const MainScene = () => {
       <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
     </div>
   ) : (
-    <div>
       <div>
-        <Paper className={classes.details}>
-          <Typography variant="h5" component="h5">
-            מנהל מחלקה א
+        <div>
+          <Paper className={classes.details}>
+            <Typography variant="h5" component="h5">
+              מנהל מחלקה א
           </Typography>
-          <Typography component="p">ירושלים</Typography>
-          <Button
-            size="large"
-            variant="contained"
-            color="primary"
-            onClick={() => firebase.auth().signOut()}>
-            Sign-out
+            <Typography component="p">ירושלים</Typography>
+            <Button
+              size="large"
+              variant="contained"
+              color="primary"
+              onClick={() => firebase.auth().signOut()}>
+              Sign-out
           </Button>
-        </Paper>
+          </Paper>
+        </div>
+        <div>
+          <AppBar position="static" color="default" className={classes.appBar}>
+            <Tabs
+              indicatorColor="primary"
+              textColor="primary"
+              variant="scrollable"
+              scrollButtons="auto"
+              value={displayedTab}
+              onChange={handleChange}>
+              <Tab key={0} value="ReportsTabScene" label="דוחות" />
+              {role === 'ceo' ? (
+                <Tab key={1} value="DepartmentManagersTabScene" label="מנהלי מחלקות" />
+              ) : null}
+              {role === 'departmentManager' || role === 'ceo' ? (
+                <Tab key={2} value="CoordinatorsTabScene" label="רכזים" />
+              ) : null}
+              {role !== 'tutor' ? <Tab key={3} value="TutorsTabScene" label="מדריכים" /> : null}
+              <Tab key={4} value="TableTabScene" label="חניכים" />
+            </Tabs>
+          </AppBar>
+
+          {displayedTab === 'TableTabScene' ? (
+            <div className={classes.table}>
+              {getAppropriateStudentsRows()}
+            </div>
+          ) : null}
+
+
+          {displayedTab === 'TutorsTabScene' ? (
+            <div className={classes.table}>
+             
+              <GenericTab
+                originalRows={tutorsOriginalRows}
+                setOriginalRows={setTutorsOriginalRows}
+                rows={tutorsRows}
+                setMainRows={setTutorsRows}
+                genericSaveButtonColor={tutorsSaveButtonColor}
+                setGenericSaveButtonColor={setTutorsSaveButtonColor}
+                type="tutors"
+                role={role}
+                uid={uid}
+              />
+            </div>
+          ) : null}
+
+          {displayedTab === 'CoordinatorsTabScene' ? (
+            <div className={classes.table}>
+              <GenericTab
+                originalRows={coordinatorsOriginalRows}
+                setOriginalRows={setCoordinatorsOriginalRows}
+                rows={coordinatorsRows}
+                setMainRows={setCoordinatorsRows}
+                genericSaveButtonColor={coordinatorsSaveButtonColor}
+                setGenericSaveButtonColor={setCoordinatorsSaveButtonColor}
+                type="coordinators"
+                role={role}
+                uid={uid}
+              />
+            </div>
+          ) : null}
+
+          {displayedTab === 'DepartmentManagersTabScene' ? (
+            <div className={classes.table}>
+              <GenericTab
+                originalRows={departmentManagersOriginalRows}
+                setOriginalRows={setDepartmentManagersOriginalRows}
+                rows={departmentManagersRows}
+                setMainRows={setDepartmentManagersRows}
+                genericSaveButtonColor={departmentManagersSaveButtonColor}
+                setGenericSaveButtonColor={setDepartmentManagersSaveButtonColor}
+                type="departmentManagers"
+                role={role}
+                uid={uid}
+              />
+            </div>
+          ) : null}
+        </div>
       </div>
-      <div>
-        <AppBar position="static" color="default" className={classes.appBar}>
-          <Tabs
-            indicatorColor="primary"
-            textColor="primary"
-            variant="scrollable"
-            scrollButtons="auto"
-            value={displayedTab}
-            onChange={handleChange}>
-            <Tab key={0} value="ReportsTabScene" label="דוחות" />
-            {role === 'ceo' ? (
-              <Tab key={1} value="DepartmentManagersTabScene" label="מנהלי מחלקות" />
-            ) : null}
-            {role === 'departmentManager' || role === 'ceo' ? (
-              <Tab key={2} value="CoordinatorsTabScene" label="רכזים" />
-            ) : null}
-            {role !== 'tutor' ? <Tab key={3} value="TutorsTabScene" label="מדריכים" /> : null}
-            <Tab key={4} value="TableTabScene" label="חניכים" />
-          </Tabs>
-        </AppBar>
-
-        {displayedTab === 'TableTabScene' ? (
-          <div className={classes.table}>
-            {role === 'tutor' && !loading ? (
-              <TableTabScene
-                originalRows={originalRows}
-                setOriginalRows={setOriginalRows}
-                rows={studentsRows}
-                setMainRows={setStudentsRows}
-                saveButtonColor={saveButtonColor}
-                setSaveButtonColor={setSaveButtonColor}
-                role={role}
-                uid={uid}
-                tutors={tutorsRows}
-                coordinators={coordinatorsRows}
-                departmentManagers={departmentManagersRows}
-              />
-            ) : null}
-          </div>
-        ) : null}
-
-        {displayedTab === 'TableTabScene' ? (
-          <div className={classes.table}>
-            {role === 'coordinator' && !loading && !loadingTutors ? (
-              <TableTabScene
-                originalRows={originalRows}
-                setOriginalRows={setOriginalRows}
-                rows={studentsRows}
-                setMainRows={setStudentsRows}
-                saveButtonColor={saveButtonColor}
-                setSaveButtonColor={setSaveButtonColor}
-                role={role}
-                uid={uid}
-                tutors={tutorsRows}
-                coordinators={coordinatorsRows}
-                departmentManagers={departmentManagersRows}
-              />
-            ) : null}
-          </div>
-        ) : null}
-
-        {displayedTab === 'TableTabScene' ? (
-          <div className={classes.table}>
-            {role === 'departmentManager' && !loading && !loadingTutors && !loadingCoordinators ? (
-              <TableTabScene
-                originalRows={originalRows}
-                setOriginalRows={setOriginalRows}
-                rows={studentsRows}
-                setMainRows={setStudentsRows}
-                saveButtonColor={saveButtonColor}
-                setSaveButtonColor={setSaveButtonColor}
-                role={role}
-                uid={uid}
-                tutors={tutorsRows}
-                coordinators={coordinatorsRows}
-                departmentManagers={departmentManagersRows}
-              />
-            ) : null}
-          </div>
-        ) : null}
-
-        {displayedTab === 'TableTabScene' ? (
-          <div className={classes.table}>
-            {role === 'ceo' &&
-            !loading &&
-            !loadingTutors &&
-            !loadingCoordinators &&
-            !loadingDepartmentManagers ? (
-              <TableTabScene
-                originalRows={originalRows}
-                setOriginalRows={setOriginalRows}
-                rows={studentsRows}
-                setMainRows={setStudentsRows}
-                saveButtonColor={saveButtonColor}
-                setSaveButtonColor={setSaveButtonColor}
-                role={role}
-                uid={uid}
-                tutors={tutorsRows}
-                coordinators={coordinatorsRows}
-                departmentManagers={departmentManagersRows}
-              />
-            ) : null}
-          </div>
-        ) : null}
-
-        {displayedTab === 'TutorsTabScene' ? (
-          <div className={classes.table}>
-            {' '}
-            <GenericTab
-              originalRows={tutorsOriginalRows}
-              setOriginalRows={setTutorsOriginalRows}
-              rows={tutorsRows}
-              setMainRows={setTutorsRows}
-              genericSaveButtonColor={tutorsSaveButtonColor}
-              setGenericSaveButtonColor={setTutorsSaveButtonColor}
-              type="tutors"
-              role={role}
-              uid={uid}
-            />{' '}
-          </div>
-        ) : null}
-        {displayedTab === 'CoordinatorsTabScene' ? (
-          <div className={classes.table}>
-            {' '}
-            <GenericTab
-              originalRows={coordinatorsOriginalRows}
-              setOriginalRows={setCoordinatorsOriginalRows}
-              rows={coordinatorsRows}
-              setMainRows={setCoordinatorsRows}
-              genericSaveButtonColor={coordinatorsSaveButtonColor}
-              setGenericSaveButtonColor={setCoordinatorsSaveButtonColor}
-              type="coordinators"
-              role={role}
-              uid={uid}
-            />{' '}
-          </div>
-        ) : null}
-        {displayedTab === 'DepartmentManagersTabScene' ? (
-          <div className={classes.table}>
-            {' '}
-            <GenericTab
-              originalRows={departmentManagersOriginalRows}
-              setOriginalRows={setDepartmentManagersOriginalRows}
-              rows={departmentManagersRows}
-              setMainRows={setDepartmentManagersRows}
-              genericSaveButtonColor={departmentManagersSaveButtonColor}
-              setGenericSaveButtonColor={setDepartmentManagersSaveButtonColor}
-              type="departmentManagers"
-              role={role}
-              uid={uid}
-            />{' '}
-          </div>
-        ) : null}
-      </div>
-    </div>
-  );
+    );
 };
 
 export { MainScene };
