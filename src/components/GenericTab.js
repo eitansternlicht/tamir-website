@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
-import ReactDataGrid from "react-data-grid";
-import { Toolbar, Data } from "react-data-grid-addons";
+import ReactDataGrid from 'react-data-grid';
+import { Toolbar, Data } from 'react-data-grid-addons';
 import {
-    makeStyles,
-    Button,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    DialogContentText,
-    CircularProgress,
-    MenuItem,
-    TextField,
-
+  makeStyles,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
+  CircularProgress,
+  MenuItem,
+  TextField
 } from '@material-ui/core/';
 import { MsgToShow } from '.';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -24,797 +23,805 @@ import 'react-responsive-ui/style.css';
 import PhoneInput from 'react-phone-number-input/react-responsive-ui';
 import { firestoreModule } from '../Firebase/Firebase';
 import moment from 'moment';
-import ReactDOM from "react-dom";
-import { Filters, Editors } from "react-data-grid-addons";
+import ReactDOM from 'react-dom';
+import { Filters, Editors } from 'react-data-grid-addons';
+import deepcopy from 'deepcopy';
 
 class phoneEditor extends React.Component {
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            phone: props.value
-        };
-    }
-    getValue() {
-        return { phone: this.state.phone };
-    }
-    getInputNode() {
-        return ReactDOM.findDOMNode(this).getElementsByTagName("input")[0];
-    }
-    handleChangePhone = name => value => {
-        this.setState({ ...this.state, [name]: value });
+  constructor(props) {
+    super(props);
+    this.state = {
+      phone: props.value
     };
-    render() {
-        return (
-            <form  >
-                <PhoneInput
-                    country="IL"
-                    placeholder="נייד"
-                    value={this.state.phone}
-                    onChange={this.handleChangePhone('phone')}
-                />
-            </form>
-        );
-    }
+  }
+  getValue() {
+    return { phone: this.state.phone };
+  }
+  getInputNode() {
+    return ReactDOM.findDOMNode(this).getElementsByTagName('input')[0];
+  }
+  handleChangePhone = name => value => {
+    this.setState({ ...this.state, [name]: value });
+  };
+  render() {
+    return (
+      <form>
+        <PhoneInput
+          country="IL"
+          placeholder="נייד"
+          value={this.state.phone}
+          onChange={this.handleChangePhone('phone')}
+        />
+      </form>
+    );
+  }
 }
 
 const formatter = ({ value }) => {
-    return <div style={{ textAlign: 'right' }}>{value}</div>
-}
+  return <div style={{ textAlign: 'right' }}>{value}</div>;
+};
 
 const defaultColumnProperties = {
-    filterable: true,
-    sortable: true,
-    resizable: true,
-    editable: true,
-    formatter: formatter,
-    minWidth: 50
-
+  filterable: true,
+  sortable: true,
+  resizable: true,
+  editable: true,
+  formatter: formatter,
+  minWidth: 50
 };
 
 const { DropDownEditor } = Editors;
-const {
-    NumericFilter,
-    AutoCompleteFilter,
-} = Filters;
+const { NumericFilter, AutoCompleteFilter } = Filters;
 
-const genderOptions = [
-    { id: 'male', value: "ז" },
-    { id: 'female', value: "נ" },
-
-]
+const genderOptions = [{ id: 'male', value: 'ז' }, { id: 'female', value: 'נ' }];
 const genderEditor = <DropDownEditor options={genderOptions} />;
 
 const columns = [
-    {
-        key: "id",
-        name: "No.",
-        width: 40,
-        filterRenderer: NumericFilter,
-        editable: false
-    },
-    {
-        key: "lastName",
-        name: "שם משפחה",
-        width: 100,
-        filterRenderer: AutoCompleteFilter
-    },
-    {
-        key: "firstName",
-        name: "שם פרטי",
-        filterRenderer: AutoCompleteFilter
-    },
-    {
-        key: "phone",
-        name: "נייד",
-        width: 130,
-        editor: phoneEditor,
-        filterRenderer: AutoCompleteFilter
-    },
-    {
-        key: "gender",
-        name: "מין",
-        editor: genderEditor,
-        filterRenderer: AutoCompleteFilter
-    },
+  {
+    key: 'id',
+    name: 'No.',
+    width: 40,
+    filterRenderer: NumericFilter,
+    editable: false
+  },
+  {
+    key: 'lastName',
+    name: 'שם משפחה',
+    width: 100,
+    filterRenderer: AutoCompleteFilter
+  },
+  {
+    key: 'firstName',
+    name: 'שם פרטי',
+    filterRenderer: AutoCompleteFilter
+  },
+  {
+    key: 'phone',
+    name: 'נייד',
+    width: 130,
+    editor: phoneEditor,
+    filterRenderer: AutoCompleteFilter
+  },
+  {
+    key: 'gender',
+    name: 'מין',
+    editor: genderEditor,
+    filterRenderer: AutoCompleteFilter
+  },
 
-    {
-        key: "address",
-        name: "כתובת",
-        filterRenderer: AutoCompleteFilter
-    },
-    {
-        key: "neighborhood",
-        name: "שכונה",
-        filterRenderer: AutoCompleteFilter
-    },
-    {
-        key: "govID",
-        name: "תעודת זהות",
-        width: 100,
-        filterRenderer: AutoCompleteFilter
-    },
-    {
-        key: "city",
-        name: "עיר",
-        filterRenderer: AutoCompleteFilter
-    },
-    {
-        key: "email",
-        name: "מייל",
-        width: 110,
-        filterRenderer: AutoCompleteFilter
-    },
+  {
+    key: 'address',
+    name: 'כתובת',
+    filterRenderer: AutoCompleteFilter
+  },
+  {
+    key: 'neighborhood',
+    name: 'שכונה',
+    filterRenderer: AutoCompleteFilter
+  },
+  {
+    key: 'govID',
+    name: 'תעודת זהות',
+    width: 100,
+    filterRenderer: AutoCompleteFilter
+  },
+  {
+    key: 'city',
+    name: 'עיר',
+    filterRenderer: AutoCompleteFilter
+  },
+  {
+    key: 'email',
+    name: 'מייל',
+    width: 110,
+    filterRenderer: AutoCompleteFilter
+  },
 
-    {
-        key: "lastModified",
-        name: "שינוי אחרון",
-        filterRenderer: AutoCompleteFilter,
-        editable: false,
-        width: 160
-    },
-    {
-        key: "check",
-        width: 5
-    }
+  {
+    key: 'lastModified',
+    name: 'שינוי אחרון',
+    filterRenderer: AutoCompleteFilter,
+    editable: false,
+    width: 160
+  },
+  {
+    key: 'check',
+    width: 5
+  }
 ].map(c => ({ ...defaultColumnProperties, ...c }));
 
 const genders = [
-    {
-        value: 'ז',
-        label: 'זכר'
-    },
-    {
-        value: 'נ',
-        label: 'נקבה'
-    }
+  {
+    value: 'ז',
+    label: 'זכר'
+  },
+  {
+    value: 'נ',
+    label: 'נקבה'
+  }
 ];
 
 const useStyles = makeStyles(theme => ({
-    actionsContainer: {
-        display: 'flex',
-        flexDirection: 'row-reverse'
-    },
-    actions: {
-        display: 'flex',
-        margin: theme.spacing(1),
-        flexDirection: 'column',
-        padding: 5,
-        marginTop: 20
-    },
-    saveContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        margin: theme.spacing(1),
-        marginRight: 'auto',
-        padding: 5,
-        marginTop: 20,
-        Size: 50
-    },
-    button: {
-        borderRadius: 5,
-        fontFamily: 'Arial',
-        fontSize: 18,
-        padding: 4,
-        margin: theme.spacing(1),
-        textAlign: 'center',
-        alignContent: 'center',
-        margin: theme.spacing(1),
-        textAlign: 'right'
-    },
-    formTitle: {
-        textAlign: 'center',
-        font: 30,
-    },
-    formText: {
-        textAlign: 'right',
-    },
-    textField: {
-        marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(1),
-        textAlign: 'right',
-        width: 150,
+  actionsContainer: {
+    display: 'flex',
+    flexDirection: 'row-reverse'
+  },
+  actions: {
+    display: 'flex',
+    margin: theme.spacing(1),
+    flexDirection: 'column',
+    padding: 5,
+    marginTop: 20
+  },
+  saveContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    margin: theme.spacing(1),
+    marginRight: 'auto',
+    padding: 5,
+    marginTop: 20,
+    Size: 50
+  },
+  button: {
+    borderRadius: 5,
+    fontFamily: 'Arial',
+    fontSize: 18,
+    padding: 4,
+    margin: theme.spacing(1),
+    textAlign: 'center',
+    alignContent: 'center',
+    margin: theme.spacing(1),
+    textAlign: 'right'
+  },
+  formTitle: {
+    textAlign: 'center',
+    font: 30
+  },
+  formText: {
+    textAlign: 'right'
+  },
+  textField: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    textAlign: 'right',
+    width: 150
+  },
 
-    },
-
-    icon: {
-        margin: theme.spacing(1),
-    },
-    buttonProgress: {
-        color: green[500],
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        marginTop: -12,
-        marginLeft: -12,
-    },
-    menu: {
-        width: 150,
-    },
-    rowRener: {
-        border: 1,
-        borderRadius: 3,
-    },
-    container: {
-        // display: 'flex'
-    },
+  icon: {
+    margin: theme.spacing(1)
+  },
+  buttonProgress: {
+    color: green[500],
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12
+  },
+  menu: {
+    width: 150
+  },
+  rowRener: {
+    border: 1,
+    borderRadius: 3
+  },
+  container: {
+    // display: 'flex'
+  }
 }));
-
 
 const selectors = Data.Selectors;
 
 const sortRows = (initialRows, sortColumn, sortDirection) => rows => {
-    const comparer = (a, b) => {
-        if (sortDirection === "ASC") {
-            return a[sortColumn] > b[sortColumn] ? 1 : -1;
-        } else if (sortDirection === "DESC") {
-            return a[sortColumn] < b[sortColumn] ? 1 : -1;
-        }
-    };
-    return sortDirection === "NONE" ? initialRows : [...rows].sort(comparer);
+  const comparer = (a, b) => {
+    if (sortDirection === 'ASC') {
+      return a[sortColumn] > b[sortColumn] ? 1 : -1;
+    } else if (sortDirection === 'DESC') {
+      return a[sortColumn] < b[sortColumn] ? 1 : -1;
+    }
+  };
+  return sortDirection === 'NONE' ? initialRows : [...rows].sort(comparer);
 };
 
 const handleFilterChange = filter => filters => {
-    const newFilters = { ...filters };
-    if (filter.filterTerm) {
-        newFilters[filter.column.key] = filter;
-    } else {
-        delete newFilters[filter.column.key];
-    }
-    return newFilters;
+  const newFilters = { ...filters };
+  if (filter.filterTerm) {
+    newFilters[filter.column.key] = filter;
+  } else {
+    delete newFilters[filter.column.key];
+  }
+  return newFilters;
 };
 
 function getValidFilterValues(rows, columnId) {
-    return rows
-        .map(r => r[columnId])
-        .filter((item, i, a) => {
-            return i === a.indexOf(item);
-        });
+  return rows
+    .map(r => r[columnId])
+    .filter((item, i, a) => {
+      return i === a.indexOf(item);
+    });
 }
 
 function getRows(rows, filters) {
-    return selectors.getRows({ rows, filters });
+  return selectors.getRows({ rows, filters });
 }
 
-
 const RowRenderer = ({ row, renderBaseRow, ...props }) => {
-    const rowToRender = {
-        ...row,
-        lastModified: moment(row.lastModified).format('DD/MM/YYYY HH:MM:SS')
-    };
-    const color = props.idx % 2 ? '#eee' : '#555';
-    return (
-        <div style={{ backgroundColor: color }}>{renderBaseRow({ ...props, row: rowToRender })}</div>
-    );
+  const rowToRender = {
+    ...row,
+    lastModified: moment(row.lastModified).format('DD/MM/YYYY HH:MM:SS')
+  };
+  const color = props.idx % 2 ? '#eee' : '#555';
+  return (
+    <div style={{ backgroundColor: color }}>{renderBaseRow({ ...props, row: rowToRender })}</div>
+  );
 };
 
-function GenericTab({ originalRows, setOriginalRows, rows, setMainRows, genericSaveButtonColor, setGenericSaveButtonColor, type, role, uid }) {
+function GenericTab({
+  originalRows,
+  setOriginalRows,
+  rows,
+  setMainRows,
+  genericSaveButtonColor,
+  setGenericSaveButtonColor,
+  type,
+  role,
+  uid
+}) {
+  const [selectedIndexes, setSelectedIndexes] = useState([]);
+  const [filters, setFilters] = useState({});
+  let [rowsCopy, setRows] = useState(rows);
+  const [loading, setLoading] = useState(false);
+  const [loadingPage, setLoadingPage] = useState(true);
+  const [msgState, setMsgState] = useState({ title: '', body: '', visible: false });
+  const [openForm, setOpenForm] = useState(false);
+  let filteredRows = getRows(rowsCopy, filters);
+  const [newRow, setNewRow] = useState({});
+  const [loadingSave, setLoadingSave] = useState(false);
+  const [loadingAdd, setLoadingAdd] = useState(false);
+  const [openDeleteCheck, setOpenDeleteCheck] = useState(false);
 
+  const removeEmptyFields = obj => entriesToObj(Object.entries(obj).filter(([, v]) => v));
+  const entriesToObj = entries =>
+    entries.reduce((prev, curr) => {
+      const [key, val] = curr;
+      return { ...prev, [key]: val };
+    }, {});
 
-    const [selectedIndexes, setSelectedIndexes] = useState([]);
-    const [filters, setFilters] = useState({});
-    let [rowsCopy, setRows] = useState(rows);
-    const [loading, setLoading] = useState(false);
-    const [loadingPage, setLoadingPage] = useState(true);
-    const [msgState, setMsgState] = useState({ title: "", body: "", visible: false });
-    const [openForm, setOpenForm] = useState(false);
-    let filteredRows = getRows(rowsCopy, filters);
-    const [newRow, setNewRow] = useState({});
-    const [loadingSave, setLoadingSave] = useState(false);
-    const [loadingAdd, setLoadingAdd] = useState(false);
-    const [openDeleteCheck, setOpenDeleteCheck] = useState(false);
+  const fixRowFields = row => {
+    columns.forEach(({ key }) => {
+      if (row.hasOwnProperty(key)) {
+        if (key === 'lastModified' && row[key] !== undefined && row[key] !== null) {
+          row[key] = row[key] instanceof Date ? row[key] : row[key].toDate();
+        }
+        if (row[key] === null || row[key] === undefined || key === 'dob') {
+          row[key] = '';
+        }
+      } else {
+        row = { ...row, [key]: '' };
+      }
+    });
+    return row;
+  };
 
+  const fixRowsFields = arr => {
+    return arr.map(fixRowFields);
+  };
 
+  const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
+    setGenericSaveButtonColor('secondary');
+    const newRows = deepcopy(rowsCopy);
+    for (let i = 0; i < newRows.length; i++) {
+      if (i >= fromRow && i <= toRow) {
+        newRows[i] = { ...rowsCopy[i], ...updated };
+        newRows[i].lastModified = updateDate();
+      } else {
+        newRows[i].lastModified = new Date(newRows[i].lastModified);
+      }
+    }
+    setRows(newRows);
+    setMainRows(newRows);
+  };
 
-    const removeEmptyFields = obj => entriesToObj(Object.entries(obj).filter(([, v]) => v));
-    const entriesToObj = entries =>
-        entries.reduce((prev, curr) => {
-            const [key, val] = curr;
-            return { ...prev, [key]: val };
-        }, {});
+  const updateDate = () => {
+    return new Date();
+  };
 
-    const fixRowFields = (row) => {
-        columns.forEach(({ key }) => {
-            if (row.hasOwnProperty(key)) {
-                if (key === 'lastModified' && row[key] !== undefined && row[key] !== null) {
-                    row[key] = row[key] instanceof Date ? row[key] : row[key].toDate();
-                }
-                if (row[key] === null || row[key] === undefined || key === 'dob') {
-                    row[key] = '';
-                }
-            } else {
-                row = { ...row, [key]: '' };
-            }
+  const updateNums = () => {
+    for (let i = 0; i < rowsCopy.length; i++) {
+      rowsCopy[i]['id'] = i + 1;
+    }
+    setRows(rowsCopy);
+    setMainRows(rowsCopy);
+  };
+
+  const handleChange = name => event => {
+    setNewRow({ ...newRow, [name]: event.target.value });
+  };
+
+  const handleChangePhone = name => value => {
+    setNewRow({ ...newRow, [name]: value });
+  };
+
+  function handleClickOpenForm() {
+    setNewRow({ id: rowsCopy.length, lastModified: updateDate(), ...newRow });
+    setOpenForm(true);
+  }
+
+  function handleCloseForm() {
+    setOpenForm(false);
+    setNewRow({});
+  }
+
+  function handleOpenCheckDelete() {
+    if (selectedIndexes.length > 0) setOpenDeleteCheck(true);
+  }
+  function handleCloseCheckDelete() {
+    setOpenDeleteCheck(false);
+  }
+
+  const deleteRow = () => {
+    if (selectedIndexes.length === 0) return;
+    if (!loading) {
+      setLoading(true);
+      const fids = [];
+      selectedIndexes.forEach(idx => fids.push(rowsCopy[idx].fid));
+      // firestoreModule.deleteStudents(fids)
+      fids.forEach(id => firestoreModule.deleteUser(id));
+      let newArr = rowsCopy.filter((row, i) => !selectedIndexes.includes(i));
+      while (selectedIndexes.length !== 0) {
+        selectedIndexes.shift();
+      }
+      rowsCopy = newArr;
+      setRows(rowsCopy);
+      setMainRows(rowsCopy);
+      setLoading(false);
+      handleCloseCheckDelete();
+      if (type === 'tutors')
+        setMsgState({
+          title: 'מחיקת מדריכם',
+          body: '!כל המדריכים שנבחרו נמחקו בהצלחה',
+          visible: true
         });
-        return row;
+      else if (type === 'coordinators')
+        setMsgState({
+          title: 'מחיקת רכזים',
+          body: '!כל הרכזים שנבחרו נמחקו בהצלחה',
+          visible: true
+        });
+      else if (type === 'departmentManagers')
+        setMsgState({
+          title: 'מחיקת מנהלי מחלקות',
+          body: '!כל המנהלים שנבחרו נמחקו בהצלחה',
+          visible: true
+        });
+      setGenericSaveButtonColor('secondary');
+      updateNums();
     }
+  };
 
-    const fixRowsFields = (arr) => {
-        return arr.map(fixRowFields);
+  const removeUnnecessaryFields = row => {
+    delete row['check'];
+    delete row['id'];
+    delete row['fid'];
+  };
+
+  const getOwners = (fixedRow, role) => {
+    if (role === 'coordinator') {
+      fixedRow = {
+        ...fixedRow,
+        owners: { coordinators: [], departmentManagers: [] },
+        role: 'tutor',
+        lastModified: updateDate()
+      };
+      fixedRow.owners['coordinators'].push(uid);
+    } else if (role === 'departmentManager') {
+      if (type === 'tutors')
+        fixedRow = {
+          ...fixedRow,
+          owners: { coordinators: [], departmentManagers: [] },
+          role: 'tutor',
+          lastModified: updateDate()
+        };
+      else
+        fixedRow = {
+          ...fixedRow,
+          owners: { departmentManagers: [] },
+          role: 'coordinator',
+          lastModified: updateDate()
+        };
+      fixedRow.owners['departmentManagers'].push(uid);
+    } else {
+      if (type === 'tutors')
+        fixedRow = {
+          ...fixedRow,
+          owners: { coordinators: [], departmentManagers: [] },
+          role: 'tutor',
+          lastModified: updateDate()
+        };
+      else if (type === 'coordinators')
+        fixedRow = {
+          ...fixedRow,
+          owners: { departmentManagers: [] },
+          role: 'coordinator',
+          lastModified: updateDate()
+        };
+      else fixedRow = { ...fixedRow, role: 'departmentManager', lastModified: updateDate() };
     }
+    return fixedRow;
+  };
 
-    const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
+  const addRow = () => {
+    setLoadingAdd(true);
+    handleCloseForm();
+    let fixedRow = fixRowFields(newRow);
+    removeUnnecessaryFields(fixedRow);
+    fixedRow = getOwners(fixedRow, role);
+    fixedRow = removeEmptyFields(fixedRow);
+    firestoreModule
+      .getUsers()
+      .add(fixedRow)
+      .then(ref => {
+        fixedRow = { ...fixedRow, fid: ref.id };
+        fixedRow = fixRowFields(fixedRow);
+        fixedRow = getOwners(fixedRow, role);
 
-        setGenericSaveButtonColor('secondary');
-        const newRows = JSON.parse(JSON.stringify(rowsCopy));
-        for (let i = 0; i < newRows.length; i++) {
-            if (i >= fromRow && i <= toRow) {
-                newRows[i] = { ...rowsCopy[i], ...updated };
-                newRows[i].lastModified = updateDate();
-            } else {
-                newRows[i].lastModified = new Date(newRows[i].lastModified);
-            }
-        }
-        setRows(newRows);
-        setMainRows(newRows);
-    };
+        rowsCopy.unshift(fixedRow);
 
-    const updateDate = () => {
-
-        return new Date();
-    }
-
-    const updateNums = () => {
-        for (let i = 0; i < rowsCopy.length; i++) {
-            rowsCopy[i]['id'] = i + 1;
-        }
+        updateNums();
         setRows(rowsCopy);
         setMainRows(rowsCopy);
-    }
-
-    const handleChange = name => event => {
-        setNewRow({ ...newRow, [name]: event.target.value });
-    };
-
-    const handleChangePhone = name => value => {
-        setNewRow({ ...newRow, [name]: value });
-    }
-
-    function handleClickOpenForm() {
-        setNewRow({ 'id': rowsCopy.length, lastModified: updateDate(), ...newRow });
-        setOpenForm(true);
-    }
-
-    function handleCloseForm() {
-        setOpenForm(false);
-        setNewRow({});
-    }
-
-    function handleOpenCheckDelete() {
-        if (selectedIndexes.length > 0)
-            setOpenDeleteCheck(true);
-    }
-    function handleCloseCheckDelete() {
-        setOpenDeleteCheck(false);
-    }
-
-    const deleteRow = () => {
-        if (selectedIndexes.length === 0)
-            return;
-        if (!loading) {
-            setLoading(true);
-            const fids = []
-            selectedIndexes.forEach(idx => fids.push(rowsCopy[idx].fid))
-            // firestoreModule.deleteStudents(fids)
-            fids.forEach(id => firestoreModule.deleteUser(id));
-            let newArr = rowsCopy.filter((row, i) => !selectedIndexes.includes(i));
-            while (selectedIndexes.length !== 0) {
-                selectedIndexes.shift();
-            }
-            rowsCopy = newArr;
-            setRows(rowsCopy);
-            setMainRows(rowsCopy);
-            setLoading(false);
-            handleCloseCheckDelete();
-            if (type === 'tutors')
-                setMsgState({
-                    title: "מחיקת מדריכם",
-                    body: "!כל המדריכים שנבחרו נמחקו בהצלחה",
-                    visible: true
-                });
-            else if (type === 'coordinators')
-                setMsgState({
-                    title: "מחיקת רכזים",
-                    body: "!כל הרכזים שנבחרו נמחקו בהצלחה",
-                    visible: true
-                });
-            else if (type === 'departmentManagers')
-                setMsgState({
-                    title: "מחיקת מנהלי מחלקות",
-                    body: "!כל המנהלים שנבחרו נמחקו בהצלחה",
-                    visible: true
-                });
-            setGenericSaveButtonColor('secondary');
-            updateNums();
-        }
-    };
-
-    const removeUnnecessaryFields = (row) => {
-        delete row['check'];
-        delete row['id'];
-        delete row['fid'];
-
-    }
-
-    const getOwners = (fixedRow, role) => {
-        if (role === 'coordinator') {
-            fixedRow = { ...fixedRow, 'owners': { 'coordinators': [], 'departmentManagers': [] }, 'role': 'tutor', lastModified: updateDate() };
-            fixedRow.owners['coordinators'].push(uid);
-        }
-        else if (role === 'departmentManager') {
-            if (type === 'tutors')
-                fixedRow = { ...fixedRow, 'owners': { 'coordinators': [], 'departmentManagers': [] }, 'role': 'tutor', lastModified: updateDate() };
-            else
-                fixedRow = { ...fixedRow, 'owners': { 'departmentManagers': [] }, 'role': 'coordinator', lastModified: updateDate() };
-            fixedRow.owners['departmentManagers'].push(uid);
-        }
-        else {
-            if (type === 'tutors')
-                fixedRow = { ...fixedRow, 'owners': { 'coordinators': [], 'departmentManagers': [] }, 'role': 'tutor', lastModified: updateDate() };
-            else if (type === 'coordinators')
-                fixedRow = { ...fixedRow, 'owners': { 'departmentManagers': [] }, 'role': 'coordinator', lastModified: updateDate() };
-            else
-                fixedRow = { ...fixedRow, 'role': 'departmentManager', lastModified: updateDate() };
-        }
-        return fixedRow;
-    }
-
-    const addRow = () => {
-        setLoadingAdd(true);
-        handleCloseForm();
-        let fixedRow = fixRowFields(newRow);
-        removeUnnecessaryFields(fixedRow);
-        fixedRow = getOwners(fixedRow, role);
-        fixedRow = removeEmptyFields(fixedRow);
-        firestoreModule.getUsers().add(fixedRow).then(ref => {
-
-            fixedRow = { ...fixedRow, 'fid': ref.id };
-            fixedRow = fixRowFields(fixedRow);
-            fixedRow = getOwners(fixedRow, role);
-
-            rowsCopy.unshift(fixedRow);
-
-            updateNums();
-            setRows(rowsCopy);
-            setMainRows(rowsCopy);
-            if (type === 'tutors')
-                setMsgState({
-                    title: "הוספת מדריך",
-                    body: "!המדריך הוסף בהצלחה",
-                    visible: true
-                });
-            else if (type === 'coordinators')
-                setMsgState({
-                    title: "הוספת רכז",
-                    body: "!הרכז הוסף בהצלחה",
-                    visible: true
-                });
-            else if (type === 'departmentManagers')
-                setMsgState({
-                    title: "הוספת מנהל מחלקה",
-                    body: "!המנהל הוסף בהצלחה",
-                    visible: true
-                });
-            setGenericSaveButtonColor('secondary');
-            setLoadingAdd(false);
-        }).catch(function (error) {
-            console.log("Error adding", error);
-        });
-    }
-
-    const classes = useStyles();
-
-    const onRowsSelected = rows => {
-        setSelectedIndexes(selectedIndexes.concat(
-            rows.map(r => r.rowIdx)
-        ));
-    };
-
-    const onRowsDeselected = rows => {
-        let rowIndexes = rows.map(r => r.rowIdx);
-        const newSelectedIndexes = selectedIndexes.filter(
-            i => rowIndexes.indexOf(i) === -1
-        );
-        setSelectedIndexes(newSelectedIndexes);
-    };
-
-    const rowText = selectedIndexes.length === 1 ? "row" : "rows";
-
-    const columnsToShow = [...columns];
-
-    const rowToArr = (row) => columns.map(r => row[r.key]);
-
-
-    const exportToExcel = () => {
-        const columnNames = columns.map(r => r.name);
-        const aoa = [columnNames].concat(rowsCopy.map(rowToArr));
-        aoaToFile({ fileName: "List.xlsx", aoa })
-    }
-
-    const firstTimeLoading = () => {
-        updateNums();
-        let newRows = fixRowsFields(rowsCopy);
-        setRows([...newRows]);
-        setMainRows([...rowsCopy]);
-        setLoadingPage(false);
-    }
-    if (loadingPage)
-        firstTimeLoading();
-
-    const deleteUnnecessaryRow = () => {
-        let fids = rowsCopy.map(row => row.fid);
-        originalRows = originalRows.filter(row => fids.includes(row.fid));
-        setOriginalRows([...originalRows]);
-
-    };
-
-
-    const getRowsToUpdate = () => {
-        let ids = [];
-        let rows = [];
-        rowsCopy.map(row => ids.push({ id: row.id - 1, fid: row.fid }));
-        for (let i = 0; i < originalRows.length; i++) {
-            for (let j = 0; j < ids.length; j++) {
-                if (originalRows[i].fid === ids[j].fid) {
-                    if (rowsCopy[ids[j].id] !== undefined) {
-                        if (
-                            new Date(originalRows[i].lastModified).getTime() !==
-                            new Date(rowsCopy[ids[j].id].lastModified).getTime()
-                        )
-                            rows.push(rowsCopy[ids[j].id]);
-                    }
-                }
-            }
-        }
-        return rows;
-    };
-
-    const makeUpdate = arr => {
-        arr.forEach(row => {
-            let temp = { ...row };
-            removeUnnecessaryFields(temp);
-            temp = removeEmptyFields(temp);
-            firestoreModule.getSpecificUser(row.fid).update(temp);
-        });
-    };
-
-    const saveUpdates = () => {
-        setLoadingSave(true);
-        if (originalRows.length !== rowsCopy.length) deleteUnnecessaryRow();
-        let arr = getRowsToUpdate();
-        if (arr.length > 0)
-            makeUpdate(arr);
-        let newRows = fixRowsFields(rowsCopy);
-        setRows(newRows);
-        setOriginalRows(newRows);
-        setMainRows(newRows);
-        updateNums();
-        setLoadingSave(false);
-        setGenericSaveButtonColor('default');
-        setMsgState({
-            title: 'שמירת שינויים',
-            body: 'כל השינויים נשמרו בהצלחה',
+        if (type === 'tutors')
+          setMsgState({
+            title: 'הוספת מדריך',
+            body: '!המדריך הוסף בהצלחה',
             visible: true
-        });
-    };
+          });
+        else if (type === 'coordinators')
+          setMsgState({
+            title: 'הוספת רכז',
+            body: '!הרכז הוסף בהצלחה',
+            visible: true
+          });
+        else if (type === 'departmentManagers')
+          setMsgState({
+            title: 'הוספת מנהל מחלקה',
+            body: '!המנהל הוסף בהצלחה',
+            visible: true
+          });
+        setGenericSaveButtonColor('secondary');
+        setLoadingAdd(false);
+      })
+      .catch(function(error) {
+        console.log('Error adding', error);
+      });
+  };
 
+  const classes = useStyles();
 
-    return (
-        <div>
+  const onRowsSelected = rows => {
+    setSelectedIndexes(selectedIndexes.concat(rows.map(r => r.rowIdx)));
+  };
 
-            <ReactDataGrid
-                rowKey="id"
-                columns={columnsToShow.reverse()}
-                rowGetter={i => filteredRows[i]}
-                rowsCount={filteredRows.length}
-                minHeight={350}
-                toolbar={<Toolbar enableFilter={true} />}
-                onAddFilter={filter => setFilters(handleFilterChange(filter))}
-                onClearFilters={() => setFilters({})}
-                getValidFilterValues={columnKey => getValidFilterValues(rowsCopy, columnKey)}
-                onGridSort={(sortColumn, sortDirection) =>
-                    setRows(sortRows(rowsCopy, sortColumn, sortDirection))
-                }
-                onGridRowsUpdated={onGridRowsUpdated}
-                rowRenderer={RowRenderer}
-                enableCellSelect={true}
-                rowSelection={{
-                    showCheckbox: true,
-                    enableShiftSelect: true,
-                    onRowsSelected: onRowsSelected,
-                    onRowsDeselected: onRowsDeselected,
-                    selectBy: {
-                        indexes: selectedIndexes
-                    }
-                }}
-            />
-            <span style={{ textAlign: 'center', alignContent: 'center', alignSelf: 'center', font: 30 }} >
-                {selectedIndexes.length} {rowText} selected
+  const onRowsDeselected = rows => {
+    let rowIndexes = rows.map(r => r.rowIdx);
+    const newSelectedIndexes = selectedIndexes.filter(i => rowIndexes.indexOf(i) === -1);
+    setSelectedIndexes(newSelectedIndexes);
+  };
+
+  const rowText = selectedIndexes.length === 1 ? 'row' : 'rows';
+
+  const columnsToShow = [...columns];
+
+  const rowToArr = row => columns.map(r => row[r.key]);
+
+  const exportToExcel = () => {
+    const columnNames = columns.map(r => r.name);
+    const aoa = [columnNames].concat(rowsCopy.map(rowToArr));
+    aoaToFile({ fileName: 'List.xlsx', aoa });
+  };
+
+  const firstTimeLoading = () => {
+    updateNums();
+    let newRows = fixRowsFields(rowsCopy);
+    setRows([...newRows]);
+    setMainRows([...rowsCopy]);
+    setLoadingPage(false);
+  };
+  if (loadingPage) firstTimeLoading();
+
+  const deleteUnnecessaryRow = () => {
+    let fids = rowsCopy.map(row => row.fid);
+    originalRows = originalRows.filter(row => fids.includes(row.fid));
+    setOriginalRows([...originalRows]);
+  };
+
+  const getRowsToUpdate = () => {
+    let ids = [];
+    let rows = [];
+    rowsCopy.map(row => ids.push({ id: row.id - 1, fid: row.fid }));
+    for (let i = 0; i < originalRows.length; i++) {
+      for (let j = 0; j < ids.length; j++) {
+        if (originalRows[i].fid === ids[j].fid) {
+          if (rowsCopy[ids[j].id] !== undefined) {
+            if (
+              new Date(originalRows[i].lastModified).getTime() !==
+              new Date(rowsCopy[ids[j].id].lastModified).getTime()
+            )
+              rows.push(rowsCopy[ids[j].id]);
+          }
+        }
+      }
+    }
+    return rows;
+  };
+
+  const makeUpdate = arr => {
+    arr.forEach(row => {
+      let temp = { ...row };
+      removeUnnecessaryFields(temp);
+      temp = removeEmptyFields(temp);
+      firestoreModule.getSpecificUser(row.fid).update(temp);
+    });
+  };
+
+  const saveUpdates = () => {
+    setLoadingSave(true);
+    if (originalRows.length !== rowsCopy.length) deleteUnnecessaryRow();
+    let arr = getRowsToUpdate();
+    if (arr.length > 0) makeUpdate(arr);
+    let newRows = fixRowsFields(rowsCopy);
+    setRows(newRows);
+    setOriginalRows(newRows);
+    setMainRows(newRows);
+    updateNums();
+    setLoadingSave(false);
+    setGenericSaveButtonColor('default');
+    setMsgState({
+      title: 'שמירת שינויים',
+      body: 'כל השינויים נשמרו בהצלחה',
+      visible: true
+    });
+  };
+
+  return (
+    <div>
+      <ReactDataGrid
+        rowKey="id"
+        columns={columnsToShow.reverse()}
+        rowGetter={i => filteredRows[i]}
+        rowsCount={filteredRows.length}
+        minHeight={350}
+        toolbar={<Toolbar enableFilter={true} />}
+        onAddFilter={filter => setFilters(handleFilterChange(filter))}
+        onClearFilters={() => setFilters({})}
+        getValidFilterValues={columnKey => getValidFilterValues(rowsCopy, columnKey)}
+        onGridSort={(sortColumn, sortDirection) =>
+          setRows(sortRows(rowsCopy, sortColumn, sortDirection))
+        }
+        onGridRowsUpdated={onGridRowsUpdated}
+        rowRenderer={RowRenderer}
+        enableCellSelect={true}
+        rowSelection={{
+          showCheckbox: true,
+          enableShiftSelect: true,
+          onRowsSelected: onRowsSelected,
+          onRowsDeselected: onRowsDeselected,
+          selectBy: {
+            indexes: selectedIndexes
+          }
+        }}
+      />
+      <span style={{ textAlign: 'center', alignContent: 'center', alignSelf: 'center', font: 30 }}>
+        {selectedIndexes.length} {rowText} selected
       </span>
 
-            <div className={classes.actionsContainer}>
-                <div className={classes.actions}>
-                    <Button disabled={loadingAdd} variant="contained" color="primary" className={classes.button} onClick={() => handleClickOpenForm()} size='large'>
-                        {type === 'tutors' && "הוסף מדריך"}
-                        {type === 'coordinators' && "הוסף רכז שכונה"}
-                        {type === 'departmentManagers' && "הוסף מנהל מחלקה"}
-                        <AddIcon />
-                        {loadingAdd && <CircularProgress size={24} className={classes.buttonProgress} />}
+      <div className={classes.actionsContainer}>
+        <div className={classes.actions}>
+          <Button
+            disabled={loadingAdd}
+            variant="contained"
+            color="primary"
+            className={classes.button}
+            onClick={() => handleClickOpenForm()}
+            size="large">
+            {type === 'tutors' && 'הוסף מדריך'}
+            {type === 'coordinators' && 'הוסף רכז שכונה'}
+            {type === 'departmentManagers' && 'הוסף מנהל מחלקה'}
+            <AddIcon />
+            {loadingAdd && <CircularProgress size={24} className={classes.buttonProgress} />}
+          </Button>
+          <MsgToShow
+            {...msgState}
+            handleClose={() => setMsgState({ ...msgState, visible: false })}
+          />
 
-                    </Button>
-                    <MsgToShow {...msgState} handleClose={() => setMsgState({ ...msgState, visible: false })} />
-
-                    <Dialog
-                        disableBackdropClick
-                        disableEscapeKeyDown
-                        open={openForm}
-                        onClose={handleCloseForm}
-                        aria-labelledby="form-dialog-title">
-                        <form validate="true" className={classes.container} autoComplete="on">
-                            <DialogTitle id="form-dialog-title" className={classes.formTitle}>הוספת חניך</DialogTitle>
-                            <DialogContent>
-                                <DialogContentText className={classes.formText}>
-                                    : נא למלא את כל השדות
+          <Dialog
+            disableBackdropClick
+            disableEscapeKeyDown
+            open={openForm}
+            onClose={handleCloseForm}
+            aria-labelledby="form-dialog-title">
+            <form validate="true" className={classes.container} autoComplete="on">
+              <DialogTitle id="form-dialog-title" className={classes.formTitle}>
+                הוספת חניך
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText className={classes.formText}>
+                  : נא למלא את כל השדות
                 </DialogContentText>
-                                <TextField
-                                    required
-                                    autoFocus
-                                    variant="outlined"
-                                    margin="dense"
-                                    id="firstName"
-                                    className={classes.textField}
-                                    placeholder="דוד"
-                                    label="שם פרטי"
-                                    type="name"
-                                    onChange={handleChange('firstName')}
-                                />
-                                <TextField
-                                    required
-                                    variant="outlined"
-                                    margin="dense"
-                                    id="lastName"
-                                    className={classes.textField}
-                                    placeholder="כהן"
-                                    label="שם המשפחה"
-                                    type="name"
-                                    onChange={handleChange('lastName')}
-                                />
+                <TextField
+                  required
+                  autoFocus
+                  variant="outlined"
+                  margin="dense"
+                  id="firstName"
+                  className={classes.textField}
+                  placeholder="דוד"
+                  label="שם פרטי"
+                  type="name"
+                  onChange={handleChange('firstName')}
+                />
+                <TextField
+                  required
+                  variant="outlined"
+                  margin="dense"
+                  id="lastName"
+                  className={classes.textField}
+                  placeholder="כהן"
+                  label="שם המשפחה"
+                  type="name"
+                  onChange={handleChange('lastName')}
+                />
 
-                                <TextField
-                                    required
+                <TextField
+                  required
+                  select
+                  id="gender"
+                  variant="outlined"
+                  margin="dens"
+                  label="מין"
+                  className={classes.textField}
+                  onChange={handleChange('gender')}
+                  value={newRow.gender}
+                  SelectProps={{
+                    MenuProps: {
+                      className: classes.menu
+                    }
+                  }}>
+                  {genders.map(option => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+                <PhoneInput
+                  required
+                  country="IL"
+                  label="מס' טלפון"
+                  placeholder="נייד"
+                  className={classes.textField}
+                  value={newRow['phone']}
+                  onChange={handleChangePhone('phone')}
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseForm} color="secondary" size="large">
+                  בטל
+                </Button>
+                <Button onClick={() => addRow()} color="primary" size="large">
+                  אשר
+                </Button>
+              </DialogActions>
+            </form>
+          </Dialog>
+        </div>
 
-                                    select
-                                    id="gender"
-                                    variant="outlined"
-                                    margin="dens"
-                                    label="מין"
-                                    className={classes.textField}
-                                    onChange={handleChange('gender')}
-                                    value={newRow.gender}
-                                    SelectProps={{
-                                        MenuProps: {
-                                            className: classes.menu,
-                                        },
-                                    }}
-                                >
-                                    {genders.map(option => (
-                                        <MenuItem key={option.value} value={option.value}>
-                                            {option.label}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-                                <PhoneInput
-                                    required
-                                    country="IL"
-                                    label="מס' טלפון"
-                                    placeholder="נייד"
-                                    className={classes.textField}
-                                    value={newRow['phone']}
-                                    onChange={handleChangePhone('phone')}
-                                />
+        <div className={classes.actions}>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            className={classes.button}
+            onClick={handleOpenCheckDelete}
+            disabled={loading}>
+            {type === 'tutors' && 'מחק מדריכים בחורים'}
+            {type === 'coordinators' && 'מחק רכזים בחורים'}
+            {type === 'departmentManagers' && 'מחק מנהלים בחורים'}
+            {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
 
-
-
-                            </DialogContent>
-                            <DialogActions>
-                                <Button onClick={handleCloseForm} color="secondary" size='large' >
-                                    בטל
-                                </Button>
-                                <Button onClick={() => addRow()} color="primary" size='large'>
-                                    אשר
-                                </Button>
-                            </DialogActions>
-                        </form>
-                    </Dialog>
-
-                </div>
-
-
-                <div className={classes.actions}>
-                    <Button variant="contained" color="primary" size='large'
-                        className={classes.button}
-                        onClick={handleOpenCheckDelete}
-                        disabled={loading}
-                    >
-                        {type === 'tutors' && "מחק מדריכים בחורים"}
-                        {type === 'coordinators' && "מחק רכזים בחורים"}
-                        {type === 'departmentManagers' && "מחק מנהלים בחורים"}
-                        {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
-
-                        <DeleteIcon />
-                    </Button>
-
-                    <Dialog
-                        disableBackdropClick
-                        disableEscapeKeyDown
-                        open={openDeleteCheck}
-                        onClose={handleCloseCheckDelete}
-
-                    >
-                        <DialogTitle className={classes.formTitle}>
-                            {type === 'tutors' && "מחיקת מדריכים"}
-                            {type === 'coordinators' && "מחיקת רכזים"}
-                            {type === 'departmentManagers' && "מחיקת מנהלים"}
-                        </DialogTitle>
-                        <DialogContent>
-                            <DialogContentText className={classes.formText}>
-                                {type === 'tutors' && "אתה עומד למחוק את כל המדריכים שנבחרו"}
-                                {type === 'coordinators' && "אתה עומד למחוק את כל הרכזים שנבחרו"}
-                                {type === 'departmentManagers' && "אתה עומד למחוק את כל המנהלים שנבחרו"}
-                            </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleCloseCheckDelete} color="primary" className={classes.button} size='large'>
-                                בטל
+            <DeleteIcon />
           </Button>
-                            <Button onClick={deleteRow} color="secondary" className={classes.button} size='large'>
-                                אשר
+
+          <Dialog
+            disableBackdropClick
+            disableEscapeKeyDown
+            open={openDeleteCheck}
+            onClose={handleCloseCheckDelete}>
+            <DialogTitle className={classes.formTitle}>
+              {type === 'tutors' && 'מחיקת מדריכים'}
+              {type === 'coordinators' && 'מחיקת רכזים'}
+              {type === 'departmentManagers' && 'מחיקת מנהלים'}
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText className={classes.formText}>
+                {type === 'tutors' && 'אתה עומד למחוק את כל המדריכים שנבחרו'}
+                {type === 'coordinators' && 'אתה עומד למחוק את כל הרכזים שנבחרו'}
+                {type === 'departmentManagers' && 'אתה עומד למחוק את כל המנהלים שנבחרו'}
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={handleCloseCheckDelete}
+                color="primary"
+                className={classes.button}
+                size="large">
+                בטל
+              </Button>
+              <Button onClick={deleteRow} color="secondary" className={classes.button} size="large">
+                אשר
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          {/* <MsgToShow {...msgState} handleClose={() => setMsgState({ ...msgState, visible: false })} /> */}
+        </div>
+
+        <div className={classes.actions}>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            className={classes.button}
+            onClick={() => exportToExcel()}>
+            ייצא לאקסל
+            <SaveIcon />
           </Button>
-                        </DialogActions>
-                    </Dialog>
+        </div>
 
-
-                    {/* <MsgToShow {...msgState} handleClose={() => setMsgState({ ...msgState, visible: false })} /> */}
-
-                </div>
-
-                <div className={classes.actions}>
-                    <Button variant="contained" color="primary" size='large'
-                        className={classes.button}
-                        onClick={() => exportToExcel()}>
-                        ייצא לאקסל
-          <SaveIcon />
-                    </Button>
-                </div>
-
-                <div className={classes.saveContainer}>
-                    {/* <ButtonGroup
+        <div className={classes.saveContainer}>
+          {/* <ButtonGroup
             variant="contained"
             color="secondary"
             size="large"
             aria-label="Large contained secondary button group"
           > */}
-                    <Button
-                        variant="contained" size='large'
-                        color={genericSaveButtonColor}
-                        className={classes.button}
-                        size="large"
-                        onClick={() => saveUpdates()}
-                        disabled={loadingSave}>
-                        שמור שינויים
+          <Button
+            variant="contained"
+            size="large"
+            color={genericSaveButtonColor}
+            className={classes.button}
+            size="large"
+            onClick={() => saveUpdates()}
+            disabled={loadingSave}>
+            שמור שינויים
             <SaveIcon />
-                        {loadingSave && <CircularProgress size={24} className={classes.buttonProgress} />}
-                    </Button>
-                    {/* </ButtonGroup> */}
-
-
-                </div>
-            </div>
-
+            {loadingSave && <CircularProgress size={24} className={classes.buttonProgress} />}
+          </Button>
+          {/* </ButtonGroup> */}
         </div>
-    );
+      </div>
+    </div>
+  );
 }
-
-
 
 export { GenericTab };

@@ -30,6 +30,7 @@ import PhoneInput from 'react-phone-number-input/react-responsive-ui';
 import { firestoreModule } from '../Firebase/Firebase';
 import { Columns } from '../utils/getColumns';
 import moment from 'moment';
+import deepcopy from 'deepcopy';
 
 const useStyles = makeStyles(theme => ({
   // wrapper: {
@@ -201,7 +202,11 @@ function TableTabScene({
   const fixStudentFields = student => {
     columns.forEach(({ key }) => {
       if (student.hasOwnProperty(key)) {
-        if ((key === 'lastModified' || key === 'dob') && student[key] !== undefined && student[key] !== null) {
+        if (
+          (key === 'lastModified' || key === 'dob') &&
+          student[key] !== undefined &&
+          student[key] !== null
+        ) {
           student[key] = student[key] instanceof Date ? student[key] : student[key].toDate();
         }
         if (student[key] === null || student[key] === undefined) {
@@ -229,7 +234,7 @@ function TableTabScene({
 
   const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
     setSaveButtonColor('secondary');
-    const newRows = JSON.parse(JSON.stringify(rowsCopy));
+    const newRows = deepcopy(rowsCopy);
 
     for (let i = 0; i < newRows.length; i++) {
       if (i >= fromRow && i <= toRow) {
@@ -238,7 +243,7 @@ function TableTabScene({
       } else {
         newRows[i].lastModified = new Date(newRows[i].lastModified);
       }
-      if(newRows[i].dob !== '') new Date(newRows[i].dob);
+      if (newRows[i].dob !== '') new Date(newRows[i].dob);
     }
 
     setRows(newRows);
@@ -247,7 +252,6 @@ function TableTabScene({
 
   const updateDate = () => {
     return new Date();
-
   };
 
   const updateNums = () => {
@@ -282,13 +286,11 @@ function TableTabScene({
   }
 
   function handleOpenCheckDelete() {
-    if (selectedIndexes.length > 0)
-      setOpenDeleteCheck(true);
+    if (selectedIndexes.length > 0) setOpenDeleteCheck(true);
   }
   function handleCloseCheckDelete() {
     setOpenDeleteCheck(false);
   }
-
 
   const deleteRow = () => {
     if (selectedIndexes.length === 0) return;
@@ -397,7 +399,7 @@ function TableTabScene({
           visible: true
         });
       })
-      .catch(function (error) {
+      .catch(function(error) {
         console.log('Error adding student', error);
       });
   };
@@ -624,7 +626,7 @@ function TableTabScene({
         <div className={classes.actions}>
           <Button
             disabled={loadingAdd}
-            size='large'
+            size="large"
             variant="contained"
             color="primary"
             className={classes.button}
@@ -645,7 +647,11 @@ function TableTabScene({
             open={openForm}
             onClose={handleCloseForm}
             aria-labelledby="form-dialog-title">
-            <form validate="true" className={classes.container} autoComplete="on" onSubmit={() => console.log('hey')}>
+            <form
+              validate="true"
+              className={classes.container}
+              autoComplete="on"
+              onSubmit={() => console.log('hey')}>
               <DialogTitle id="form-dialog-title" className={classes.formTitle}>
                 הוספת חניך
               </DialogTitle>
@@ -668,7 +674,6 @@ function TableTabScene({
                 <TextField
                   required
                   variant="outlined"
-
                   margin="dense"
                   id="lastName"
                   className={classes.textField}
@@ -681,7 +686,6 @@ function TableTabScene({
                 <TextField
                   required
                   variant="outlined"
-
                   select
                   id="gender"
                   margin="dense"
@@ -703,7 +707,6 @@ function TableTabScene({
 
                 <PhoneInput
                   required
-
                   country="IL"
                   label="מס' טלפון"
                   className={classes.textField}
@@ -711,26 +714,32 @@ function TableTabScene({
                   value={newStudent.phone}
                   onChange={handleChangePhone('phone')}
                 />
-
               </DialogContent>
               <DialogActions>
-                <Button onClick={handleCloseForm} color="secondary" className={classes.button} size='large'>
+                <Button
+                  onClick={handleCloseForm}
+                  color="secondary"
+                  className={classes.button}
+                  size="large">
                   בטל
                 </Button>
-                <Button type='submit' onClick={() => addStudent()} color="primary" className={classes.button} size='large'>
+                <Button
+                  type="submit"
+                  onClick={() => addStudent()}
+                  color="primary"
+                  className={classes.button}
+                  size="large">
                   הוסף
                 </Button>
               </DialogActions>
             </form>
           </Dialog>
-
-
         </div>
 
         <div className={classes.actions}>
           {role !== 'tutor' ? (
             <Button
-              size='large'
+              size="large"
               variant="contained"
               color="primary"
               className={classes.button}
@@ -743,8 +752,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-              <></>
-            )}
+            <></>
+          )}
 
           <AssignmentDialog
             title="בחר מדריך"
@@ -792,13 +801,12 @@ function TableTabScene({
                 }
                 setSaveButtonColor('secondary');
               }
-
             }}
           />
 
           {role === 'departmentManager' || role === 'ceo' ? (
             <Button
-              size='large'
+              size="large"
               variant="contained"
               color="primary"
               className={classes.button}
@@ -811,8 +819,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-              <></>
-            )}
+            <></>
+          )}
 
           <AssignmentDialog
             title="בחר רכז"
@@ -863,7 +871,7 @@ function TableTabScene({
 
           {role === 'ceo' ? (
             <Button
-              size='large'
+              size="large"
               variant="contained"
               color="primary"
               className={classes.button}
@@ -876,8 +884,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-              <></>
-            )}
+            <></>
+          )}
 
           <AssignmentDialog
             title="בחר מנהל מחלקה"
@@ -929,7 +937,7 @@ function TableTabScene({
 
         <div className={classes.actions}>
           <Button
-            size='large'
+            size="large"
             variant="contained"
             color="primary"
             className={classes.button}
@@ -943,32 +951,31 @@ function TableTabScene({
             disableBackdropClick
             disableEscapeKeyDown
             open={openDeleteCheck}
-            onClose={handleCloseCheckDelete}
-
-          >
-            <DialogTitle className={classes.formTitle}>{"מחיקת חניכים"}</DialogTitle>
+            onClose={handleCloseCheckDelete}>
+            <DialogTitle className={classes.formTitle}>{'מחיקת חניכים'}</DialogTitle>
             <DialogContent>
               <DialogContentText className={classes.formText}>
                 אתה עומד למחוק את כל החניכים שנבחרו
-          </DialogContentText>
+              </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleCloseCheckDelete} color="primary" className={classes.button} size='large'>
+              <Button
+                onClick={handleCloseCheckDelete}
+                color="primary"
+                className={classes.button}
+                size="large">
                 בטל
-          </Button>
-              <Button onClick={deleteRow} color="secondary" className={classes.button} size='large'>
+              </Button>
+              <Button onClick={deleteRow} color="secondary" className={classes.button} size="large">
                 אשר
-          </Button>
+              </Button>
             </DialogActions>
           </Dialog>
-
-
-
         </div>
 
         <div className={classes.actions}>
           <Button
-            size='large'
+            size="large"
             variant="contained"
             color="primary"
             className={classes.button}
@@ -979,14 +986,13 @@ function TableTabScene({
         </div>
 
         <div className={classes.saveContainer}>
-
           <Button
-            size='large'
+            size="large"
             variant="contained"
             color={saveButtonColor}
             className={classes.button}
             size="large"
-            onClick={() => saveButtonColor === 'secondary' ? saveUpdates() : {}}
+            onClick={() => (saveButtonColor === 'secondary' ? saveUpdates() : {})}
             disabled={loadingSave}>
             שמור שינויים
             <SaveIcon />
