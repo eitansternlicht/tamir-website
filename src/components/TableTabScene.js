@@ -238,6 +238,7 @@ function TableTabScene({
       } else {
         newRows[i].lastModified = new Date(newRows[i].lastModified);
       }
+      if(newRows[i].dob !== '') new Date(newRows[i].dob);
     }
 
     setRows(newRows);
@@ -510,7 +511,6 @@ function TableTabScene({
     newRows = getMissedDetailsForAllStudents();
     setRows(newRows);
     setMainRows([...newRows]);
-    // setOriginalRows([...newRows]);
     setLoadingPage(false);
   };
 

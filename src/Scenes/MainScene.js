@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TableTabScene } from '../components';
-import { makeStyles, Paper, Typography, Tab, Tabs, AppBar, Button } from '@material-ui/core/';
+import { makeStyles, Paper, Typography, Tab, Tabs, AppBar, Button, Grid } from '@material-ui/core/';
 import green from '@material-ui/core/colors/green';
 import { GenericTab } from '../components/GenericTab';
 import {
@@ -12,6 +12,7 @@ import {
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from 'firebase';
 import { firestoreModule } from '../Firebase/Firebase';
+import Upload from '../utils/Upload';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -47,8 +48,8 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center'
   }
 }));
-const role = 'departmentManager';
-const uid = '9WowTnrHzkXm8jvsfNxD';
+const role = 'ceo';
+const uid = 'qIAOWJMzBXdSXHf20w8J';
 
 const uiConfig = {
   signInFlow: 'popup',
@@ -73,9 +74,7 @@ const MainScene = () => {
   const [saveButtonColor, setSaveButtonColor] = useState('default');
   const [tutorsSaveButtonColor, setTutorsSaveButtonColor] = useState('default');
   const [coordinatorsSaveButtonColor, setCoordinatorsSaveButtonColor] = useState('default');
-  const [departmentManagersSaveButtonColor, setDepartmentManagersSaveButtonColor] = useState(
-    'default'
-  );
+  const [departmentManagersSaveButtonColor, setDepartmentManagersSaveButtonColor] = useState('default');
   const [coordinatorsRows, setCoordinatorsRows] = useState([]);
   const [tutorsRows, setTutorsRows] = useState([]);
   const [departmentManagersRows, setDepartmentManagersRows] = useState([]);
@@ -237,6 +236,7 @@ const MainScene = () => {
               value={displayedTab}
               onChange={handleChange}>
               <Tab key={0} value="ReportsTabScene" label="דוחות" />
+              <Tab key={5} value="ImportFile" label="ייבוא קובץ מאקסל" />
               {role === 'ceo' ? (
                 <Tab key={1} value="DepartmentManagersTabScene" label="מנהלי מחלקות" />
               ) : null}
@@ -257,7 +257,7 @@ const MainScene = () => {
 
           {displayedTab === 'TutorsTabScene' ? (
             <div className={classes.table}>
-             
+
               <GenericTab
                 originalRows={tutorsOriginalRows}
                 setOriginalRows={setTutorsOriginalRows}
@@ -303,6 +303,24 @@ const MainScene = () => {
               />
             </div>
           ) : null}
+
+          {displayedTab === 'ImportFile' ? (
+            <div className={classes.table}>
+               <Grid
+                container
+                border= '3'
+                spacing={0}
+                direction="column"
+                alignItems="center"
+                justify="center"
+                style={{ minHeight: '50vh' }}
+              >
+                <Upload />
+              </Grid>
+            </div>
+          ) : null}
+
+
         </div>
       </div>
     );
