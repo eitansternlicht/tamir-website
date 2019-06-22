@@ -23,6 +23,7 @@ import AssignmentIcon from '@material-ui/icons/AssignmentInd';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { aoaToFile } from '../utils/excell-utils';
+import { getOwners } from '../utils/general-utils';
 import green from '@material-ui/core/colors/green';
 import 'react-responsive-ui/style.css';
 //import MuiPhoneNumber from '@material-ui/material-ui-phone-number';
@@ -200,6 +201,7 @@ function TableTabScene({
     }, {});
 
   const fixStudentFields = student => {
+    console.log("s", student);
     columns.forEach(({ key }) => {
       if (student.hasOwnProperty(key)) {
         if (
@@ -213,13 +215,15 @@ function TableTabScene({
           student[key] = '';
         }
       } else {
-        student = { ...student, [key]: '' };
+
+        student = { ...student, [key]: key === 'lastModified' ? new Date() : '' };
       }
     });
     return student;
   };
 
   const fixStudentsFields = arr => {
+    console.log("aa", arr);
     return arr.map(fixStudentFields);
   };
 
@@ -245,6 +249,8 @@ function TableTabScene({
       }
       if (newRows[i].dob !== '') new Date(newRows[i].dob);
     }
+
+    console.log("new", newRows);
 
     setRows(newRows);
     setMainRows(newRows);
@@ -344,40 +350,14 @@ function TableTabScene({
     delete student['departmentManager'];
   };
 
-  const getOwners = (fixedStudent, role) => {
-    if (role === 'tutor')
-      fixedStudent = {
-        ...fixedStudent,
-        owners: {
-          tutors: [{ studentStatus: 'normal', uid: uid }],
-          coordinators: [],
-          departmentManagers: []
-        }
-      };
-    else if (role === 'coordinator')
-      fixedStudent = {
-        ...fixedStudent,
-        owners: { tutors: [], coordinators: [uid], departmentManagers: [] }
-      };
-    else if (role === 'departmentManager')
-      fixedStudent = {
-        ...fixedStudent,
-        owners: { tutors: [], coordinators: [], departmentManagers: [uid] }
-      };
-    else
-      fixedStudent = {
-        ...fixedStudent,
-        owners: { tutors: [], coordinators: [], departmentManagers: [] }
-      };
-    return fixedStudent;
-  };
+
 
   const addStudent = () => {
     setLoadingAdd(true);
     handleCloseForm();
     let fixedStudent = fixStudentFields(newStudent);
     removeUnnecessaryFields(fixedStudent);
-    fixedStudent = getOwners(fixedStudent, role);
+    fixedStudent = getOwners(fixedStudent, role, uid);
     fixedStudent = removeEmptyFields(fixedStudent);
     firestoreModule
       .getStudents()
@@ -399,7 +379,7 @@ function TableTabScene({
           visible: true
         });
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log('Error adding student', error);
       });
   };
@@ -752,8 +732,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-            <></>
-          )}
+              <></>
+            )}
 
           <AssignmentDialog
             title="בחר מדריך"
@@ -819,8 +799,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-            <></>
-          )}
+              <></>
+            )}
 
           <AssignmentDialog
             title="בחר רכז"
@@ -884,8 +864,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-            <></>
-          )}
+              <></>
+            )}
 
           <AssignmentDialog
             title="בחר מנהל מחלקה"

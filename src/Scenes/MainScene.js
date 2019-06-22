@@ -11,6 +11,7 @@ import {
 } from '../utils/createRowData';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from 'firebase';
+import { getOwners } from '../utils/general-utils';
 import { firestoreModule } from '../Firebase/Firebase';
 import Upload from '../utils/Upload';
 
@@ -306,16 +307,21 @@ const MainScene = () => {
 
           {displayedTab === 'ImportFile' ? (
             <div className={classes.table}>
-               <Grid
+              <Grid
                 container
-                border= '3'
+                border='3'
                 spacing={0}
                 direction="column"
                 alignItems="center"
                 justify="center"
                 style={{ minHeight: '50vh' }}
               >
-                <Upload />
+                <Upload onNewFile={(aooToAdd) => aooToAdd.map(student => {
+                  let fixedStudent = getOwners(student, role, uid);
+                  firestoreModule
+                    .getStudents()
+                    .add(fixedStudent)
+                })} />
               </Grid>
             </div>
           ) : null}

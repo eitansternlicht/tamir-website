@@ -1,7 +1,5 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { AlertDialog } from './../components';
-
+import { checkIfAllFieldsHaveValue, entriesToObj } from '../utils/general-utils';
 import {
   AppBar,
   Toolbar,
@@ -24,18 +22,11 @@ import {
   TableRow,
   Container
 } from '@material-ui/core';
-import Icon from '@material-ui/core/Icon';
+import { MsgToShow } from './'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import InfoIcon from '@material-ui/icons/Info';
-import LockIcon from '@material-ui/icons/Lock';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-// import account_box from '@material-ui/icons/Action/account_box';
 
 import clsx from 'clsx';
+const mandatoryRows = ['firstName', 'lastName', 'gender'];
 
 const rows = [
   'i',
@@ -62,7 +53,6 @@ const rows = [
   'staffMemberAppointed',
   'comments'
 ];
-const fileRows = rows;
 class Select extends React.Component {
   constructor(props) {
     super(props);
@@ -92,16 +82,14 @@ class Select extends React.Component {
       i: '',
       okeeDialog: '',
       errordialog: '',
-      open: '',
-      send: ''
+      send: false,
+      msgState: { title: '', body: '', visible: false }
     };
   }
 
   handleChange = name => event => {
     this.setState({ [name]: event.target.value });
   };
-
-
 
   getLabel = str => {
     switch (str) {
@@ -158,69 +146,56 @@ class Select extends React.Component {
     if (str === 'i') {
       return false;
     }
-    return Object.values(this.state).includes(this.getLabel(str));
+    return Object.values(this.state).includes(str);
   };
 
+  chosen = (obj, name) => {
+    return obj[name] && obj[name] !== 'בחר עמודה מתאימה'
 
+  }
 
   handleClickOpen = () => {
-    // const keys = Object.keys(this.state);
 
     let values = rows.map(key => key !== 'i' ? this.state[key] : null);
     values = values.map(row => row === '' && row !== null ? 'בחר עמודה מתאימה' : row);
 
-    console.log("val", values);
-    let canSend = !values.includes('בחר עמודה מתאימה');
+    let canSend = checkIfAllFieldsHaveValue(mandatoryRows, this.state, this.chosen);
 
+    console.log("state", this.state);
     if (canSend === true) {
+      const [i, ...rest] = rows;
+      this.props.onSelectingDone(rest.filter(row => this.chosen(this.state, row)).map(existingName => [existingName, this.state[existingName]]))
       this.setState({ send: true });
-      return;
     }
 
-    if (values.includes('') || values.includes('בחר עמודה מתאימה'))
-      this.setState({ open: true });
-    else
-      this.setState({ open: false });
+    if (!canSend) {
+      this.setState({
+        msgState: {
+          title: 'שגיאה בטעינת הקבוץ',
+          body: 'המערכת לא הצליחה לטעון את הנתונים בדוק אם מלאת את כול השדות',
+          visible: true
+        }
+      })
+    }
 
-    return;
+    if (canSend) {
+      this.setState({
+        msgState: {
+          title: 'טעינת קובץ',
+          body: 'הקובץ נטען בהצלחה',
+          visible: true
+        }
+      })
+    }
   };
 
   handleClose = () => {
-    this.setState({ open: false });
-
     this.setState({ send: false });
   };
 
-  displayErrors = errors => {
-    errors.map((error, i) => <p key />);
-  };
 
   render() {
 
-    // const useStyles = makeStyles(theme => ({
-    //   root: {
-    //     display: 'flex',
-    //     margin: 50,
-    //     flexWrap: 'wrap'
-    //   },
-    //   formControl: {
-    //     margin: theme.spacing(1),
-    //     flexDirection: 'row',
-    //     minWidth: 120
-    //   },
-    //   selectEmpty: {
-    //     marginTop: theme.spacing(2)
-    //   },
-    //   leftIcon: {
-    //     marginRight: theme.spacing(1)
-    //   },
-    //   iconSmall: {
-    //     fontSize: 40
-    //   },
-    //   button: {
-    //     margin: theme.spacing(1)
-    //   }
-    // }));
     const classes = {
       textField: {
         marginLeft: 100,
@@ -256,7 +231,7 @@ class Select extends React.Component {
         </AppBar>
 
         <CardContent>
-          <Table style={{ width: '70%', marginLeft: 'auto', marginRight: 'auto' }}>
+          <Table style={{ width: '100%', marginLeft: 'auto', marginRight: 'auto' }}>
             <TableBody>
               <TableRow style={{ width: 'auto', marginLeft: 'auto', marginRight: 'auto' }} >
                 <TableCell component="th" scope="row" />
@@ -264,7 +239,7 @@ class Select extends React.Component {
                 <TableCell align="right"> עמודה מהאקסל </TableCell>
               </TableRow>
               {rows.map(row => (row !== 'i' ?
-                <TableRow key={row} style={{ width: 'auto', marginLeft: 'auto', marginRight: 'auto' }}>
+                <TableRow key={row} style={{ width: '100%', marginLeft: 'auto', marginRight: 'auto' }}>
                   <TableCell component="th" scope="row" />
                   <TableCell align="right">
                     <NativeSelect
@@ -273,8 +248,8 @@ class Select extends React.Component {
                       name={row}
                       onChange={this.handleChange(row)}
                       inputProps={{ 'aria-label': 'age' }}>
-                      {fileRows.map(row => <option disabled={this.chekdisabled(row)} value={this.getLabel(row)}>
-                        {this.getLabel(row)}
+                      {this.props.fileRows.map(row => <option key={row} disabled={this.chekdisabled(row)} value={row}>
+                        {row}
                       </option>)}
                     </NativeSelect>
                   </TableCell>
@@ -284,42 +259,13 @@ class Select extends React.Component {
             </TableBody>
           </Table>
         </CardContent>
-
-
-        <Dialog
-          open={this.state.open}
-          onClose={this.handleClickOpen}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description">
-          <DialogTitle id="alert-dialog-title">error</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              המערכת לא הצליחה לטעון את הנתונים בדוק אם מלאת את כול השדות
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleClose} color="primary" autoFocus>
-              אישור
-            </Button>
-          </DialogActions>
-        </Dialog>
-        <Dialog
-          open={this.state.send}
-          onClose={this.handleClickOpen}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description">
-          <DialogTitle id="alert-dialog-title">okee</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              הנתונים נטענו בהצלחה
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleClose} color="primary" autoFocus>
-              אישור
-            </Button>
-          </DialogActions>
-        </Dialog>
+        <MsgToShow
+          {...this.state.msgState}
+          handleClose={() => {
+            if (this.state.send) this.props.uploadedFinished(false);
+            this.setState({ msgState: { ... this.state.msgState, visible: false } })
+        } }
+      />
       </div>
     );
   }
