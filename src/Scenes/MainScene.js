@@ -198,6 +198,7 @@ const MainScene = () => {
       );
     } else return null;
   }
+
   return !isSignedIn ? (
     <div style={{ padding: 50 }}>
       <Typography variant="h5" component="h5" style={{ textAlign: 'right', paddingBottom: 10 }}>
@@ -217,6 +218,7 @@ const MainScene = () => {
           </Typography>
             <Typography component="p">ירושלים</Typography>
             <Button
+              style={{ alignItems: 'left', alignSelft: 'left', alignContent: 'left' }}
               size="large"
               variant="contained"
               color="primary"
@@ -285,22 +287,14 @@ const MainScene = () => {
 
           {displayedTab === 'ImportFile' ? (
             <div className={classes.table}>
-              {/* <Grid
-                container
-                border='3'
-                spacing={0}
-                direction="column"
-                alignItems="center"
-                justify="center"
-                style={{ minHeight: '50vh' }}
-              > */}
-                <Upload onNewFile={(aooToAdd) => aooToAdd.map(student => {
-                  let fixedStudent = getOwners(student, role, uid);
-                  firestoreModule
-                    .getStudents()
-                    .add(fixedStudent)
-                })} />
-              
+
+              <Upload onNewFile={(aooToAdd) => aooToAdd.map(student => {
+                let fixedStudent = getOwners(student, role, uid);
+                firestoreModule
+                  .getStudents()
+                  .add({ ...fixedStudent, lastModified: new Date() })
+              })} />
+
             </div>
           ) : null}
 
@@ -336,7 +330,7 @@ const MainScene = () => {
             </div>
           ) : null}
         </div>
-      </div>
+      </div >
     );
 };
 

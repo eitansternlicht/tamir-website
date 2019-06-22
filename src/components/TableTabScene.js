@@ -207,7 +207,7 @@ function TableTabScene({
         if (
           (key === 'lastModified' || key === 'dob') &&
           student[key] !== undefined &&
-          student[key] !== null
+          student[key] !== null && student[key] !== ''
         ) {
           student[key] = student[key] instanceof Date ? student[key] : student[key].toDate();
         }
@@ -239,12 +239,13 @@ function TableTabScene({
   const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
     setSaveButtonColor('secondary');
     const newRows = deepcopy(rowsCopy);
-
+    console.log("dd", newRows);
     for (let i = 0; i < newRows.length; i++) {
       if (i >= fromRow && i <= toRow) {
         newRows[i] = { ...rowsCopy[i], ...updated };
         newRows[i].lastModified = updateDate();
       } else {
+        newRows[i] = { ...rowsCopy[i] };
         newRows[i].lastModified = new Date(newRows[i].lastModified);
       }
       if (newRows[i].dob !== '') new Date(newRows[i].dob);
