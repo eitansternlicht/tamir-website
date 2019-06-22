@@ -75,7 +75,9 @@ const MainScene = () => {
   const [saveButtonColor, setSaveButtonColor] = useState('default');
   const [tutorsSaveButtonColor, setTutorsSaveButtonColor] = useState('default');
   const [coordinatorsSaveButtonColor, setCoordinatorsSaveButtonColor] = useState('default');
-  const [departmentManagersSaveButtonColor, setDepartmentManagersSaveButtonColor] = useState('default');
+  const [departmentManagersSaveButtonColor, setDepartmentManagersSaveButtonColor] = useState(
+    'default'
+  );
   const [coordinatorsRows, setCoordinatorsRows] = useState([]);
   const [tutorsRows, setTutorsRows] = useState([]);
   const [departmentManagersRows, setDepartmentManagersRows] = useState([]);
@@ -140,8 +142,7 @@ const MainScene = () => {
           departmentManagers={departmentManagersRows}
         />
       );
-    }
-    else if (role === 'coordinator' && !loading && !loadingTutors) {
+    } else if (role === 'coordinator' && !loading && !loadingTutors) {
       return (
         <TableTabScene
           originalRows={originalRows}
@@ -157,8 +158,7 @@ const MainScene = () => {
           departmentManagers={departmentManagersRows}
         />
       );
-    }
-    else if (role === 'departmentManager' && !loading && !loadingTutors && !loadingCoordinators) {
+    } else if (role === 'departmentManager' && !loading && !loadingTutors && !loadingCoordinators) {
       return (
         <TableTabScene
           originalRows={originalRows}
@@ -174,12 +174,13 @@ const MainScene = () => {
           departmentManagers={departmentManagersRows}
         />
       );
-    }
-    else if (role === 'ceo' &&
+    } else if (
+      role === 'ceo' &&
       !loading &&
       !loadingTutors &&
       !loadingCoordinators &&
-      !loadingDepartmentManagers) {
+      !loadingDepartmentManagers
+    ) {
       return (
         <TableTabScene
           originalRows={originalRows}
@@ -195,10 +196,7 @@ const MainScene = () => {
           departmentManagers={departmentManagersRows}
         />
       );
-    }
-    else
-      return null;
-
+    } else return null;
   }
   return !isSignedIn ? (
     <div style={{ padding: 50 }}>
@@ -250,15 +248,11 @@ const MainScene = () => {
           </AppBar>
 
           {displayedTab === 'TableTabScene' ? (
-            <div className={classes.table}>
-              {getAppropriateStudentsRows()}
-            </div>
+            <div className={classes.table}>{getAppropriateStudentsRows()}</div>
           ) : null}
-
 
           {displayedTab === 'TutorsTabScene' ? (
             <div className={classes.table}>
-
               <GenericTab
                 originalRows={tutorsOriginalRows}
                 setOriginalRows={setTutorsOriginalRows}
@@ -289,22 +283,6 @@ const MainScene = () => {
             </div>
           ) : null}
 
-          {displayedTab === 'DepartmentManagersTabScene' ? (
-            <div className={classes.table}>
-              <GenericTab
-                originalRows={departmentManagersOriginalRows}
-                setOriginalRows={setDepartmentManagersOriginalRows}
-                rows={departmentManagersRows}
-                setMainRows={setDepartmentManagersRows}
-                genericSaveButtonColor={departmentManagersSaveButtonColor}
-                setGenericSaveButtonColor={setDepartmentManagersSaveButtonColor}
-                type="departmentManagers"
-                role={role}
-                uid={uid}
-              />
-            </div>
-          ) : null}
-
           {displayedTab === 'ImportFile' ? (
             <div className={classes.table}>
               <Grid
@@ -326,7 +304,37 @@ const MainScene = () => {
             </div>
           ) : null}
 
+          {displayedTab === 'DepartmentManagersTabScene' ? (
+            <div className={classes.table}>
+              <GenericTab
+                originalRows={departmentManagersOriginalRows}
+                setOriginalRows={setDepartmentManagersOriginalRows}
+                rows={departmentManagersRows}
+                setMainRows={setDepartmentManagersRows}
+                genericSaveButtonColor={departmentManagersSaveButtonColor}
+                setGenericSaveButtonColor={setDepartmentManagersSaveButtonColor}
+                type="departmentManagers"
+                role={role}
+                uid={uid}
+              />
+            </div>
+          ) : null}
 
+
+          {displayedTab === 'ReportsTabScene' ? (
+            <div className={classes.table}>
+              <Grid
+                container
+                border="3"
+                spacing={0}
+                direction="column"
+                alignItems="center"
+                justify="center"
+                style={{ minHeight: '50vh' }}>
+                <Upload />
+              </Grid>
+            </div>
+          ) : null}
         </div>
       </div>
     );
