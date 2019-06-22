@@ -172,7 +172,7 @@ class Select extends React.Component {
       this.setState({
         msgState: {
           title: 'שגיאה בטעינת הקבוץ',
-          body: 'המערכת לא הצליחה לטעון את הנתונים בדוק אם מלאת את כול השדות',
+          body: 'המערכת לא הצליחה לטעון את הנתונים בדוק אם מלאת את כל שדות החובה',
           visible: true
         }
       })
@@ -230,18 +230,18 @@ class Select extends React.Component {
 
         </AppBar>
 
-        <CardContent>
+        <CardContent >
           <Table style={{ width: '100%', marginLeft: 'auto', marginRight: 'auto' }}>
-            <TableBody>
+            <TableBody >
               <TableRow style={{ width: 'auto', marginLeft: 'auto', marginRight: 'auto' }} >
                 <TableCell component="th" scope="row" />
-                <TableCell align="right"> מותאם ל </TableCell>
-                <TableCell align="right"> עמודה מהאקסל </TableCell>
+                <TableCell align="center"> מותאם ל </TableCell>
+                <TableCell align="center"> עמודה בטבלה </TableCell>
               </TableRow>
               {rows.map(row => (row !== 'i' ?
                 <TableRow key={row} style={{ width: '100%', marginLeft: 'auto', marginRight: 'auto' }}>
                   <TableCell component="th" scope="row" />
-                  <TableCell align="right">
+                  <TableCell align="center">
                     <NativeSelect
                       className={classes.selectEmpty}
                       value={this.state[row]}
@@ -253,7 +253,7 @@ class Select extends React.Component {
                       </option>)}
                     </NativeSelect>
                   </TableCell>
-                  <TableCell align="right">{this.getLabel(row)}</TableCell>
+                  <TableCell align="center">{mandatoryRows.includes(row) ? '* ' + this.getLabel(row) : this.getLabel(row)}</TableCell>
                 </TableRow>
                 : null))}
             </TableBody>
@@ -264,7 +264,7 @@ class Select extends React.Component {
           handleClose={() => {
             if (this.state.send) this.props.uploadedFinished(false);
             this.setState({ msgState: { ... this.state.msgState, visible: false } })
-        } }
+        }}
       />
       </div>
     );

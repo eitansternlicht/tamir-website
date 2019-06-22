@@ -285,7 +285,7 @@ const MainScene = () => {
 
           {displayedTab === 'ImportFile' ? (
             <div className={classes.table}>
-              <Grid
+              {/* <Grid
                 container
                 border='3'
                 spacing={0}
@@ -293,14 +293,14 @@ const MainScene = () => {
                 alignItems="center"
                 justify="center"
                 style={{ minHeight: '50vh' }}
-              >
+              > */}
                 <Upload onNewFile={(aooToAdd) => aooToAdd.map(student => {
                   let fixedStudent = getOwners(student, role, uid);
                   firestoreModule
                     .getStudents()
                     .add(fixedStudent)
                 })} />
-              </Grid>
+              
             </div>
           ) : null}
 

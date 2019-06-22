@@ -27,7 +27,7 @@ class Upload extends Component {
 
         return (
 
-            <div>
+            <div style={{width: '1000'}}>
                 {this.state.selecting ? <Select uploadedFinished={(val) => this.setState({ selecting: val })} onSelectingDone={(fileRowsToTableRows) => {
                     this.props.onNewFile(this.state.aoo.map(obj => entriesToObj(fileRowsToTableRows.map(([tableName, fileName]) => [tableName, obj[fileName]]))))
                 }} fileRows={Object.keys(this.state.aoo[0])} /> : <div>
