@@ -28,8 +28,7 @@ const getStudents = (setRows, setLoading, uid, role) => {
   }
 };
 
-const getUsersIDS = (setIDArr) => {
-
+const getUsersPhones = (setIDArr) => {
   firestoreModule
     .getUsers()
     .onSnapshot(snapshot => {
@@ -108,4 +107,4 @@ const getDepartmentManagers = (setRows, setLoading) => {
 
 }
 
-export { getStudents, getTutors, getCoordinators, getDepartmentManagers, getUsersIDS };
+export { getStudents, getTutors, getCoordinators, getDepartmentManagers, getUsersPhones };

@@ -26,7 +26,7 @@ import moment from 'moment';
 import ReactDOM from 'react-dom';
 import { Filters, Editors } from 'react-data-grid-addons';
 import deepcopy from 'deepcopy';
-import { getUsersIDS } from '../utils/createRowData'
+import { getUsersPhones } from '../utils/createRowData'
 
 class phoneEditor extends React.Component {
   constructor(props) {
@@ -301,7 +301,7 @@ function GenericTab({
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingAdd, setLoadingAdd] = useState(false);
   const [openDeleteCheck, setOpenDeleteCheck] = useState(false);
-  const [usersIDs, setUsersIDs] = useState([]);
+  const [usersPhones, setUsersPhones] = useState([]);
 
   const removeEmptyFields = obj => entriesToObj(Object.entries(obj).filter(([, v]) => v));
   const entriesToObj = entries =>
@@ -359,7 +359,7 @@ function GenericTab({
 
   const handleChange = name => event => {
     let fieldName = name + 'Err';
-    setFormState({ ...formState, [fieldName] : false });
+    setFormState({ ...formState, [fieldName]: false });
     setNewRow({ ...newRow, [name]: event.target.value });
   };
 
@@ -476,8 +476,7 @@ function GenericTab({
   };
 
   function checkIfUserExist(phone) {
-
-    return usersIDs.includes(phone);
+    return usersPhones.includes(phone);
   }
 
   function isValidPhone(phone) {
@@ -620,7 +619,7 @@ function GenericTab({
 
   const firstTimeLoading = () => {
     updateNums();
-    getUsersIDS(setUsersIDs);
+    getUsersPhones(setUsersPhones);
     let newRows = fixRowsFields(rowsCopy);
     setRows([...newRows]);
     setMainRows([...rowsCopy]);
