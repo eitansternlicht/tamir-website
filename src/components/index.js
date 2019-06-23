@@ -2,3 +2,8 @@ export * from './Dropzone';
 export * from './TableTabScene';
 export * from './AssignmentDialog';
 export * from './MsgToShow';
+export * from './DenseTable';
+export * from './MonthChoose';
+export * from './TypeReports';
+export * from './WatchReportsButton';
+export * from './YearChoose';
