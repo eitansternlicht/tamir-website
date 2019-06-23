@@ -486,9 +486,6 @@ function TableTabScene({
   const firstTimeLoading = () => {
     updateNums();
     let newRows = fixStudentsFields(rowsCopy);
-    let newOrRows = fixStudentsFields(originalRows);
-    console.log("new", newOrRows);
-    setOriginalRows([...newOrRows]);
     rowsCopy = [...newRows];
     newRows = getMissedDetailsForAllStudents();
     setRows(newRows);
@@ -561,7 +558,7 @@ function TableTabScene({
     rowsCopy = [...newRows];
     newRows = getMissedDetailsForAllStudents();
     setRows(newRows);
-    setOriginalRows([...newRows]);
+    // setOriginalRows([...newRows]);
     setMainRows([...newRows]);
     updateNums();
     setLoadingSave(false);

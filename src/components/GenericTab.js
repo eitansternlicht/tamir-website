@@ -511,7 +511,7 @@ function GenericTab({
         setGenericSaveButtonColor('secondary');
         setLoadingAdd(false);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log('Error adding', error);
       });
   };
@@ -564,7 +564,7 @@ function GenericTab({
         if (originalRows[i].fid === ids[j].fid) {
           if (rowsCopy[ids[j].id] !== undefined) {
             if (
-              new Date(originalRows[i].lastModified).getTime() !==
+              originalRows[i].lastModified.toDate().getTime() !==
               new Date(rowsCopy[ids[j].id].lastModified).getTime()
             )
               rows.push(rowsCopy[ids[j].id]);
@@ -580,14 +580,15 @@ function GenericTab({
       let temp = { ...row };
       removeUnnecessaryFields(temp);
       temp = removeEmptyFields(temp);
-      firestoreModule.getSpecificUser(row.fid).update(temp);
+      firestoreModule.getSpecificUser(row.fid).set(temp);
     });
   };
-
+  console.log("or", originalRows, "copy", rowsCopy);
   const saveUpdates = () => {
     setLoadingSave(true);
     if (originalRows.length !== rowsCopy.length) deleteUnnecessaryRow();
     let arr = getRowsToUpdate();
+    console.log("arr", arr);
     if (arr.length > 0) makeUpdate(arr);
     let newRows = fixRowsFields(rowsCopy);
     setRows(newRows);
