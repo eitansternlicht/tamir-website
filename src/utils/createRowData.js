@@ -2,8 +2,8 @@ import { firestoreModule } from '../Firebase/Firebase';
 
 const getStudents = (setRows, setLoading, uid, role) => {
   let str = 'owners.' + role + 's';
-  if(role === 'ceo')
-  firestoreModule
+  if (role === 'ceo')
+    firestoreModule
       .getStudents()
       .onSnapshot(querySnapshot => {
         setRows(querySnapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id })))
@@ -17,16 +17,25 @@ const getStudents = (setRows, setLoading, uid, role) => {
         setRows(querySnapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id })))
         setLoading(false);
       });
-      else{
-        firestoreModule
+  else {
+    firestoreModule
       .getStudents()
       .where(str, 'array-contains', uid)
       .onSnapshot(querySnapshot => {
         setRows(querySnapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id })))
         setLoading(false);
       });
-      }
+  }
 };
+
+const getUsersIDS = (setIDArr) => {
+
+  firestoreModule
+    .getUsers()
+    .onSnapshot(snapshot => {
+      setIDArr(snapshot.docs.map(doc => doc.data()['phone']));
+    });
+}
 
 const getTutors = (setRows, uid, setLoading, role) => {
 
@@ -53,8 +62,6 @@ const getTutors = (setRows, uid, setLoading, role) => {
         answer = answer.filter(row => row.role === 'tutor');
         setRows(answer);
         setLoading(false);
-
-        //console.log('results', snapshot.docs.map(doc => doc.data()))
       });
   }
 }
@@ -97,9 +104,8 @@ const getDepartmentManagers = (setRows, setLoading) => {
       answer = answer.filter(row => row.role === 'departmentManager');
       setRows(answer);
       setLoading(false);
-      //console.log('results', snapshot.docs.map(doc => doc.data()))
     });
 
 }
 
-export { getStudents, getTutors, getCoordinators, getDepartmentManagers };
+export { getStudents, getTutors, getCoordinators, getDepartmentManagers, getUsersIDS };

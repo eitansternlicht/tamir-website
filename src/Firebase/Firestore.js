@@ -32,9 +32,6 @@ function deleteUser(userId) {
     return firestoreDb.collection(collections.users).doc(userId).delete()
 }
 
-// function deleteStudents(studentIds) {
-
-// }
 
 const getModule = () => {
     firestoreDb = firebase.firestore();

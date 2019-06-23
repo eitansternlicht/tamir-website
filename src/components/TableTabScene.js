@@ -172,6 +172,7 @@ function TableTabScene({
   const [loading, setLoading] = useState(false);
   const [loadingPage, setLoadingPage] = useState(true);
   const [msgState, setMsgState] = useState({ title: '', body: '', visible: false });
+  const [formState, setFormState] = useState({ firstNameErr: false, lastNameErr: false, genderErr: false, phoneErr: false });
   const [assignmentDialogType, setAssignmentDialogType] = useState('');
   const [openForm, setOpenForm] = useState(false);
   let filteredRows = getRows(rowsCopy, filters);
@@ -266,6 +267,8 @@ function TableTabScene({
   };
 
   const handleChange = name => event => {
+    let fieldName = name + 'Err';
+    setFormState({ ...formState, [fieldName] : false });
     setNewStudent({ ...newStudent, [name]: event.target.value });
   };
 
@@ -348,6 +351,50 @@ function TableTabScene({
   };
 
 
+  function isValidPhone(phone) {
+    if (phone.length === 13)
+      return true;
+    return false;
+  }
+
+  function formValidation() {
+    if (newStudent['firstName'] === '' || !newStudent.hasOwnProperty('firstName')) {
+      setFormState({ firstNameErr: true });
+      return;
+    }
+    else {
+      setFormState({ ['firstNameErr']: false });
+    }
+    if (newStudent['lastName'] === '' || !newStudent.hasOwnProperty('lastName')) {
+      setFormState({ lastNameErr: true });
+      return;
+    }
+    else {
+      setFormState({ ['lastNameErr']: false });
+    }
+    if (newStudent['gender'] === '' || !newStudent.hasOwnProperty('gender')) {
+      setFormState({ genderErr: true });
+      return;
+    } else {
+      setFormState({ ['genderErr']: false });
+    }
+    if (newStudent['phone'] === '' || !newStudent.hasOwnProperty('phone') || newStudent['phone'] === undefined) {
+      setFormState({ phoneErr: true });
+      return;
+    } else {
+      setFormState({ ['phoneErr']: false });
+    }
+
+    if (newStudent['phone'] && !isValidPhone(newStudent.phone)) {
+      setMsgState({
+        title: 'הוספת חניך',
+        body: '!נא להכניס נייד תקין',
+        visible: true
+      });
+      return;
+    }
+    addStudent();
+  }
 
   const addStudent = () => {
     setLoadingAdd(true);
@@ -629,10 +676,9 @@ function TableTabScene({
             onClose={handleCloseForm}
             aria-labelledby="form-dialog-title">
             <form
-              validate="true"
               className={classes.container}
               autoComplete="on"
-              onSubmit={() => console.log('hey')}>
+            >
               <DialogTitle id="form-dialog-title" className={classes.formTitle}>
                 הוספת חניך
               </DialogTitle>
@@ -643,6 +689,7 @@ function TableTabScene({
                 <TextField
                   required
                   autoFocus
+                  error={formState.firstNameErr}
                   variant="outlined"
                   margin="dense"
                   id="firstName"
@@ -654,6 +701,7 @@ function TableTabScene({
                 />
                 <TextField
                   required
+                  error={formState.lastNameErr}
                   variant="outlined"
                   margin="dense"
                   id="lastName"
@@ -666,6 +714,7 @@ function TableTabScene({
 
                 <TextField
                   required
+                  error={formState.genderErr}
                   variant="outlined"
                   select
                   id="gender"
@@ -688,6 +737,7 @@ function TableTabScene({
 
                 <PhoneInput
                   required
+                  error={formState.phoneErr}
                   country="IL"
                   label="מס' טלפון"
                   className={classes.textField}
@@ -705,8 +755,7 @@ function TableTabScene({
                   בטל
                 </Button>
                 <Button
-                  type="submit"
-                  onClick={() => addStudent()}
+                  onClick={() => formValidation()}
                   color="primary"
                   className={classes.button}
                   size="large">
@@ -980,8 +1029,8 @@ function TableTabScene({
             {loadingSave && <CircularProgress size={24} className={classes.buttonProgress} />}
           </Button>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }
 

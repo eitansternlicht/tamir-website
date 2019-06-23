@@ -26,6 +26,7 @@ import moment from 'moment';
 import ReactDOM from 'react-dom';
 import { Filters, Editors } from 'react-data-grid-addons';
 import deepcopy from 'deepcopy';
+import { getUsersIDS } from '../utils/createRowData'
 
 class phoneEditor extends React.Component {
   constructor(props) {
@@ -293,12 +294,14 @@ function GenericTab({
   const [loading, setLoading] = useState(false);
   const [loadingPage, setLoadingPage] = useState(true);
   const [msgState, setMsgState] = useState({ title: '', body: '', visible: false });
+  const [formState, setFormState] = useState({ firstNameErr: false, lastNameErr: false, genderErr: false, phoneErr: false });
   const [openForm, setOpenForm] = useState(false);
   let filteredRows = getRows(rowsCopy, filters);
   const [newRow, setNewRow] = useState({});
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingAdd, setLoadingAdd] = useState(false);
   const [openDeleteCheck, setOpenDeleteCheck] = useState(false);
+  const [usersIDs, setUsersIDs] = useState([]);
 
   const removeEmptyFields = obj => entriesToObj(Object.entries(obj).filter(([, v]) => v));
   const entriesToObj = entries =>
@@ -310,7 +313,7 @@ function GenericTab({
   const fixRowFields = row => {
     columns.forEach(({ key }) => {
       if (row.hasOwnProperty(key)) {
-        if (key === 'lastModified' && row[key] !== undefined && row[key] !== null) {
+        if (key === 'lastModified' && row[key] !== undefined && row[key] !== null && row[key] !== '') {
           row[key] = row[key] instanceof Date ? row[key] : row[key].toDate();
         }
         if (row[key] === null || row[key] === undefined || key === 'dob') {
@@ -355,6 +358,8 @@ function GenericTab({
   };
 
   const handleChange = name => event => {
+    let fieldName = name + 'Err';
+    setFormState({ ...formState, [fieldName] : false });
     setNewRow({ ...newRow, [name]: event.target.value });
   };
 
@@ -470,6 +475,79 @@ function GenericTab({
     return fixedRow;
   };
 
+  function checkIfUserExist(phone) {
+
+    return usersIDs.includes(phone);
+  }
+
+  function isValidPhone(phone) {
+    if (phone.length === 13)
+      return true;
+    return false;
+  }
+
+  function formValidation() {
+    if (newRow['firstName'] === '' || !newRow.hasOwnProperty('firstName')) {
+      setFormState({ firstNameErr: true });
+      return;
+    }
+    else {
+      setFormState({ ['firstNameErr']: false });
+    }
+    if (newRow['lastName'] === '' || !newRow.hasOwnProperty('lastName')) {
+      setFormState({ lastNameErr: true });
+      return;
+    }
+    else {
+      setFormState({ ['lastNameErr']: false });
+    }
+    if (newRow['gender'] === '' || !newRow.hasOwnProperty('gender')) {
+      setFormState({ genderErr: true });
+      return;
+    } else {
+      setFormState({ ['genderErr']: false });
+    }
+    if (newRow['phone'] === '' || !newRow.hasOwnProperty('phone') || newRow['phone'] === undefined) {
+      setFormState({ phoneErr: true });
+      return;
+    } else {
+      setFormState({ ['phoneErr']: false });
+    }
+
+    if (newRow['phone'] && !isValidPhone(newRow.phone)) {
+      setMsgState({
+        title: 'הוספת חניך',
+        body: '!נא להכניס נייד תקין',
+        visible: true
+      });
+      return;
+    }
+    if (checkIfUserExist(newRow.phone)) {
+      if (type === 'tutors')
+        setMsgState({
+          title: 'הוספת מדריך',
+          body: '!המדריך כבר קיים במערכת',
+          visible: true
+        });
+      else if (type === 'coordinators')
+        setMsgState({
+          title: 'הוספת רכז',
+          body: '!הרכז כבר קיים במערכת',
+          visible: true
+        });
+      else if (type === 'departmentManagers')
+        setMsgState({
+          title: 'הוספת מנהל מחלקה',
+          body: '!המנהל כבר קיים במערכת',
+          visible: true
+        });
+      return;
+    }
+    addRow();
+  }
+
+  checkIfUserExist(newRow.phone);
+
   const addRow = () => {
     setLoadingAdd(true);
     handleCloseForm();
@@ -542,6 +620,7 @@ function GenericTab({
 
   const firstTimeLoading = () => {
     updateNums();
+    getUsersIDS(setUsersIDs);
     let newRows = fixRowsFields(rowsCopy);
     setRows([...newRows]);
     setMainRows([...rowsCopy]);
@@ -583,12 +662,10 @@ function GenericTab({
       firestoreModule.getSpecificUser(row.fid).set(temp);
     });
   };
-  console.log("or", originalRows, "copy", rowsCopy);
   const saveUpdates = () => {
     setLoadingSave(true);
     if (originalRows.length !== rowsCopy.length) deleteUnnecessaryRow();
     let arr = getRowsToUpdate();
-    console.log("arr", arr);
     if (arr.length > 0) makeUpdate(arr);
     let newRows = fixRowsFields(rowsCopy);
     setRows(newRows);
@@ -673,6 +750,7 @@ function GenericTab({
                 <TextField
                   required
                   autoFocus
+                  error={formState.firstNameErr}
                   variant="outlined"
                   margin="dense"
                   id="firstName"
@@ -685,6 +763,7 @@ function GenericTab({
                 <TextField
                   required
                   variant="outlined"
+                  error={formState.lastNameErr}
                   margin="dense"
                   id="lastName"
                   className={classes.textField}
@@ -698,6 +777,7 @@ function GenericTab({
                   required
                   select
                   id="gender"
+                  error={formState.genderErr}
                   variant="outlined"
                   margin="dens"
                   label="מין"
@@ -718,6 +798,7 @@ function GenericTab({
                 <PhoneInput
                   required
                   country="IL"
+                  error={formState.phoneErr}
                   label="מס' טלפון"
                   placeholder="נייד"
                   className={classes.textField}
@@ -729,7 +810,7 @@ function GenericTab({
                 <Button onClick={handleCloseForm} color="secondary" size="large">
                   בטל
                 </Button>
-                <Button onClick={() => addRow()} color="primary" size="large">
+                <Button onClick={() => formValidation()} color="primary" size="large">
                   אשר
                 </Button>
               </DialogActions>
