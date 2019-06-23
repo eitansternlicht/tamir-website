@@ -11,8 +11,7 @@ import {
   DialogContentText,
   CircularProgress,
   MenuItem,
-  TextField,
-  Slide
+  TextField
 } from '@material-ui/core/';
 //import ButtonGroup from '@material-ui/core/ButtonGroup';
 import { MsgToShow, AssignmentDialog } from '.';
@@ -201,7 +200,6 @@ function TableTabScene({
     }, {});
 
   const fixStudentFields = student => {
-    console.log("s", student);
     columns.forEach(({ key }) => {
       if (student.hasOwnProperty(key)) {
         if (
@@ -223,7 +221,6 @@ function TableTabScene({
   };
 
   const fixStudentsFields = arr => {
-    console.log("aa", arr);
     return arr.map(fixStudentFields);
   };
 
@@ -239,7 +236,6 @@ function TableTabScene({
   const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
     setSaveButtonColor('secondary');
     const newRows = deepcopy(rowsCopy);
-    console.log("dd", newRows);
     for (let i = 0; i < newRows.length; i++) {
       if (i >= fromRow && i <= toRow) {
         newRows[i] = { ...rowsCopy[i], ...updated };
@@ -251,7 +247,7 @@ function TableTabScene({
       if (newRows[i].dob !== '') new Date(newRows[i].dob);
     }
 
-    console.log("new", newRows);
+
 
     setRows(newRows);
     setMainRows(newRows);
@@ -491,7 +487,7 @@ function TableTabScene({
     updateNums();
     let newRows = fixStudentsFields(rowsCopy);
     let newOrRows = fixStudentsFields(originalRows);
-    debugger;
+    console.log("new", newOrRows);
     setOriginalRows([...newOrRows]);
     rowsCopy = [...newRows];
     newRows = getMissedDetailsForAllStudents();
@@ -517,24 +513,27 @@ function TableTabScene({
         if (originalRows[i].fid === ids[j].fid) {
           if (rowsCopy[ids[j].id] !== undefined) {
             if (
-              new Date(originalRows[i].lastModified).getTime() !==
+              originalRows[i].lastModified.toDate().getTime() !==
               new Date(rowsCopy[ids[j].id].lastModified).getTime()
-            )
+            ) {
+
               students.push(rowsCopy[ids[j].id]);
+            }
+
           }
         }
       }
     }
+
     return students;
   };
 
   const makeUpdate = arr => {
     arr.forEach(student => {
       let temp = { ...student };
-      console.log("stud", temp);
       removeUnnecessaryFields(temp);
       temp = removeEmptyFields(temp);
-      firestoreModule.getSpecificStudent(student.fid).update(temp);
+      firestoreModule.getSpecificStudent(student.fid).set(temp);
     });
   };
 
@@ -562,17 +561,16 @@ function TableTabScene({
     rowsCopy = [...newRows];
     newRows = getMissedDetailsForAllStudents();
     setRows(newRows);
-    //setOriginalRows([...newRows]);
+    setOriginalRows([...newRows]);
     setMainRows([...newRows]);
     updateNums();
     setLoadingSave(false);
     setSaveButtonColor('default');
-    if (arr.length > 0)
-      setMsgState({
-        title: 'שמירת שינויים',
-        body: 'כל השינויים נשמרו בהצלחה',
-        visible: true
-      });
+    setMsgState({
+      title: 'שמירת שינויים',
+      body: 'כל השינויים נשמרו בהצלחה',
+      visible: true
+    });
   };
 
   console.log('co', rowsCopy, 'or', originalRows);

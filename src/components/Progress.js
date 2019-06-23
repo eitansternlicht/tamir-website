@@ -1,4 +1,4 @@
-import React, { Component, makeStyles } from 'react';
+import React, { Component } from 'react';
 
 class Progress extends Component {
 

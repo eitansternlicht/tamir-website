@@ -1,13 +1,7 @@
 // import 'date-fns';
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-// import DateFnsUtils from '@date-io/date-fns';
-import {
-    MuiPickersUtilsProvider,
-    KeyboardTimePicker,
-    KeyboardDatePicker,
-} from '@material-ui/pickers';
+
 import { Filters, Editors } from "react-data-grid-addons";
 import { TextField } from '@material-ui/core';
 import ReactDOM from "react-dom";
@@ -26,23 +20,9 @@ class BirthDayEditor extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            // focused: false,
             dob: props.value
         };
-        // this.handleOnChange = this.handleOnChange.bind(this);
-        // this.onFocusChange = this.onFocusChange.bind(this);
     }
-
-
-    // const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
-
-    // const classes = useStyles();
-
-    // handleDateChange(date) {
-    //     //   setSelectedDate(date);
-    //     console.log("date", date);
-    //     this.setState({ dob: date }, () => this.props.onCommit());
-    // }
 
     getValue() {
         return { dob: this.state.dob };
@@ -77,30 +57,6 @@ class BirthDayEditor extends React.Component {
             </form>
         );
     }
-
-    // utils={DateFnsUtils}
-
-    // render() {
-    //     return (
-    //         <div>
-    //             <Grid container
-    //                 style={{
-    //                     width: '60%',
-    //                 }}
-    //             // justify="space-around">
-    //             >
-    //                 <SingleDatePicker
-    //                     date={this.state.dob} // momentPropTypes.momentObj or null
-    //                     onDateChange={date => this.setState({ dob: date })} // PropTypes.func.isRequired
-    //                     focused={this.state.focused} // PropTypes.bool
-    //                     onFocusChange={({ focused }) => this.setState({ focused })} // PropTypes.func.isRequired
-    //                 //id="your_unique_id" // PropTypes.string.isRequired,
-    //                 />
-    //             </Grid>
-    //         </div>
-    //     );
-
-    // }
 
 }
 

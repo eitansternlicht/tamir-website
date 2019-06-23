@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { filesToAOAs, aoaToFile } from '../utils/excell-utils';
+import { filesToAOAs} from '../utils/excell-utils';
 
 const Dropzone = ({ onGetFile }) => {
   const onDrop = useCallback(acceptedFiles => {

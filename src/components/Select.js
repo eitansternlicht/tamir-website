@@ -1,33 +1,22 @@
 import React from 'react';
-import { checkIfAllFieldsHaveValue, entriesToObj } from '../utils/general-utils';
+import { checkIfAllFieldsHaveValue } from '../utils/general-utils';
 import {
   AppBar,
   Toolbar,
   Typography,
   Button,
-  Card,
   CardContent,
-  CardActions,
-  FormControl,
   NativeSelect,
-  FormHelperText,
-  TextField,
-  Paper,
   Table,
   TableCell,
-  HomeIcon,
-  CardActionArea,
   TableBody,
-  TableHead,
-  TableRow,
-  Container
+  TableRow
 } from '@material-ui/core';
 import { MsgToShow } from './'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
-import clsx from 'clsx';
-const mandatoryRows = ['firstName', 'lastName', 'gender'];
 
+const mandatoryRows = ['firstName', 'lastName', 'gender'];
 const rows = [
   'i',
   'lastName',
@@ -156,9 +145,6 @@ class Select extends React.Component {
 
   handleClickOpen = () => {
 
-    let values = rows.map(key => key !== 'i' ? this.state[key] : null);
-    values = values.map(row => row === '' && row !== null ? 'בחר עמודה מתאימה' : row);
-
     let canSend = checkIfAllFieldsHaveValue(mandatoryRows, this.state, this.chosen);
 
     console.log("state", this.state);
@@ -264,8 +250,8 @@ class Select extends React.Component {
           handleClose={() => {
             if (this.state.send) this.props.uploadedFinished(false);
             this.setState({ msgState: { ... this.state.msgState, visible: false } })
-        }}
-      />
+          }}
+        />
       </div>
     );
   }

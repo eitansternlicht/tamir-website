@@ -1,9 +1,7 @@
-import React, { Component } from 'react'
-import IconButton from '@material-ui/core/IconButton';
+import React, { Component } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Select from '../components/Select';
 import { entriesToObj } from './general-utils'
-import Progress from "../components/Progress";
 import Dropzone from '../components/Dropzone';
 
 class Upload extends Component {
