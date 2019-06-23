@@ -490,6 +490,9 @@ function TableTabScene({
   const firstTimeLoading = () => {
     updateNums();
     let newRows = fixStudentsFields(rowsCopy);
+    let newOrRows = fixStudentsFields(originalRows);
+    debugger;
+    setOriginalRows([...newOrRows]);
     rowsCopy = [...newRows];
     newRows = getMissedDetailsForAllStudents();
     setRows(newRows);
@@ -528,6 +531,7 @@ function TableTabScene({
   const makeUpdate = arr => {
     arr.forEach(student => {
       let temp = { ...student };
+      console.log("stud", temp);
       removeUnnecessaryFields(temp);
       temp = removeEmptyFields(temp);
       firestoreModule.getSpecificStudent(student.fid).update(temp);
@@ -536,7 +540,7 @@ function TableTabScene({
 
   const fixStudentDOB = student => {
     if (student.hasOwnProperty('dob')) {
-      if (student.dob !== undefined && student.dob !== null) {
+      if (student.dob !== undefined && student.dob !== null && student.dob !== '') {
         student.dob = student.dob instanceof Date ? student.dob : new Date(student.dob);
       }
     }
@@ -558,16 +562,17 @@ function TableTabScene({
     rowsCopy = [...newRows];
     newRows = getMissedDetailsForAllStudents();
     setRows(newRows);
-    setOriginalRows([...newRows]);
+    //setOriginalRows([...newRows]);
     setMainRows([...newRows]);
     updateNums();
     setLoadingSave(false);
     setSaveButtonColor('default');
-    setMsgState({
-      title: 'שמירת שינויים',
-      body: 'כל השינויים נשמרו בהצלחה',
-      visible: true
-    });
+    if (arr.length > 0)
+      setMsgState({
+        title: 'שמירת שינויים',
+        body: 'כל השינויים נשמרו בהצלחה',
+        visible: true
+      });
   };
 
   console.log('co', rowsCopy, 'or', originalRows);
