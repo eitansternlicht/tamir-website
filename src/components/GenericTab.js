@@ -745,7 +745,7 @@ function GenericTab({
               </DialogTitle>
               <DialogContent>
                 <DialogContentText className={classes.formText}>
-                  : נא למלא את כל השדות
+                  ** נא למלא את כל השדות **
                 </DialogContentText>
                 <TextField
                   required

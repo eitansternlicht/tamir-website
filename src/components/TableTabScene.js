@@ -268,7 +268,7 @@ function TableTabScene({
 
   const handleChange = name => event => {
     let fieldName = name + 'Err';
-    setFormState({ ...formState, [fieldName] : false });
+    setFormState({ ...formState, [fieldName]: false });
     setNewStudent({ ...newStudent, [name]: event.target.value });
   };
 
@@ -684,7 +684,7 @@ function TableTabScene({
               </DialogTitle>
               <DialogContent>
                 <DialogContentText className={classes.formText}>
-                  : נא למלא את כל השדות
+                  ** נא למלא את כל השדות **
                 </DialogContentText>
                 <TextField
                   required
