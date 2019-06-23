@@ -37,7 +37,7 @@ const text = {
 };
 
 const ReportsTabScene = () => {
-  const [reportType, setReportType] = useState('monthlyReportReport');
+  const [reportType, setReportType] = useState('monthlyReport');
 
   const renderTitle = titleText => (
     <Grid container>
@@ -56,7 +56,7 @@ const ReportsTabScene = () => {
           <Grid>
             <Grid>
               <Typography variant="h3" align="left" style={{ marginLeft: 270 }}>
-                {text.fifthLine}
+                {/* {text.fifthLine} */}
               </Typography>
             </Grid>
           </Grid>
@@ -100,9 +100,7 @@ const ReportsTabScene = () => {
       </Grid>
 
       <Grid justify="space-between" container spacing={24}>
-        <Grid item>
-          <DenseTable />
-        </Grid>
+        <Grid item>{/* <DenseTable /> */}</Grid>
 
         <Grid item>
           <div style={{ marginTop: 25, marginRight: 100 }}>
@@ -169,9 +167,7 @@ const ReportsTabScene = () => {
 
       <Grid justify="flex-end" container spacing={24}>
         <div style={{ marginRight: 228 }}>
-          <Grid item>
-            <DenseTable />
-          </Grid>
+          <Grid item>{/* <DenseTable /> */}</Grid>
         </div>
 
         <Grid item>
