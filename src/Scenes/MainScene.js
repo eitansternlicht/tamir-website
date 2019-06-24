@@ -216,7 +216,7 @@ const MainScene = () => {
           <Paper className={classes.details}>
             <Typography variant="h5" component="h5">
               מנהל מחלקה א
-          </Typography>
+            </Typography>
             <Typography component="p">ירושלים</Typography>
             <Button
               style={{ alignItems: 'left', alignSelf: 'left', alignContent: 'left' }}
@@ -286,18 +286,7 @@ const MainScene = () => {
             </div>
           ) : null}
 
-          {displayedTab === 'ImportFile' ? (
-            <div className={classes.table}>
-              <Upload
-                onNewFile={aooToAdd =>
-                  aooToAdd.map(student => {
-                    let fixedStudent = getOwners(student, role, uid);
-                    firestoreModule.getStudents().add({ ...fixedStudent, lastModified: new Date() });
-                  })
-                }
-              />
-            </div>
-          ) : null}
+
 
           {displayedTab === 'DepartmentManagersTabScene' ? (
             <div className={classes.table}>
@@ -311,6 +300,19 @@ const MainScene = () => {
                 type="departmentManagers"
                 role={role}
                 uid={uid}
+              />
+            </div>
+          ) : null}
+
+          {displayedTab === 'ImportFile' ? (
+            <div className={classes.table}>
+              <Upload
+                onNewFile={aooToAdd =>
+                  aooToAdd.map(student => {
+                    let fixedStudent = getOwners(student, role, uid);
+                    firestoreModule.getStudents().add({ ...fixedStudent, lastModified: new Date() });
+                  })
+                }
               />
             </div>
           ) : null}
