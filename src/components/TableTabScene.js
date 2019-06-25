@@ -617,7 +617,7 @@ function TableTabScene({
     });
   };
 
-  console.log('co', rowsCopy, 'or', originalRows);
+  // console.log('co', rowsCopy, 'or', originalRows);
   return (
     <div>
       <ReactDataGrid

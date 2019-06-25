@@ -42,6 +42,7 @@ class phoneEditor extends React.Component {
     return ReactDOM.findDOMNode(this).getElementsByTagName('input')[0];
   }
   handleChangePhone = name => value => {
+
     this.setState({ ...this.state, [name]: value });
   };
   render() {
@@ -330,7 +331,35 @@ function GenericTab({
     return arr.map(fixRowFields);
   };
 
+  function checkIfUserExist(phone) {
+    return usersPhones.includes(phone);
+  }
+
+  function isValidPhone(phone) {
+    if (phone.length === 13)
+      return true;
+    return false;
+  }
+
   const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
+    if (updated.phone !== undefined) {
+      if (!isValidPhone(updated.phone)) {
+        setMsgState({
+          title: 'עריכת נייד',
+          body: '!נא להכניס נייד תקין',
+          visible: true
+        });
+        return;
+      }
+      if (checkIfUserExist(updated.phone)) {
+        setMsgState({
+          title: 'עריכת נייד',
+          body: '!הנייד כבר קיים במערכת',
+          visible: true
+        });
+        return;
+      }
+    } 
     setGenericSaveButtonColor('secondary');
     const newRows = deepcopy(rowsCopy);
     for (let i = 0; i < newRows.length; i++) {
@@ -364,6 +393,7 @@ function GenericTab({
   };
 
   const handleChangePhone = name => value => {
+    setFormState({ ...formState, phoneErr: false });
     setNewRow({ ...newRow, [name]: value });
   };
 
@@ -475,15 +505,7 @@ function GenericTab({
     return fixedRow;
   };
 
-  function checkIfUserExist(phone) {
-    return usersPhones.includes(phone);
-  }
 
-  function isValidPhone(phone) {
-    if (phone.length === 13)
-      return true;
-    return false;
-  }
 
   function formValidation() {
     if (newRow['firstName'] === '' || !newRow.hasOwnProperty('firstName')) {
@@ -740,7 +762,9 @@ function GenericTab({
             aria-labelledby="form-dialog-title">
             <form validate="true" className={classes.container} autoComplete="on">
               <DialogTitle id="form-dialog-title" className={classes.formTitle}>
-                הוספת חניך
+                {type === 'tutors' && 'הוספת מדריך'}
+                {type === 'coordinators' && 'הוספת רכז שכונה'}
+                {type === 'departmentManagers' && 'הוספת מנהל מחלקה'}
               </DialogTitle>
               <DialogContent>
                 <DialogContentText className={classes.formText}>

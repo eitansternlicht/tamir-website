@@ -284,19 +284,6 @@ const MainScene = () => {
           </div>
         ) : null}
 
-        {displayedTab === 'ImportFile' ? (
-          <div className={classes.table}>
-            <Upload
-              onNewFile={aooToAdd =>
-                aooToAdd.map(student => {
-                  let fixedStudent = getOwners(student, role, uid);
-                  firestoreModule.getStudents().add({ ...fixedStudent, lastModified: new Date() });
-                })
-              }
-            />
-          </div>
-        ) : null}
-
         {displayedTab === 'DepartmentManagersTabScene' ? (
           <div className={classes.table}>
             <GenericTab
@@ -309,6 +296,18 @@ const MainScene = () => {
               type="departmentManagers"
               role={role}
               uid={uid}
+            />
+          </div>
+        ) : null}
+        {displayedTab === 'ImportFile' ? (
+          <div className={classes.table}>
+            <Upload
+              onNewFile={aooToAdd =>
+                aooToAdd.map(student => {
+                  let fixedStudent = getOwners(student, role, uid);
+                  firestoreModule.getStudents().add({ ...fixedStudent, lastModified: new Date() });
+                })
+              }
             />
           </div>
         ) : null}
