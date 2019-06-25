@@ -228,7 +228,6 @@ const MainScene = () => {
           </Button>
           <Tabs
             indicatorColor="primary"
-            // centered
             style={{ marginRight: 'auto' }}
             textColor="primary"
             variant="scrollable"
