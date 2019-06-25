@@ -17,6 +17,7 @@ const ReportsTabScene = props => {
     selectedYear: new Date().getFullYear()
   });
   const [selected, setSelected] = useState([]);
+  const [isFetchingReport, setIsFetchingReport] = useState(false);
   return (
     <div style={{ padding: 50 }}>
       <Box display="flex" flexDirection="row-reverse">
@@ -124,6 +125,12 @@ const ReportsTabScene = props => {
             multiSelect={reportType === 'monthlyReport'}
             tableTitle={reportType === 'monthlyReport' ? 'בחירת מדריכים' : 'בחירת מדריך'}
             rows={rows}
+            isFetchingReport={isFetchingReport}
+            onClickFetchReport={() => {
+              setIsFetchingReport(true);
+              console.log('selected for report', selected);
+              setIsFetchingReport(false);
+            }}
           />
         </Box>
       </Box>

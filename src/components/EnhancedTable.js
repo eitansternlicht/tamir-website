@@ -14,28 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
-import Tooltip from '@material-ui/core/Tooltip';
-import SendIcon from '@material-ui/icons/Send';
-
-// function createData(name, calories, fat, carbs, protein) {
-//   return { name, calories, fat, carbs, protein };
-// }
-
-// const rows = [
-//   createData('Cupcake', 305, 3.7, 67, 4.3),
-//   createData('Donut', 452, 25.0, 51, 4.9),
-//   createData('Eclair', 262, 16.0, 24, 6.0),
-//   createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-//   createData('Gingerbread', 356, 16.0, 49, 3.9),
-//   createData('Honeycomb', 408, 3.2, 87, 6.5),
-//   createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-//   createData('Jelly Bean', 375, 0.0, 94, 0.0),
-//   createData('KitKat', 518, 26.0, 65, 7.0),
-//   createData('Lollipop', 392, 0.2, 98, 0.0),
-//   createData('Marshmallow', 318, 0, 81, 2.0),
-//   createData('Nougat', 360, 19.0, 9, 37.0),
-//   createData('Oreo', 437, 18.0, 63, 4.0)
-// ];
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -104,6 +83,7 @@ function EnhancedTableHead(props) {
         <TableCell padding="checkbox">
           {multiSelect ? (
             <Checkbox
+              style={{ color: '#3F51B5' }}
               indeterminate={numSelected > 0 && numSelected < rowCount}
               checked={numSelected > 0 && numSelected === rowCount}
               onChange={onSelectAllClick}
@@ -114,6 +94,22 @@ function EnhancedTableHead(props) {
     </TableHead>
   );
 }
+
+const useCircularIndeterminateStyles = makeStyles(theme => ({
+  progress: {
+    margin: theme.spacing(2)
+  }
+}));
+
+const CircularIndeterminate = () => {
+  const classes = useCircularIndeterminateStyles();
+
+  return (
+    <div>
+      <CircularProgress size={30} className={classes.progress} style={{ color: '#0089c7' }} />
+    </div>
+  );
+};
 
 EnhancedTableHead.propTypes = {
   numSelected: PropTypes.number.isRequired,
@@ -154,7 +150,7 @@ const useToolbarStyles = makeStyles(theme => ({
 
 const EnhancedTableToolbar = props => {
   const classes = useToolbarStyles();
-  const { numSelected, multiSelect } = props;
+  const { numSelected, multiSelect, onClickFetchReport, isFetchingReport } = props;
 
   return (
     <Toolbar
@@ -164,8 +160,8 @@ const EnhancedTableToolbar = props => {
       className={classes.title}>
       <div className={classes.title}>
         {multiSelect && numSelected > 0 ? (
-          <Typography color="inherit" variant="subtitle1">
-            {numSelected} selected
+          <Typography style={{ color: '#3F51B5' }} variant="subtitle1">
+            {`מדריכים בחורים${numSelected}`}
           </Typography>
         ) : (
           <Typography variant="h4" style={{ color: '#41ad48' }}>
@@ -176,9 +172,13 @@ const EnhancedTableToolbar = props => {
       <div className={classes.spacer} />
       <div className={classes.actions}>
         {numSelected > 0 ? (
-          <Button variant="outlined" className={classes.button}>
-            דו"ח
-          </Button>
+          isFetchingReport ? (
+            <CircularIndeterminate />
+          ) : (
+            <Button onClick={onClickFetchReport} variant="outlined" className={classes.button}>
+              דו"ח
+            </Button>
+          )
         ) : null}
       </div>
     </Toolbar>
@@ -205,7 +205,16 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 const EnhancedTable = props => {
-  const { rows, multiSelect, selected, handleClick, handleSelectAll } = props;
+  const {
+    tableTitle,
+    rows,
+    multiSelect,
+    selected,
+    handleClick,
+    handleSelectAll,
+    onClickFetchReport,
+    isFetchingReport
+  } = props;
   const classes = useStyles();
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('lastName');
@@ -234,8 +243,10 @@ const EnhancedTable = props => {
       <Paper className={classes.paper}>
         <EnhancedTableToolbar
           multiSelect={multiSelect}
-          tableTitle={props.tableTitle}
+          tableTitle={tableTitle}
           numSelected={selected.length}
+          onClickFetchReport={onClickFetchReport}
+          isFetchingReport={isFetchingReport}
         />
         <div className={classes.tableWrapper}>
           <Table className={classes.table} aria-labelledby="tableTitle" size="medium">
@@ -273,6 +284,7 @@ const EnhancedTable = props => {
                         <Checkbox
                           checked={isItemSelected}
                           inputProps={{ 'aria-labelledby': labelId }}
+                          style={{ color: '#3F51B5' }}
                         />
                       </TableCell>
                     </TableRow>
