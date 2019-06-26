@@ -21,8 +21,6 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2, 1),
     textAlign: 'right',
     backgroundColor: theme.palette.background.paper,
-    //width: 500,
-    //flexGrow: 1,
     width: '100%'
   },
   table: {
@@ -43,10 +41,6 @@ const useStyles = makeStyles(theme => ({
     padding: 5
   },
   appBar: {
-    // textAlign: 'center',
-    // alignContent: 'center',
-    // position: "centered",
-    // justifyContent: 'center',
     alignItems: 'center'
   }
 }));
@@ -82,7 +76,7 @@ const MainScene = () => {
   const [coordinatorsRows, setCoordinatorsRows] = useState([]);
   const [tutorsRows, setTutorsRows] = useState([]);
   const [departmentManagersRows, setDepartmentManagersRows] = useState([]);
-  const [displayedTab, setDisplayedTab] = useState('ReportsTabScene');
+  const [displayedTab, setDisplayedTab] = useState('TableTabScene');
   const [originalRows, setOriginalRows] = useState([]);
   const [tutorsOriginalRows, setTutorsOriginalRows] = useState([]);
   const [coordinatorsOriginalRows, setCoordinatorsOriginalRows] = useState([]);
