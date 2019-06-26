@@ -31,6 +31,7 @@ import { firestoreModule } from '../Firebase/Firebase';
 import { Columns } from '../utils/getColumns';
 import moment from 'moment';
 import deepcopy from 'deepcopy';
+import { entriesToObj } from '../utils/general-utils';
 
 const useStyles = makeStyles(theme => ({
   // wrapper: {
@@ -172,7 +173,12 @@ function TableTabScene({
   const [loading, setLoading] = useState(false);
   const [loadingPage, setLoadingPage] = useState(true);
   const [msgState, setMsgState] = useState({ title: '', body: '', visible: false });
-  const [formState, setFormState] = useState({ firstNameErr: false, lastNameErr: false, genderErr: false, phoneErr: false });
+  const [formState, setFormState] = useState({
+    firstNameErr: false,
+    lastNameErr: false,
+    genderErr: false,
+    phoneErr: false
+  });
   const [assignmentDialogType, setAssignmentDialogType] = useState('');
   const [openForm, setOpenForm] = useState(false);
   let filteredRows = getRows(rowsCopy, filters);
@@ -194,11 +200,6 @@ function TableTabScene({
   ];
 
   const removeEmptyFields = obj => entriesToObj(Object.entries(obj).filter(([, v]) => v));
-  const entriesToObj = entries =>
-    entries.reduce((prev, curr) => {
-      const [key, val] = curr;
-      return { ...prev, [key]: val };
-    }, {});
 
   const fixStudentFields = student => {
     columns.forEach(({ key }) => {
@@ -206,7 +207,8 @@ function TableTabScene({
         if (
           (key === 'lastModified' || key === 'dob') &&
           student[key] !== undefined &&
-          student[key] !== null && student[key] !== ''
+          student[key] !== null &&
+          student[key] !== ''
         ) {
           student[key] = student[key] instanceof Date ? student[key] : student[key].toDate();
         }
@@ -214,7 +216,6 @@ function TableTabScene({
           student[key] = '';
         }
       } else {
-
         student = { ...student, [key]: key === 'lastModified' ? new Date() : '' };
       }
     });
@@ -247,8 +248,6 @@ function TableTabScene({
       }
       if (newRows[i].dob !== '') new Date(newRows[i].dob);
     }
-
-
 
     setRows(newRows);
     setMainRows(newRows);
@@ -350,10 +349,8 @@ function TableTabScene({
     delete student['departmentManager'];
   };
 
-
   function isValidPhone(phone) {
-    if (phone.length === 13)
-      return true;
+    if (phone.length === 13) return true;
     return false;
   }
 
@@ -361,15 +358,13 @@ function TableTabScene({
     if (newStudent['firstName'] === '' || !newStudent.hasOwnProperty('firstName')) {
       setFormState({ firstNameErr: true });
       return;
-    }
-    else {
+    } else {
       setFormState({ ['firstNameErr']: false });
     }
     if (newStudent['lastName'] === '' || !newStudent.hasOwnProperty('lastName')) {
       setFormState({ lastNameErr: true });
       return;
-    }
-    else {
+    } else {
       setFormState({ ['lastNameErr']: false });
     }
     if (newStudent['gender'] === '' || !newStudent.hasOwnProperty('gender')) {
@@ -378,7 +373,11 @@ function TableTabScene({
     } else {
       setFormState({ ['genderErr']: false });
     }
-    if (newStudent['phone'] === '' || !newStudent.hasOwnProperty('phone') || newStudent['phone'] === undefined) {
+    if (
+      newStudent['phone'] === '' ||
+      !newStudent.hasOwnProperty('phone') ||
+      newStudent['phone'] === undefined
+    ) {
       setFormState({ phoneErr: true });
       return;
     } else {
@@ -423,7 +422,7 @@ function TableTabScene({
           visible: true
         });
       })
-      .catch(function (error) {
+      .catch(function(error) {
         console.log('Error adding student', error);
       });
   };
@@ -560,10 +559,8 @@ function TableTabScene({
               originalRows[i].lastModified.toDate().getTime() !==
               new Date(rowsCopy[ids[j].id].lastModified).getTime()
             ) {
-
               students.push(rowsCopy[ids[j].id]);
             }
-
           }
         }
       }
@@ -675,10 +672,7 @@ function TableTabScene({
             open={openForm}
             onClose={handleCloseForm}
             aria-labelledby="form-dialog-title">
-            <form
-              className={classes.container}
-              autoComplete="on"
-            >
+            <form className={classes.container} autoComplete="on">
               <DialogTitle id="form-dialog-title" className={classes.formTitle}>
                 הוספת חניך
               </DialogTitle>
@@ -782,8 +776,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-              <></>
-            )}
+            <></>
+          )}
 
           <AssignmentDialog
             title="בחר מדריך"
@@ -849,8 +843,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-              <></>
-            )}
+            <></>
+          )}
 
           <AssignmentDialog
             title="בחר רכז"
@@ -914,8 +908,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-              <></>
-            )}
+            <></>
+          )}
 
           <AssignmentDialog
             title="בחר מנהל מחלקה"
@@ -1029,8 +1023,8 @@ function TableTabScene({
             {loadingSave && <CircularProgress size={24} className={classes.buttonProgress} />}
           </Button>
         </div>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 }
 

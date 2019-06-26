@@ -26,8 +26,8 @@ import moment from 'moment';
 import ReactDOM from 'react-dom';
 import { Filters, Editors } from 'react-data-grid-addons';
 import deepcopy from 'deepcopy';
-import { getUsersPhones } from '../utils/createRowData'
-
+import { getUsersPhones } from '../utils/createRowData';
+import { removeEmptyFields } from '../utils/general-utils';
 class phoneEditor extends React.Component {
   constructor(props) {
     super(props);
@@ -42,7 +42,6 @@ class phoneEditor extends React.Component {
     return ReactDOM.findDOMNode(this).getElementsByTagName('input')[0];
   }
   handleChangePhone = name => value => {
-
     this.setState({ ...this.state, [name]: value });
   };
   render() {
@@ -295,7 +294,12 @@ function GenericTab({
   const [loading, setLoading] = useState(false);
   const [loadingPage, setLoadingPage] = useState(true);
   const [msgState, setMsgState] = useState({ title: '', body: '', visible: false });
-  const [formState, setFormState] = useState({ firstNameErr: false, lastNameErr: false, genderErr: false, phoneErr: false });
+  const [formState, setFormState] = useState({
+    firstNameErr: false,
+    lastNameErr: false,
+    genderErr: false,
+    phoneErr: false
+  });
   const [openForm, setOpenForm] = useState(false);
   let filteredRows = getRows(rowsCopy, filters);
   const [newRow, setNewRow] = useState({});
@@ -304,17 +308,15 @@ function GenericTab({
   const [openDeleteCheck, setOpenDeleteCheck] = useState(false);
   const [usersPhones, setUsersPhones] = useState([]);
 
-  const removeEmptyFields = obj => entriesToObj(Object.entries(obj).filter(([, v]) => v));
-  const entriesToObj = entries =>
-    entries.reduce((prev, curr) => {
-      const [key, val] = curr;
-      return { ...prev, [key]: val };
-    }, {});
-
   const fixRowFields = row => {
     columns.forEach(({ key }) => {
       if (row.hasOwnProperty(key)) {
-        if (key === 'lastModified' && row[key] !== undefined && row[key] !== null && row[key] !== '') {
+        if (
+          key === 'lastModified' &&
+          row[key] !== undefined &&
+          row[key] !== null &&
+          row[key] !== ''
+        ) {
           row[key] = row[key] instanceof Date ? row[key] : row[key].toDate();
         }
         if (row[key] === null || row[key] === undefined || key === 'dob') {
@@ -336,8 +338,7 @@ function GenericTab({
   }
 
   function isValidPhone(phone) {
-    if (phone.length === 13)
-      return true;
+    if (phone.length === 13) return true;
     return false;
   }
 
@@ -359,7 +360,7 @@ function GenericTab({
         });
         return;
       }
-    } 
+    }
     setGenericSaveButtonColor('secondary');
     const newRows = deepcopy(rowsCopy);
     for (let i = 0; i < newRows.length; i++) {
@@ -505,21 +506,17 @@ function GenericTab({
     return fixedRow;
   };
 
-
-
   function formValidation() {
     if (newRow['firstName'] === '' || !newRow.hasOwnProperty('firstName')) {
       setFormState({ firstNameErr: true });
       return;
-    }
-    else {
+    } else {
       setFormState({ ['firstNameErr']: false });
     }
     if (newRow['lastName'] === '' || !newRow.hasOwnProperty('lastName')) {
       setFormState({ lastNameErr: true });
       return;
-    }
-    else {
+    } else {
       setFormState({ ['lastNameErr']: false });
     }
     if (newRow['gender'] === '' || !newRow.hasOwnProperty('gender')) {
@@ -528,7 +525,11 @@ function GenericTab({
     } else {
       setFormState({ ['genderErr']: false });
     }
-    if (newRow['phone'] === '' || !newRow.hasOwnProperty('phone') || newRow['phone'] === undefined) {
+    if (
+      newRow['phone'] === '' ||
+      !newRow.hasOwnProperty('phone') ||
+      newRow['phone'] === undefined
+    ) {
       setFormState({ phoneErr: true });
       return;
     } else {
@@ -610,7 +611,7 @@ function GenericTab({
         setGenericSaveButtonColor('secondary');
         setLoadingAdd(false);
       })
-      .catch(function (error) {
+      .catch(function(error) {
         console.log('Error adding', error);
       });
   };

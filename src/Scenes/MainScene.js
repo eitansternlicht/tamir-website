@@ -82,7 +82,7 @@ const MainScene = () => {
   const [coordinatorsRows, setCoordinatorsRows] = useState([]);
   const [tutorsRows, setTutorsRows] = useState([]);
   const [departmentManagersRows, setDepartmentManagersRows] = useState([]);
-  const [displayedTab, setDisplayedTab] = useState('TableTabScene');
+  const [displayedTab, setDisplayedTab] = useState('ReportsTabScene');
   const [originalRows, setOriginalRows] = useState([]);
   const [tutorsOriginalRows, setTutorsOriginalRows] = useState([]);
   const [coordinatorsOriginalRows, setCoordinatorsOriginalRows] = useState([]);
