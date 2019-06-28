@@ -12,9 +12,8 @@ import {
   TableBody,
   TableRow
 } from '@material-ui/core';
-import { MsgToShow } from './'
+import { MsgToShow } from './';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-
 
 const mandatoryRows = ['firstName', 'lastName', 'gender'];
 const rows = [
@@ -46,28 +45,28 @@ class Select extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      'lastName': '',
-      'firstName': '',
-      'groups': '',
-      'phone': '',
-      'gender': '',
-      'schoolGrade': '',
-      'school': '',
-      'address': '',
-      'neighborhood': '',
-      'dob': '',
-      'govID': '',
-      'city': '',
-      'email': '',
-      'shirtSize': '',
-      'friends': '',
-      'socialCircle': '',
-      'youthGroup': '',
-      'interests': '',
-      'specialIssues': '',
-      'prefferedDays': '',
-      'staffMemberAppointed': '',
-      'comments': '',
+      lastName: '',
+      firstName: '',
+      groups: '',
+      phone: '',
+      gender: '',
+      schoolGrade: '',
+      school: '',
+      address: '',
+      neighborhood: '',
+      dob: '',
+      govID: '',
+      city: '',
+      email: '',
+      shirtSize: '',
+      friends: '',
+      socialCircle: '',
+      youthGroup: '',
+      interests: '',
+      specialIssues: '',
+      prefferedDays: '',
+      staffMemberAppointed: '',
+      comments: '',
       i: '',
       okeeDialog: '',
       errordialog: '',
@@ -128,6 +127,8 @@ class Select extends React.Component {
         return 'איש צוות מטפל';
       case 'comments':
         return 'הערות';
+      default:
+        return null;
     }
   };
 
@@ -139,18 +140,20 @@ class Select extends React.Component {
   };
 
   chosen = (obj, name) => {
-    return obj[name] && obj[name] !== 'בחר עמודה מתאימה'
-
-  }
+    return obj[name] && obj[name] !== 'בחר עמודה מתאימה';
+  };
 
   handleClickOpen = () => {
-
     let canSend = checkIfAllFieldsHaveValue(mandatoryRows, this.state, this.chosen);
 
-    console.log("state", this.state);
+    console.log('state', this.state);
     if (canSend === true) {
-      const [i, ...rest] = rows;
-      this.props.onSelectingDone(rest.filter(row => this.chosen(this.state, row)).map(existingName => [existingName, this.state[existingName]]))
+      const [, ...rest] = rows;
+      this.props.onSelectingDone(
+        rest
+          .filter(row => this.chosen(this.state, row))
+          .map(existingName => [existingName, this.state[existingName]])
+      );
       this.setState({ send: true });
     }
 
@@ -161,7 +164,7 @@ class Select extends React.Component {
           body: 'המערכת לא הצליחה לטעון את הנתונים בדוק אם מלאת את כל שדות החובה',
           visible: true
         }
-      })
+      });
     }
 
     if (canSend) {
@@ -171,7 +174,7 @@ class Select extends React.Component {
           body: 'הקובץ נטען בהצלחה',
           visible: true
         }
-      })
+      });
     }
   };
 
@@ -179,9 +182,7 @@ class Select extends React.Component {
     this.setState({ send: false });
   };
 
-
   render() {
-
     const classes = {
       textField: {
         marginLeft: 100,
@@ -198,7 +199,7 @@ class Select extends React.Component {
         <AppBar position="static">
           <Toolbar>
             <Button
-              align='right'
+              align="right"
               color="secondary"
               style={{ width: 150, height: 50, position: 'relative', float: 'left', margin: 20 }}
               variant="contained"
@@ -206,42 +207,48 @@ class Select extends React.Component {
               onClick={this.handleClickOpen}>
               <ChevronLeftIcon style={{ marginRight: 20 }} />
               בצע התאמה
-        </Button>
+            </Button>
             <Typography variant="h6" style={{ flexGrow: 1 }} />
             <h2 color="inherit" style={{ flexGrow: 1 }}>
               התאמת עמודות
             </h2>
-
           </Toolbar>
-
         </AppBar>
 
-        <CardContent >
+        <CardContent>
           <Table style={{ width: '100%', marginLeft: 'auto', marginRight: 'auto' }}>
-            <TableBody >
-              <TableRow style={{ width: 'auto', marginLeft: 'auto', marginRight: 'auto' }} >
+            <TableBody>
+              <TableRow style={{ width: 'auto', marginLeft: 'auto', marginRight: 'auto' }}>
                 <TableCell component="th" scope="row" />
                 <TableCell align="center"> מותאם ל </TableCell>
                 <TableCell align="center"> עמודה בטבלה </TableCell>
               </TableRow>
-              {rows.map(row => (row !== 'i' ?
-                <TableRow key={row} style={{ width: '100%', marginLeft: 'auto', marginRight: 'auto' }}>
-                  <TableCell component="th" scope="row" />
-                  <TableCell align="center">
-                    <NativeSelect
-                      className={classes.selectEmpty}
-                      value={this.state[row]}
-                      name={row}
-                      onChange={this.handleChange(row)}
-                      inputProps={{ 'aria-label': 'age' }}>
-                      {this.props.fileRows.map(row => <option key={row} disabled={this.chekdisabled(row)} value={row}>
-                        {row}
-                      </option>)}
-                    </NativeSelect>
-                  </TableCell>
-                  <TableCell align="center">{mandatoryRows.includes(row) ? '* ' + this.getLabel(row) : this.getLabel(row)}</TableCell>
-                </TableRow>
-                : null))}
+              {rows.map(row =>
+                row !== 'i' ? (
+                  <TableRow
+                    key={row}
+                    style={{ width: '100%', marginLeft: 'auto', marginRight: 'auto' }}>
+                    <TableCell component="th" scope="row" />
+                    <TableCell align="center">
+                      <NativeSelect
+                        className={classes.selectEmpty}
+                        value={this.state[row]}
+                        name={row}
+                        onChange={this.handleChange(row)}
+                        inputProps={{ 'aria-label': 'age' }}>
+                        {this.props.fileRows.map(row => (
+                          <option key={row} disabled={this.chekdisabled(row)} value={row}>
+                            {row}
+                          </option>
+                        ))}
+                      </NativeSelect>
+                    </TableCell>
+                    <TableCell align="center">
+                      {mandatoryRows.includes(row) ? '* ' + this.getLabel(row) : this.getLabel(row)}
+                    </TableCell>
+                  </TableRow>
+                ) : null
+              )}
             </TableBody>
           </Table>
         </CardContent>
@@ -249,7 +256,7 @@ class Select extends React.Component {
           {...this.state.msgState}
           handleClose={() => {
             if (this.state.send) this.props.uploadedFinished(false);
-            this.setState({ msgState: { ... this.state.msgState, visible: false } })
+            this.setState({ msgState: { ...this.state.msgState, visible: false } });
           }}
         />
       </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import { lighten, makeStyles, withStyles } from '@material-ui/core/styles';
+import { lighten, makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -156,8 +156,7 @@ const EnhancedTableToolbar = props => {
     <Toolbar
       className={clsx(classes.root, {
         [classes.highlight]: numSelected > 0
-      })}
-      className={classes.title}>
+      })}>
       <div className={classes.title}>
         {multiSelect && numSelected > 0 ? (
           <Typography style={{ color: '#3F51B5' }} variant="subtitle1">

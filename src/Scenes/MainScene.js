@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TableTabScene } from '../components';
-import { makeStyles, Paper, Typography, Tab, Tabs, AppBar, Button } from '@material-ui/core/';
+import { makeStyles, Typography, Tab, Tabs, AppBar, Button } from '@material-ui/core/';
 import green from '@material-ui/core/colors/green';
 import { GenericTab } from '../components/GenericTab';
 import {
@@ -11,6 +11,7 @@ import {
 } from '../utils/createRowData';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from 'firebase';
+import Loader from 'react-loader-spinner';
 import { getOwners } from '../utils/general-utils';
 import { firestoreModule } from '../Firebase/Firebase';
 import Upload from '../utils/Upload';
@@ -44,8 +45,8 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center'
   }
 }));
-const role = 'ceo';
-const uid = 'qIAOWJMzBXdSXHf20w8J';
+// const role = 'ceo';
+// const uid = 'qIAOWJMzBXdSXHf20w8J';
 
 const uiConfig = {
   signInFlow: 'popup',
@@ -61,7 +62,8 @@ const uiConfig = {
 };
 
 const MainScene = () => {
-  const [isSignedIn, setIsSignedIn] = useState(true);
+  // const [isSignedIn, setIsSignedIn] = useState(true);
+  const [userStatus, setUserStatus] = useState('SignedOut');
   const [loading, setLoading] = useState(true);
   const [loadingTutors, setLoadingTutors] = useState(true);
   const [loadingCoordinators, setLoadingCoordinators] = useState(true);
@@ -87,7 +89,30 @@ const MainScene = () => {
 
   // componentDidMount
   useEffect(() => {
-    unregisterAuthObserver = firebase.auth().onAuthStateChanged(user => setIsSignedIn(!!user));
+    unregisterAuthObserver = firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        setUserStatus('SignedInCheckingPermissions');
+        user
+          .getIdTokenResult()
+          .then(idTokenResult => {
+            if (idTokenResult) {
+              setUserStatus(idTokenResult);
+            } else {
+              firebase
+                .auth()
+                .signOut()
+                .then(() => setUserStatus('SignedOutPermissionDenied'));
+            }
+          })
+          .catch(err => {
+            firebase
+              .auth()
+              .signOut()
+              .then(() => setUserStatus('SignedOutPermissionDenied'));
+            console.error(err);
+          });
+      }
+    });
   }, []);
 
   // componentWillUnmount
@@ -97,7 +122,9 @@ const MainScene = () => {
     };
   }, []);
 
-  if (isSignedIn && loading) {
+  if (userStatus.isRegistered) {
+    const { uid } = firebase.auth().currentUser;
+    const { role } = userStatus;
     getStudents(setStudentsRows, setLoading, uid, role);
     getStudents(setOriginalRows, setLoading, uid, role);
     if (role !== 'tutor') {
@@ -121,6 +148,8 @@ const MainScene = () => {
   const classes = useStyles();
 
   function getAppropriateStudentsRows() {
+    const { uid } = firebase.auth().currentUser;
+    const { role } = userStatus;
     if (role === 'tutor' && !loading) {
       return (
         <TableTabScene
@@ -194,125 +223,154 @@ const MainScene = () => {
     } else return null;
   }
 
-  return !isSignedIn ? (
-    <div style={{ padding: 50 }}>
-      <Typography variant="h5" component="h5" style={{ textAlign: 'right', paddingBottom: 10 }}>
-        טמיר
-      </Typography>
-      <Typography variant="h5" component="h5" style={{ textAlign: 'right' }}>
-        התחבר
-      </Typography>
-      <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
-    </div>
-  ) : (
-    <div>
-      <div>
-        <AppBar
-          position="static"
-          color="default"
-          className={classes.appBar}
-          style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
-          <Button
-            style={{ marginRight: 'auto' }}
-            size="large"
-            variant="outlined"
-            color="primary"
-            onClick={() => firebase.auth().signOut()}>
-            התנתק
-          </Button>
-          <Tabs
-            indicatorColor="primary"
-            style={{ marginRight: 'auto' }}
-            textColor="primary"
-            variant="scrollable"
-            scrollButtons="auto"
-            value={displayedTab}
-            onChange={handleChange}>
-            <Tab key={0} value="ReportsTabScene" label="דוחות" />
-            <Tab key={5} value="ImportFile" label="ייבוא קובץ מאקסל" />
-            {role === 'ceo' ? (
-              <Tab key={1} value="DepartmentManagersTabScene" label="מנהלי מחלקות" />
-            ) : null}
-            {role === 'departmentManager' || role === 'ceo' ? (
-              <Tab key={2} value="CoordinatorsTabScene" label="רכזים" />
-            ) : null}
-            {role !== 'tutor' ? <Tab key={3} value="TutorsTabScene" label="מדריכים" /> : null}
-            <Tab key={4} value="TableTabScene" label="חניכים" />
-          </Tabs>
-        </AppBar>
-
-        {displayedTab === 'TableTabScene' ? (
-          <div className={classes.table}>{getAppropriateStudentsRows()}</div>
-        ) : null}
-
-        {displayedTab === 'TutorsTabScene' ? (
-          <div className={classes.table}>
-            <GenericTab
-              originalRows={tutorsOriginalRows}
-              setOriginalRows={setTutorsOriginalRows}
-              rows={tutorsRows}
-              setMainRows={setTutorsRows}
-              genericSaveButtonColor={tutorsSaveButtonColor}
-              setGenericSaveButtonColor={setTutorsSaveButtonColor}
-              type="tutors"
-              role={role}
-              uid={uid}
-            />
-          </div>
-        ) : null}
-
-        {displayedTab === 'CoordinatorsTabScene' ? (
-          <div className={classes.table}>
-            <GenericTab
-              originalRows={coordinatorsOriginalRows}
-              setOriginalRows={setCoordinatorsOriginalRows}
-              rows={coordinatorsRows}
-              setMainRows={setCoordinatorsRows}
-              genericSaveButtonColor={coordinatorsSaveButtonColor}
-              setGenericSaveButtonColor={setCoordinatorsSaveButtonColor}
-              type="coordinators"
-              role={role}
-              uid={uid}
-            />
-          </div>
-        ) : null}
-
-        {displayedTab === 'DepartmentManagersTabScene' ? (
-          <div className={classes.table}>
-            <GenericTab
-              originalRows={departmentManagersOriginalRows}
-              setOriginalRows={setDepartmentManagersOriginalRows}
-              rows={departmentManagersRows}
-              setMainRows={setDepartmentManagersRows}
-              genericSaveButtonColor={departmentManagersSaveButtonColor}
-              setGenericSaveButtonColor={setDepartmentManagersSaveButtonColor}
-              type="departmentManagers"
-              role={role}
-              uid={uid}
-            />
-          </div>
-        ) : null}
-        {displayedTab === 'ImportFile' ? (
-          <div className={classes.table}>
-            <Upload
-              onNewFile={aooToAdd =>
-                aooToAdd.map(student => {
-                  let fixedStudent = getOwners(student, role, uid);
-                  firestoreModule.getStudents().add({ ...fixedStudent, lastModified: new Date() });
-                })
-              }
-            />
-          </div>
-        ) : null}
-
-        {displayedTab === 'ReportsTabScene' ? (
-          <div className={classes.table}>
-            <ReportsTabScene tutors={tutorsOriginalRows} />
-          </div>
-        ) : null}
+  if (userStatus === 'SignedOut')
+    return (
+      <div style={{ padding: 50 }}>
+        <Typography variant="h5" component="h5" style={{ textAlign: 'right', paddingBottom: 10 }}>
+          טמיר
+        </Typography>
+        <Typography variant="h5" component="h5" style={{ textAlign: 'right' }}>
+          התחבר
+        </Typography>
+        <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
       </div>
-    </div>
-  );
+    );
+  else if (userStatus === 'SignedOutPermissionDenied')
+    return (
+      <div style={{ padding: 50 }}>
+        <Typography variant="h5" component="h5" style={{ textAlign: 'right', paddingBottom: 10 }}>
+          טמיר
+        </Typography>
+        <Typography variant="h5" component="h5" style={{ textAlign: 'right' }}>
+          התחבר
+        </Typography>
+        <Typography variant="h5" component="h5" style={{ textAlign: 'right', color: 'red' }}>
+          אין הרשאות גישה למספר זה
+        </Typography>
+        <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
+      </div>
+    );
+  else if (userStatus === 'SignedInCheckingPermissions')
+    return <Loader type="Grid" color="#41ad48" height="100" width="100" />;
+  else {
+    const { uid } = firebase.auth().currentUser;
+    const { role } = userStatus;
+    return (
+      <div>
+        <div>
+          <AppBar
+            position="static"
+            color="default"
+            className={classes.appBar}
+            style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
+            <Button
+              style={{ marginRight: 'auto' }}
+              size="large"
+              variant="outlined"
+              color="primary"
+              onClick={() => {
+                setUserStatus('SignedOut');
+                firebase.auth().signOut();
+              }}>
+              התנתק
+            </Button>
+            <Tabs
+              indicatorColor="primary"
+              style={{ marginRight: 'auto' }}
+              textColor="primary"
+              variant="scrollable"
+              scrollButtons="auto"
+              value={displayedTab}
+              onChange={handleChange}>
+              <Tab key={0} value="ReportsTabScene" label="דוחות" />
+              <Tab key={5} value="ImportFile" label="ייבוא קובץ מאקסל" />
+              {role === 'ceo' ? (
+                <Tab key={1} value="DepartmentManagersTabScene" label="מנהלי מחלקות" />
+              ) : null}
+              {role === 'departmentManager' || role === 'ceo' ? (
+                <Tab key={2} value="CoordinatorsTabScene" label="רכזים" />
+              ) : null}
+              {role !== 'tutor' ? <Tab key={3} value="TutorsTabScene" label="מדריכים" /> : null}
+              <Tab key={4} value="TableTabScene" label="חניכים" />
+            </Tabs>
+          </AppBar>
+
+          {displayedTab === 'TableTabScene' ? (
+            <div className={classes.table}>{getAppropriateStudentsRows()}</div>
+          ) : null}
+
+          {displayedTab === 'TutorsTabScene' ? (
+            <div className={classes.table}>
+              <GenericTab
+                originalRows={tutorsOriginalRows}
+                setOriginalRows={setTutorsOriginalRows}
+                rows={tutorsRows}
+                setMainRows={setTutorsRows}
+                genericSaveButtonColor={tutorsSaveButtonColor}
+                setGenericSaveButtonColor={setTutorsSaveButtonColor}
+                type="tutors"
+                role={role}
+                uid={uid}
+              />
+            </div>
+          ) : null}
+
+          {displayedTab === 'CoordinatorsTabScene' ? (
+            <div className={classes.table}>
+              <GenericTab
+                originalRows={coordinatorsOriginalRows}
+                setOriginalRows={setCoordinatorsOriginalRows}
+                rows={coordinatorsRows}
+                setMainRows={setCoordinatorsRows}
+                genericSaveButtonColor={coordinatorsSaveButtonColor}
+                setGenericSaveButtonColor={setCoordinatorsSaveButtonColor}
+                type="coordinators"
+                role={role}
+                uid={uid}
+              />
+            </div>
+          ) : null}
+
+          {displayedTab === 'DepartmentManagersTabScene' ? (
+            <div className={classes.table}>
+              <GenericTab
+                originalRows={departmentManagersOriginalRows}
+                setOriginalRows={setDepartmentManagersOriginalRows}
+                rows={departmentManagersRows}
+                setMainRows={setDepartmentManagersRows}
+                genericSaveButtonColor={departmentManagersSaveButtonColor}
+                setGenericSaveButtonColor={setDepartmentManagersSaveButtonColor}
+                type="departmentManagers"
+                role={role}
+                uid={uid}
+              />
+            </div>
+          ) : null}
+          {displayedTab === 'ImportFile' ? (
+            <div className={classes.table}>
+              <Upload
+                onNewFile={aooToAdd =>
+                  aooToAdd.map(student => {
+                    const { role } = userStatus;
+                    let fixedStudent = getOwners(student, role, uid);
+                    firestoreModule
+                      .getStudents()
+                      .add({ ...fixedStudent, lastModified: new Date() });
+                  })
+                }
+              />
+            </div>
+          ) : null}
+
+          {displayedTab === 'ReportsTabScene' ? (
+            <div className={classes.table}>
+              <ReportsTabScene tutors={tutorsOriginalRows} />
+            </div>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
 };
 
-export { MainScene };
+export default MainScene;

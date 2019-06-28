@@ -8,8 +8,8 @@ import { EnhancedTable } from '../components';
 import { Box } from '@material-ui/core';
 import MonthPickerInput from 'react-month-picker-input';
 import { firestoreModule } from '../Firebase/Firebase';
-import { zip, entriesToObj } from '../utils/general-utils';
-import { diffInHours, toMoment } from '../utils/date-utils';
+import { zip } from '../utils/general-utils';
+import { toMoment } from '../utils/date-utils';
 import { totalHoursWorked } from '../utils/local-db';
 import { aoaToFile } from '../utils/excell-utils';
 import _ from 'lodash';
@@ -166,7 +166,7 @@ const ReportsTabScene = props => {
                 .getAttendance(selected, month)
                 .then(results => {
                   if (results.length === 0) {
-                    throw 'no results!';
+                    throw new Error('no results!');
                   }
                   const aoaOfUIDs = results.map(resultsOfUID => {
                     const objOfMonthsToShifts = _.groupBy(resultsOfUID, ({ startTime }) =>

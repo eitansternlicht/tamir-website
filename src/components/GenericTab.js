@@ -189,9 +189,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: 18,
     padding: 4,
     margin: theme.spacing(1),
-    textAlign: 'center',
     alignContent: 'center',
-    margin: theme.spacing(1),
     textAlign: 'right'
   },
   formTitle: {
@@ -381,7 +379,7 @@ function GenericTab({
 
   const updateNums = () => {
     for (let i = 0; i < rowsCopy.length; i++) {
-      rowsCopy[i]['id'] = i + 1;
+      rowsCopy[i].id = i + 1;
     }
     setRows(rowsCopy);
     setMainRows(rowsCopy);
@@ -456,9 +454,9 @@ function GenericTab({
   };
 
   const removeUnnecessaryFields = row => {
-    delete row['check'];
-    delete row['id'];
-    delete row['fid'];
+    delete row.check;
+    delete row.id;
+    delete row.fid;
   };
 
   const getOwners = (fixedRow, role) => {
@@ -469,7 +467,7 @@ function GenericTab({
         role: 'tutor',
         lastModified: updateDate()
       };
-      fixedRow.owners['coordinators'].push(uid);
+      fixedRow.owners.coordinators.push(uid);
     } else if (role === 'departmentManager') {
       if (type === 'tutors')
         fixedRow = {
@@ -485,7 +483,7 @@ function GenericTab({
           role: 'coordinator',
           lastModified: updateDate()
         };
-      fixedRow.owners['departmentManagers'].push(uid);
+      fixedRow.owners.departmentManagers.push(uid);
     } else {
       if (type === 'tutors')
         fixedRow = {
@@ -507,36 +505,32 @@ function GenericTab({
   };
 
   function formValidation() {
-    if (newRow['firstName'] === '' || !newRow.hasOwnProperty('firstName')) {
+    if (newRow.firstName === '' || !newRow.hasOwnProperty('firstName')) {
       setFormState({ firstNameErr: true });
       return;
     } else {
-      setFormState({ ['firstNameErr']: false });
+      setFormState({ firstNameErr: false });
     }
-    if (newRow['lastName'] === '' || !newRow.hasOwnProperty('lastName')) {
+    if (newRow.lastName === '' || !newRow.hasOwnProperty('lastName')) {
       setFormState({ lastNameErr: true });
       return;
     } else {
-      setFormState({ ['lastNameErr']: false });
+      setFormState({ lastNameErr: false });
     }
-    if (newRow['gender'] === '' || !newRow.hasOwnProperty('gender')) {
+    if (newRow.gender === '' || !newRow.hasOwnProperty('gender')) {
       setFormState({ genderErr: true });
       return;
     } else {
-      setFormState({ ['genderErr']: false });
+      setFormState({ genderErr: false });
     }
-    if (
-      newRow['phone'] === '' ||
-      !newRow.hasOwnProperty('phone') ||
-      newRow['phone'] === undefined
-    ) {
+    if (newRow.phone === '' || !newRow.hasOwnProperty('phone') || newRow.phone === undefined) {
       setFormState({ phoneErr: true });
       return;
     } else {
-      setFormState({ ['phoneErr']: false });
+      setFormState({ phoneErr: false });
     }
 
-    if (newRow['phone'] && !isValidPhone(newRow.phone)) {
+    if (newRow.phone && !isValidPhone(newRow.phone)) {
       setMsgState({
         title: 'הוספת חניך',
         body: '!נא להכניס נייד תקין',
@@ -754,7 +748,6 @@ function GenericTab({
             {...msgState}
             handleClose={() => setMsgState({ ...msgState, visible: false })}
           />
-
           <Dialog
             disableBackdropClick
             disableEscapeKeyDown
@@ -796,7 +789,6 @@ function GenericTab({
                   type="name"
                   onChange={handleChange('lastName')}
                 />
-
                 <TextField
                   required
                   select
@@ -826,7 +818,7 @@ function GenericTab({
                   label="מס' טלפון"
                   placeholder="נייד"
                   className={classes.textField}
-                  value={newRow['phone']}
+                  value={newRow.phone}
                   onChange={handleChangePhone('phone')}
                 />
               </DialogContent>
@@ -854,7 +846,6 @@ function GenericTab({
             {type === 'coordinators' && 'מחק רכזים בחורים'}
             {type === 'departmentManagers' && 'מחק מנהלים בחורים'}
             {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
-
             <DeleteIcon />
           </Button>
 
@@ -888,8 +879,6 @@ function GenericTab({
               </Button>
             </DialogActions>
           </Dialog>
-
-          {/* <MsgToShow {...msgState} handleClose={() => setMsgState({ ...msgState, visible: false })} /> */}
         </div>
 
         <div className={classes.actions}>
@@ -905,25 +894,17 @@ function GenericTab({
         </div>
 
         <div className={classes.saveContainer}>
-          {/* <ButtonGroup
-            variant="contained"
-            color="secondary"
-            size="large"
-            aria-label="Large contained secondary button group"
-          > */}
           <Button
             variant="contained"
             size="large"
             color={genericSaveButtonColor}
             className={classes.button}
-            size="large"
             onClick={() => saveUpdates()}
             disabled={loadingSave}>
             שמור שינויים
             <SaveIcon />
             {loadingSave && <CircularProgress size={24} className={classes.buttonProgress} />}
           </Button>
-          {/* </ButtonGroup> */}
         </div>
       </div>
     </div>

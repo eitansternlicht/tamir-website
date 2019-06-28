@@ -259,7 +259,7 @@ function TableTabScene({
 
   const updateNums = () => {
     for (let i = 0; i < rowsCopy.length; i++) {
-      rowsCopy[i]['id'] = i + 1;
+      rowsCopy[i].id = i + 1;
     }
     setRows(rowsCopy);
     setMainRows(rowsCopy);
@@ -340,13 +340,13 @@ function TableTabScene({
   };
 
   const removeUnnecessaryFields = student => {
-    delete student['check'];
-    delete student['id'];
-    delete student['studentStatus'];
-    delete student['fid'];
-    delete student['tutor'];
-    delete student['coordinator'];
-    delete student['departmentManager'];
+    delete student.check;
+    delete student.id;
+    delete student.studentStatus;
+    delete student.fid;
+    delete student.tutor;
+    delete student.coordinator;
+    delete student.departmentManager;
   };
 
   function isValidPhone(phone) {
@@ -355,36 +355,36 @@ function TableTabScene({
   }
 
   function formValidation() {
-    if (newStudent['firstName'] === '' || !newStudent.hasOwnProperty('firstName')) {
+    if (newStudent.firstName === '' || !newStudent.hasOwnProperty('firstName')) {
       setFormState({ firstNameErr: true });
       return;
     } else {
-      setFormState({ ['firstNameErr']: false });
+      setFormState({ firstNameErr: false });
     }
-    if (newStudent['lastName'] === '' || !newStudent.hasOwnProperty('lastName')) {
+    if (newStudent.lastName === '' || !newStudent.hasOwnProperty('lastName')) {
       setFormState({ lastNameErr: true });
       return;
     } else {
-      setFormState({ ['lastNameErr']: false });
+      setFormState({ lastNameErr: false });
     }
-    if (newStudent['gender'] === '' || !newStudent.hasOwnProperty('gender')) {
+    if (newStudent.gender === '' || !newStudent.hasOwnProperty('gender')) {
       setFormState({ genderErr: true });
       return;
     } else {
-      setFormState({ ['genderErr']: false });
+      setFormState({ genderErr: false });
     }
     if (
-      newStudent['phone'] === '' ||
+      newStudent.phone === '' ||
       !newStudent.hasOwnProperty('phone') ||
-      newStudent['phone'] === undefined
+      newStudent.phone === undefined
     ) {
       setFormState({ phoneErr: true });
       return;
     } else {
-      setFormState({ ['phoneErr']: false });
+      setFormState({ phoneErr: false });
     }
 
-    if (newStudent['phone'] && !isValidPhone(newStudent.phone)) {
+    if (newStudent.phone && !isValidPhone(newStudent.phone)) {
       setMsgState({
         title: 'הוספת חניך',
         body: '!נא להכניס נייד תקין',
@@ -485,8 +485,8 @@ function TableTabScene({
     let departmentManager = '';
 
     if (newSt.owners !== null && newSt.owners !== undefined) {
-      if (newSt.owners.hasOwnProperty('tutors') && newSt.owners['tutors'].length > 0) {
-        let arr = newSt.owners['tutors'];
+      if (newSt.owners.hasOwnProperty('tutors') && newSt.owners.tutors.length > 0) {
+        let arr = newSt.owners.tutors;
         for (let i = 0; i < arr.length; i++) {
           if (arr[i].studentStatus === 'normal') {
             status = 'גויס';
@@ -501,16 +501,16 @@ function TableTabScene({
         }
       }
 
-      if (newSt.owners.hasOwnProperty('coordinators') && newSt.owners['coordinators'].length > 0) {
-        let temp = getCoordinatorFromFid(newSt.owners['coordinators'][0]);
+      if (newSt.owners.hasOwnProperty('coordinators') && newSt.owners.coordinators.length > 0) {
+        let temp = getCoordinatorFromFid(newSt.owners.coordinators[0]);
         if (temp !== undefined) coordinator = temp.firstName;
       }
 
       if (
         newSt.owners.hasOwnProperty('departmentManagers') &&
-        newSt.owners['departmentManagers'].length > 0
+        newSt.owners.departmentManagers.length > 0
       ) {
-        let temp = getDepartmentManagerFromFid(newSt.owners['departmentManagers'][0]);
+        let temp = getDepartmentManagerFromFid(newSt.owners.departmentManagers[0]);
         if (temp !== undefined) departmentManager = temp.firstName;
       }
       newSt = {
@@ -790,20 +790,20 @@ function TableTabScene({
                   if (chosenOption !== 'None') {
                     let owners = rowsCopy[i].owners;
                     if (owners.hasOwnProperty('tutors')) {
-                      owners = owners['tutors'];
+                      owners = owners.tutors;
                       let uids = owners.map(o => o.uid);
                       if (!uids.includes(chosenOption))
-                        rowsCopy[i].owners['tutors'].push({
+                        rowsCopy[i].owners.tutors.push({
                           studentStatus: 'potential',
                           uid: chosenOption
                         });
                     } else {
                       owners = { ...owners, tutors: [] };
-                      owners['tutors'].push({ studentStatus: 'potential', uid: chosenOption });
+                      owners.tutors.push({ studentStatus: 'potential', uid: chosenOption });
                       rowsCopy[i].owners = owners;
                     }
                   } else {
-                    rowsCopy[i].owners['tutors'] = [];
+                    rowsCopy[i].owners.tutors = [];
                   }
                   firestoreModule
                     .getSpecificStudent(rowsCopy[i].fid)
@@ -857,16 +857,16 @@ function TableTabScene({
                   if (chosenOption !== 'None') {
                     let owners = rowsCopy[i].owners;
                     if (owners.hasOwnProperty('coordinators')) {
-                      owners = owners['coordinators'];
+                      owners = owners.coordinators;
                       if (!owners.includes(chosenOption))
-                        rowsCopy[i].owners['coordinators'].push(chosenOption);
+                        rowsCopy[i].owners.coordinators.push(chosenOption);
                     } else {
                       owners = { ...owners, coordinators: [] };
-                      owners['coordinators'].push(chosenOption);
+                      owners.coordinators.push(chosenOption);
                       rowsCopy[i].owners = owners;
                     }
                   } else {
-                    rowsCopy[i].owners['coordinators'] = [];
+                    rowsCopy[i].owners.coordinators = [];
                   }
                   firestoreModule
                     .getSpecificStudent(rowsCopy[i].fid)
@@ -922,17 +922,17 @@ function TableTabScene({
                   if (chosenOption !== 'None') {
                     let owners = rowsCopy[i].owners;
                     if (owners.hasOwnProperty('departmentManagers')) {
-                      owners = owners['departmentManagers'];
+                      owners = owners.departmentManagers;
 
                       if (!owners.includes(chosenOption))
-                        rowsCopy[i].owners['departmentManagers'].push(chosenOption);
+                        rowsCopy[i].owners.departmentManagers.push(chosenOption);
                     } else {
                       owners = { ...owners, departmentManagers: [] };
-                      owners['departmentManagers'].push(chosenOption);
+                      owners.departmentManagers.push(chosenOption);
                       rowsCopy[i].owners = owners;
                     }
                   } else {
-                    rowsCopy[i].owners['departmentManagers'] = [];
+                    rowsCopy[i].owners.departmentManagers = [];
                   }
                   firestoreModule
                     .getSpecificStudent(rowsCopy[i].fid)
@@ -1015,7 +1015,6 @@ function TableTabScene({
             variant="contained"
             color={saveButtonColor}
             className={classes.button}
-            size="large"
             onClick={() => (saveButtonColor === 'secondary' ? saveUpdates() : {})}
             disabled={loadingSave}>
             שמור שינויים

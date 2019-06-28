@@ -23,11 +23,11 @@
     "react-dom": "^16.8.6",
     "react-dropzone": "^10.1.0",
     "react-firebaseui": "^3.1.2",
+    "react-loader-spinner": "^2.3.0",
     "react-month-picker-input": "^1.2.3",
     "react-phone-number-input": "^2.3.14",
     "react-responsive-ui": "^0.14.140",
     "react-scripts": "2.1.8",
-    "react-spinners": "^0.5.4",
     "xlsx": "^0.14.2"
   },
   "scripts": {

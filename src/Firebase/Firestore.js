@@ -1,6 +1,5 @@
 import firebase from 'firebase/app';
 import 'firebase/firestore';
-import { entriesToObj } from '../utils/general-utils';
 
 let firestoreDb = null;
 
