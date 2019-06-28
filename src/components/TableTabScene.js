@@ -248,8 +248,6 @@ function TableTabScene({
       if (newRows[i].dob !== '') new Date(newRows[i].dob);
     }
 
-
-
     setRows(newRows);
     setMainRows(newRows);
   };
@@ -778,7 +776,7 @@ function TableTabScene({
                   ? setAssignmentDialogType('tutors')
                   : setAssignmentDialogType('')
               }>
-              שבץ חניכים בחורים למדריך
+              שבץ חניכים שנבחרו למדריך
               <AssignmentIcon />
             </Button>
           ) : (
@@ -845,7 +843,7 @@ function TableTabScene({
                   ? setAssignmentDialogType('coordinators')
                   : setAssignmentDialogType('')
               }>
-              שבץ חניכים בחורים לרכז
+              שבץ חניכים שנבחרו לרכז
               <AssignmentIcon />
             </Button>
           ) : (
@@ -910,7 +908,7 @@ function TableTabScene({
                   ? setAssignmentDialogType('departmentManagers')
                   : setAssignmentDialogType('')
               }>
-              שבץ חניכים בחורים למנהל מחלקה
+              שבץ חניכים שנבחרו למנהל מחלקה
               <AssignmentIcon />
             </Button>
           ) : (
@@ -973,7 +971,7 @@ function TableTabScene({
             className={classes.button}
             onClick={handleOpenCheckDelete}
             disabled={loading}>
-            מחק חניכים בחורים
+            מחק חניכים שנבחרו
             {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
             <DeleteIcon />
           </Button>

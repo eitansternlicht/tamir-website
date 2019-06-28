@@ -849,9 +849,9 @@ function GenericTab({
             className={classes.button}
             onClick={handleOpenCheckDelete}
             disabled={loading}>
-            {type === 'tutors' && 'מחק מדריכים בחורים'}
-            {type === 'coordinators' && 'מחק רכזים בחורים'}
-            {type === 'departmentManagers' && 'מחק מנהלים בחורים'}
+            {type === 'tutors' && 'מחק מדריכים שנבחרו'}
+            {type === 'coordinators' && 'מחק רכזים שנבחרו'}
+            {type === 'departmentManagers' && 'מחק מנהלים שנבחרו'}
             {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
 
             <DeleteIcon />
