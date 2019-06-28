@@ -614,9 +614,10 @@ function TableTabScene({
     });
   };
 
-  // console.log('co', rowsCopy, 'or', originalRows);
+ 
   return (
     <div>
+      
       <ReactDataGrid
         rowKey="id"
         columns={columnsToShow.reverse()}
@@ -644,7 +645,7 @@ function TableTabScene({
         }}
       />
       {selectedIndexes.length !== 0 && <span style={{ textAlign: 'center', alignContent: 'center', alignSelf: 'center', font: 30 }}>
-      {rowText} {selectedIndexes.length}  
+        {rowText} {selectedIndexes.length}
       </span>}
 
       <div className={classes.actionsContainer}>

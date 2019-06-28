@@ -194,6 +194,13 @@ const MainScene = () => {
     } else return null;
   }
 
+
+
+  function popup() {
+
+    return "are you sure you want to exit?";
+  }
+
   return !isSignedIn ? (
     <div style={{ padding: 50 }}>
       <Typography variant="h5" component="h5" style={{ textAlign: 'right', paddingBottom: 10 }}>
@@ -205,114 +212,115 @@ const MainScene = () => {
       <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
     </div>
   ) : (
-    <div>
       <div>
-        <AppBar
-          position="static"
-          color="default"
-          className={classes.appBar}
-          style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
-          <Button
-            style={{ marginRight: 'auto' }}
-            size="large"
-            variant="outlined"
-            color="primary"
-            onClick={() => firebase.auth().signOut()}>
-            התנתק
+        {saveButtonColor === 'secondary' ? window.onbeforeunload = popup : null}
+        <div>
+          <AppBar
+            position="static"
+            color="default"
+            className={classes.appBar}
+            style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
+            <Button
+              style={{ marginRight: 'auto' }}
+              size="large"
+              variant="outlined"
+              color="primary"
+              onClick={() => firebase.auth().signOut()}>
+              התנתק
           </Button>
-          <Tabs
-            indicatorColor="primary"
-            style={{ marginRight: 'auto' }}
-            textColor="primary"
-            variant="scrollable"
-            scrollButtons="auto"
-            value={displayedTab}
-            onChange={handleChange}>
-            <Tab key={0} value="ReportsTabScene" label="דוחות" />
-            <Tab key={5} value="ImportFile" label="ייבוא קובץ מאקסל" />
-            {role === 'ceo' ? (
-              <Tab key={1} value="DepartmentManagersTabScene" label="מנהלי מחלקות" />
-            ) : null}
-            {role === 'departmentManager' || role === 'ceo' ? (
-              <Tab key={2} value="CoordinatorsTabScene" label="רכזים" />
-            ) : null}
-            {role !== 'tutor' ? <Tab key={3} value="TutorsTabScene" label="מדריכים" /> : null}
-            <Tab key={4} value="TableTabScene" label="חניכים" />
-          </Tabs>
-        </AppBar>
+            <Tabs
+              indicatorColor="primary"
+              style={{ marginRight: 'auto' }}
+              textColor="primary"
+              variant="scrollable"
+              scrollButtons="auto"
+              value={displayedTab}
+              onChange={handleChange}>
+              <Tab key={0} value="ReportsTabScene" label="דוחות" />
+              <Tab key={5} value="ImportFile" label="ייבוא קובץ מאקסל" />
+              {role === 'ceo' ? (
+                <Tab key={1} value="DepartmentManagersTabScene" label="מנהלי מחלקות" />
+              ) : null}
+              {role === 'departmentManager' || role === 'ceo' ? (
+                <Tab key={2} value="CoordinatorsTabScene" label="רכזים" />
+              ) : null}
+              {role !== 'tutor' ? <Tab key={3} value="TutorsTabScene" label="מדריכים" /> : null}
+              <Tab key={4} value="TableTabScene" label="חניכים" />
+            </Tabs>
+          </AppBar>
 
-        {displayedTab === 'TableTabScene' ? (
-          <div className={classes.table}>{getAppropriateStudentsRows()}</div>
-        ) : null}
+          {displayedTab === 'TableTabScene' ? (
+            <div className={classes.table}>{getAppropriateStudentsRows()}</div>
+          ) : null}
 
-        {displayedTab === 'TutorsTabScene' ? (
-          <div className={classes.table}>
-            <GenericTab
-              originalRows={tutorsOriginalRows}
-              setOriginalRows={setTutorsOriginalRows}
-              rows={tutorsRows}
-              setMainRows={setTutorsRows}
-              genericSaveButtonColor={tutorsSaveButtonColor}
-              setGenericSaveButtonColor={setTutorsSaveButtonColor}
-              type="tutors"
-              role={role}
-              uid={uid}
-            />
-          </div>
-        ) : null}
+          {displayedTab === 'TutorsTabScene' ? (
+            <div className={classes.table}>
+              <GenericTab
+                originalRows={tutorsOriginalRows}
+                setOriginalRows={setTutorsOriginalRows}
+                rows={tutorsRows}
+                setMainRows={setTutorsRows}
+                genericSaveButtonColor={tutorsSaveButtonColor}
+                setGenericSaveButtonColor={setTutorsSaveButtonColor}
+                type="tutors"
+                role={role}
+                uid={uid}
+              />
+            </div>
+          ) : null}
 
-        {displayedTab === 'CoordinatorsTabScene' ? (
-          <div className={classes.table}>
-            <GenericTab
-              originalRows={coordinatorsOriginalRows}
-              setOriginalRows={setCoordinatorsOriginalRows}
-              rows={coordinatorsRows}
-              setMainRows={setCoordinatorsRows}
-              genericSaveButtonColor={coordinatorsSaveButtonColor}
-              setGenericSaveButtonColor={setCoordinatorsSaveButtonColor}
-              type="coordinators"
-              role={role}
-              uid={uid}
-            />
-          </div>
-        ) : null}
+          {displayedTab === 'CoordinatorsTabScene' ? (
+            <div className={classes.table}>
+              <GenericTab
+                originalRows={coordinatorsOriginalRows}
+                setOriginalRows={setCoordinatorsOriginalRows}
+                rows={coordinatorsRows}
+                setMainRows={setCoordinatorsRows}
+                genericSaveButtonColor={coordinatorsSaveButtonColor}
+                setGenericSaveButtonColor={setCoordinatorsSaveButtonColor}
+                type="coordinators"
+                role={role}
+                uid={uid}
+              />
+            </div>
+          ) : null}
 
-        {displayedTab === 'DepartmentManagersTabScene' ? (
-          <div className={classes.table}>
-            <GenericTab
-              originalRows={departmentManagersOriginalRows}
-              setOriginalRows={setDepartmentManagersOriginalRows}
-              rows={departmentManagersRows}
-              setMainRows={setDepartmentManagersRows}
-              genericSaveButtonColor={departmentManagersSaveButtonColor}
-              setGenericSaveButtonColor={setDepartmentManagersSaveButtonColor}
-              type="departmentManagers"
-              role={role}
-              uid={uid}
-            />
-          </div>
-        ) : null}
-        {displayedTab === 'ImportFile' ? (
-          <div className={classes.table}>
-            <Upload
-              onNewFile={aooToAdd =>
-                aooToAdd.map(student => {
-                  let fixedStudent = getOwners(student, role, uid);
-                  firestoreModule.getStudents().add({ ...fixedStudent, lastModified: new Date() });
-                })
-              }
-            />
-          </div>
-        ) : null}
+          {displayedTab === 'DepartmentManagersTabScene' ? (
+            <div className={classes.table}>
+              <GenericTab
+                originalRows={departmentManagersOriginalRows}
+                setOriginalRows={setDepartmentManagersOriginalRows}
+                rows={departmentManagersRows}
+                setMainRows={setDepartmentManagersRows}
+                genericSaveButtonColor={departmentManagersSaveButtonColor}
+                setGenericSaveButtonColor={setDepartmentManagersSaveButtonColor}
+                type="departmentManagers"
+                role={role}
+                uid={uid}
+              />
+            </div>
+          ) : null}
+          {displayedTab === 'ImportFile' ? (
+            <div className={classes.table}>
+              <Upload
+                onNewFile={aooToAdd =>
+                  aooToAdd.map(student => {
+                    let fixedStudent = getOwners(student, role, uid);
+                    firestoreModule.getStudents().add({ ...fixedStudent, lastModified: new Date() });
+                  })
+                }
+              />
+            </div>
+          ) : null}
 
-        {displayedTab === 'ReportsTabScene' ? (
-          <div className={classes.table}>
-            <ReportsTabScene tutors={tutorsOriginalRows} />
-          </div>
-        ) : null}
+          {displayedTab === 'ReportsTabScene' ? (
+            <div className={classes.table}>
+              <ReportsTabScene tutors={tutorsOriginalRows} />
+            </div>
+          ) : null}
+        </div>
       </div>
-    </div>
-  );
+    );
 };
 
 export { MainScene };
