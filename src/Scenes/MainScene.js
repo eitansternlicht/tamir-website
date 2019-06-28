@@ -61,6 +61,10 @@ const uiConfig = {
   }
 };
 
+const popup = () => {
+  return 'are you sure you want to exit?';
+};
+
 const MainScene = () => {
   // const [isSignedIn, setIsSignedIn] = useState(true);
   const [userStatus, setUserStatus] = useState('SignedOut');
@@ -257,6 +261,7 @@ const MainScene = () => {
     const { role } = userStatus;
     return (
       <div>
+        {saveButtonColor === 'secondary' ? (window.onbeforeunload = popup) : null}
         <div>
           <AppBar
             position="static"
@@ -349,15 +354,14 @@ const MainScene = () => {
           {displayedTab === 'ImportFile' ? (
             <div className={classes.table}>
               <Upload
-                onNewFile={aooToAdd =>
-                  aooToAdd.map(student => {
-                    const { role } = userStatus;
-                    let fixedStudent = getOwners(student, role, uid);
+                onNewFile={aooToAdd => {
+                  aooToAdd.forEach(student => {
+                    const fixedStudent = getOwners(student, role, uid);
                     firestoreModule
                       .getStudents()
                       .add({ ...fixedStudent, lastModified: new Date() });
-                  })
-                }
+                  });
+                }}
               />
             </div>
           ) : null}

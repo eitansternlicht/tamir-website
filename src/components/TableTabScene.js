@@ -422,7 +422,7 @@ function TableTabScene({
           visible: true
         });
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log('Error adding student', error);
       });
   };
@@ -437,7 +437,7 @@ function TableTabScene({
     setSelectedIndexes(newSelectedIndexes);
   };
 
-  const rowText = selectedIndexes.length === 1 ? 'row' : 'rows';
+  const rowText = selectedIndexes.length === 1 ? 'חניך בחור' : 'חניכים בחורים';
 
   const columns = Columns(role);
   const columnsToShow = [...columns];
@@ -614,9 +614,10 @@ function TableTabScene({
     });
   };
 
-  // console.log('co', rowsCopy, 'or', originalRows);
+ 
   return (
     <div>
+      
       <ReactDataGrid
         rowKey="id"
         columns={columnsToShow.reverse()}
@@ -643,9 +644,9 @@ function TableTabScene({
           }
         }}
       />
-      <span style={{ textAlign: 'center', alignContent: 'center', alignSelf: 'center', font: 30 }}>
-        {selectedIndexes.length} {rowText} selected
-      </span>
+      {selectedIndexes.length !== 0 && <span style={{ textAlign: 'center', alignContent: 'center', alignSelf: 'center', font: 30 }}>
+        {rowText} {selectedIndexes.length}
+      </span>}
 
       <div className={classes.actionsContainer}>
         <div className={classes.actions}>
@@ -772,12 +773,12 @@ function TableTabScene({
                   ? setAssignmentDialogType('tutors')
                   : setAssignmentDialogType('')
               }>
-              שבץ חניכים בחורים למדריך
+              שבץ חניכים שנבחרו למדריך
               <AssignmentIcon />
             </Button>
           ) : (
-            <></>
-          )}
+              <></>
+            )}
 
           <AssignmentDialog
             title="בחר מדריך"
@@ -839,12 +840,12 @@ function TableTabScene({
                   ? setAssignmentDialogType('coordinators')
                   : setAssignmentDialogType('')
               }>
-              שבץ חניכים בחורים לרכז
+              שבץ חניכים שנבחרו לרכז
               <AssignmentIcon />
             </Button>
           ) : (
-            <></>
-          )}
+              <></>
+            )}
 
           <AssignmentDialog
             title="בחר רכז"
@@ -904,12 +905,12 @@ function TableTabScene({
                   ? setAssignmentDialogType('departmentManagers')
                   : setAssignmentDialogType('')
               }>
-              שבץ חניכים בחורים למנהל מחלקה
+              שבץ חניכים שנבחרו למנהל מחלקה
               <AssignmentIcon />
             </Button>
           ) : (
-            <></>
-          )}
+              <></>
+            )}
 
           <AssignmentDialog
             title="בחר מנהל מחלקה"
@@ -967,7 +968,7 @@ function TableTabScene({
             className={classes.button}
             onClick={handleOpenCheckDelete}
             disabled={loading}>
-            מחק חניכים בחורים
+            מחק חניכים שנבחרו
             {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
             <DeleteIcon />
           </Button>

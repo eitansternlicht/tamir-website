@@ -605,7 +605,7 @@ function GenericTab({
         setGenericSaveButtonColor('secondary');
         setLoadingAdd(false);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log('Error adding', error);
       });
   };
@@ -622,7 +622,16 @@ function GenericTab({
     setSelectedIndexes(newSelectedIndexes);
   };
 
-  const rowText = selectedIndexes.length === 1 ? 'row' : 'rows';
+  const getAppropriateSelect = () => {
+
+    if (type === 'tutors')
+      return selectedIndexes.length === 1 ? 'מדריך בחור' : 'מדריכים בחורים';
+    if (type === 'coordinators')
+      return selectedIndexes.length === 1 ? 'רכז בחור' : 'רכזים בחורים';
+    if (type === 'departmentManagers')
+      return selectedIndexes.length === 1 ? 'מנהל בחור' : 'מנהלים בחורים';
+  }
+  const rowText = getAppropriateSelect();
 
   const columnsToShow = [...columns];
 
@@ -725,9 +734,9 @@ function GenericTab({
           }
         }}
       />
-      <span style={{ textAlign: 'center', alignContent: 'center', alignSelf: 'center', font: 30 }}>
-        {selectedIndexes.length} {rowText} selected
-      </span>
+      {selectedIndexes.length !== 0 && <span style={{ textAlign: 'center', alignContent: 'center', alignSelf: 'center', font: 30 }}>
+        {selectedIndexes.length} {rowText}
+      </span>}
 
       <div className={classes.actionsContainer}>
         <div className={classes.actions}>
@@ -842,9 +851,9 @@ function GenericTab({
             className={classes.button}
             onClick={handleOpenCheckDelete}
             disabled={loading}>
-            {type === 'tutors' && 'מחק מדריכים בחורים'}
-            {type === 'coordinators' && 'מחק רכזים בחורים'}
-            {type === 'departmentManagers' && 'מחק מנהלים בחורים'}
+            {type === 'tutors' && 'מחק מדריכים שנבחרו'}
+            {type === 'coordinators' && 'מחק רכזים שנבחרו'}
+            {type === 'departmentManagers' && 'מחק מנהלים שנבחרו'}
             {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
             <DeleteIcon />
           </Button>
