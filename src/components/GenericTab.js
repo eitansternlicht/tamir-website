@@ -611,7 +611,7 @@ function GenericTab({
         setGenericSaveButtonColor('secondary');
         setLoadingAdd(false);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log('Error adding', error);
       });
   };
@@ -628,7 +628,16 @@ function GenericTab({
     setSelectedIndexes(newSelectedIndexes);
   };
 
-  const rowText = selectedIndexes.length === 1 ? 'row' : 'rows';
+  const getAppropriateSelect = () => {
+
+    if (type === 'tutors')
+      return selectedIndexes.length === 1 ? 'מדריך בחור' : 'מדריכים בחורים';
+    if (type === 'coordinators')
+      return selectedIndexes.length === 1 ? 'רכז בחור' : 'רכזים בחורים';
+    if (type === 'departmentManagers')
+      return selectedIndexes.length === 1 ? 'מנהל בחור' : 'מנהלים בחורים';
+  }
+  const rowText = getAppropriateSelect();
 
   const columnsToShow = [...columns];
 
@@ -731,9 +740,9 @@ function GenericTab({
           }
         }}
       />
-      <span style={{ textAlign: 'center', alignContent: 'center', alignSelf: 'center', font: 30 }}>
-        {selectedIndexes.length} {rowText} selected
-      </span>
+      {selectedIndexes.length !== 0 && <span style={{ textAlign: 'center', alignContent: 'center', alignSelf: 'center', font: 30 }}>
+        {selectedIndexes.length} {rowText}
+      </span>}
 
       <div className={classes.actionsContainer}>
         <div className={classes.actions}>
