@@ -161,7 +161,7 @@ const EnhancedTableToolbar = props => {
       <div className={classes.title}>
         {multiSelect && numSelected > 0 ? (
           <Typography style={{ color: '#3F51B5' }} variant="subtitle1">
-            {`מדריכים בחורים${numSelected}`}
+            {`מדריכים בחורים ${numSelected}`}
           </Typography>
         ) : (
           <Typography variant="h4" style={{ color: '#41ad48' }}>

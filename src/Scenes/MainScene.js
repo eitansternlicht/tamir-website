@@ -21,8 +21,6 @@ const useStyles = makeStyles(theme => ({
     padding: theme.spacing(2, 1),
     textAlign: 'right',
     backgroundColor: theme.palette.background.paper,
-    //width: 500,
-    //flexGrow: 1,
     width: '100%'
   },
   table: {
@@ -43,10 +41,6 @@ const useStyles = makeStyles(theme => ({
     padding: 5
   },
   appBar: {
-    // textAlign: 'center',
-    // alignContent: 'center',
-    // position: "centered",
-    // justifyContent: 'center',
     alignItems: 'center'
   }
 }));
