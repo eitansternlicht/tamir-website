@@ -16,6 +16,7 @@ import { addOwners } from '../utils/local-db';
 import { firestoreModule } from '../Firebase/Firebase';
 import Upload from '../utils/Upload';
 import ReportsTabScene from './ReportsTabScene';
+import logo from '../assets/images/tamir_logoshakuf.png';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -232,30 +233,30 @@ const MainScene = () => {
 
   if (userStatus === 'SignedOut')
     return (
-      <div style={{ backgroundColor: '#EBEBEB', height: 777 }}>
+      <div style={{ backgroundColor: '#F9F9F9', height: '100vh', display: 'flex', flexDirection: 'column' }}>
         <AppBar>
           <Toolbar>
             <Typography variant="h6" style={{ flexGrow: 1 }} />
-
-            <h3 color="inherit"> טמיר התחבר</h3>
+            <h3 color="inherit">התחבר</h3>
           </Toolbar>
         </AppBar>
-        <div style={{ paddingTop: 200 }}>
+        <img src={logo} style={{ width: 245, height: 128, alignSelf: 'flex-end', marginRight: 50, marginTop: 100  }} />
+        <div>
           <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
         </div>
       </div>
     );
   else if (userStatus === 'SignedOutPermissionDenied')
     return (
-      <div style={{ backgroundColor: '#EBEBEB', height: 777 }}>
+      <div style={{ backgroundColor: '#F9F9F9', height: '100vh', display: 'flex', flexDirection: 'column' }}>
         <AppBar>
           <Toolbar>
             <Typography variant="h6" style={{ flexGrow: 1 }} />
-
-            <h3 color="inherit"> טמיר התחבר</h3>
+            <h3 color="inherit">התחבר</h3>
           </Toolbar>
         </AppBar>
-        <div style={{ paddingTop: 200 }}>
+        <img src={logo} style={{ width: 245, height: 128, alignSelf: 'flex-end', marginRight: 50, marginTop: 100  }} />
+        <div>
           <Typography variant="h5" component="h5" style={{ paddingLeft: 730, color: 'red' }}>
             אין הרשאות גישה למספר זה
           </Typography>
@@ -264,7 +265,7 @@ const MainScene = () => {
       </div>
     );
   else if (userStatus === 'SignedInCheckingPermissions')
-    return <Loader type="Grid" color="#41ad48" height="100" width="100" />;
+    return <div style={{display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center'}}><Loader type="Grid" color="#41ad48" height="100" width="100"/></div>;
   else {
     const { uid } = firebase.auth().currentUser;
     const { role } = userStatus;
