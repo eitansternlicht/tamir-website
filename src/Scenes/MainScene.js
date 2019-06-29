@@ -90,22 +90,28 @@ const MainScene = () => {
 
   firebase.auth().languageCode = 'iw';
   let unregisterAuthObserver;
-
+  console.log('eitannnnn');
   // componentDidMount
   useEffect(() => {
     unregisterAuthObserver = firebase.auth().onAuthStateChanged(user => {
       if (user) {
         setUserStatus('SignedInCheckingPermissions');
+        console.log('eitan user', user);
+        console.log('eitan user uid', user.uid);
         user
           .getIdTokenResult()
           .then(idTokenResult => {
-            if (idTokenResult) {
-              setUserStatus(idTokenResult);
+            if (idTokenResult && idTokenResult.claims && idTokenResult.claims.isRegistered) {
+              console.log('eitan idTokenResult', idTokenResult.claims);
+              setUserStatus(idTokenResult.claims);
             } else {
               firebase
                 .auth()
                 .signOut()
-                .then(() => setUserStatus('SignedOutPermissionDenied'));
+                .then(() => {
+                  console.log('eitan SignedOutPermissionDenied', idTokenResult.claims);
+                  setUserStatus('SignedOutPermissionDenied');
+                });
             }
           })
           .catch(err => {
@@ -116,6 +122,7 @@ const MainScene = () => {
             console.error(err);
           });
       }
+      console.log('eitan check register');
     });
   }, []);
 
@@ -126,7 +133,8 @@ const MainScene = () => {
     };
   }, []);
 
-  if (userStatus.isRegistered) {
+  if (userStatus.isRegistered && loading) {
+    console.log('eitan loading');
     const { uid } = firebase.auth().currentUser;
     const { role } = userStatus;
     getStudents(setStudentsRows, setLoading, uid, role);
@@ -314,6 +322,7 @@ const MainScene = () => {
                 genericSaveButtonColor={tutorsSaveButtonColor}
                 setGenericSaveButtonColor={setTutorsSaveButtonColor}
                 type="tutors"
+                userStatus={userStatus}
                 role={role}
                 uid={uid}
               />
@@ -330,6 +339,7 @@ const MainScene = () => {
                 genericSaveButtonColor={coordinatorsSaveButtonColor}
                 setGenericSaveButtonColor={setCoordinatorsSaveButtonColor}
                 type="coordinators"
+                userStatus={userStatus}
                 role={role}
                 uid={uid}
               />
@@ -346,6 +356,7 @@ const MainScene = () => {
                 genericSaveButtonColor={departmentManagersSaveButtonColor}
                 setGenericSaveButtonColor={setDepartmentManagersSaveButtonColor}
                 type="departmentManagers"
+                userStatus={userStatus}
                 role={role}
                 uid={uid}
               />

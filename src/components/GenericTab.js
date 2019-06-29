@@ -28,6 +28,8 @@ import { Filters, Editors } from 'react-data-grid-addons';
 import deepcopy from 'deepcopy';
 import { getUsersPhones } from '../utils/createRowData';
 import { removeEmptyFields } from '../utils/general-utils';
+import { addOwnersForUsers } from '../utils/local-db';
+
 class phoneEditor extends React.Component {
   constructor(props) {
     super(props);
@@ -283,6 +285,7 @@ function GenericTab({
   genericSaveButtonColor,
   setGenericSaveButtonColor,
   type,
+  userStatus,
   role,
   uid
 }) {
@@ -459,51 +462,6 @@ function GenericTab({
     delete row.fid;
   };
 
-  const getOwners = (fixedRow, role) => {
-    if (role === 'coordinator') {
-      fixedRow = {
-        ...fixedRow,
-        owners: { coordinators: [], departmentManagers: [] },
-        role: 'tutor',
-        lastModified: updateDate()
-      };
-      fixedRow.owners.coordinators.push(uid);
-    } else if (role === 'departmentManager') {
-      if (type === 'tutors')
-        fixedRow = {
-          ...fixedRow,
-          owners: { coordinators: [], departmentManagers: [] },
-          role: 'tutor',
-          lastModified: updateDate()
-        };
-      else
-        fixedRow = {
-          ...fixedRow,
-          owners: { departmentManagers: [] },
-          role: 'coordinator',
-          lastModified: updateDate()
-        };
-      fixedRow.owners.departmentManagers.push(uid);
-    } else {
-      if (type === 'tutors')
-        fixedRow = {
-          ...fixedRow,
-          owners: { coordinators: [], departmentManagers: [] },
-          role: 'tutor',
-          lastModified: updateDate()
-        };
-      else if (type === 'coordinators')
-        fixedRow = {
-          ...fixedRow,
-          owners: { departmentManagers: [] },
-          role: 'coordinator',
-          lastModified: updateDate()
-        };
-      else fixedRow = { ...fixedRow, role: 'departmentManager', lastModified: updateDate() };
-    }
-    return fixedRow;
-  };
-
   function formValidation() {
     if (newRow.firstName === '' || !newRow.hasOwnProperty('firstName')) {
       setFormState({ firstNameErr: true });
@@ -569,7 +527,7 @@ function GenericTab({
     handleCloseForm();
     let fixedRow = fixRowFields(newRow);
     removeUnnecessaryFields(fixedRow);
-    fixedRow = getOwners(fixedRow, role);
+    fixedRow = addOwnersForUsers(role, uid, userStatus.owners, type, fixedRow);
     fixedRow = removeEmptyFields(fixedRow);
     firestoreModule
       .getUsers()
@@ -577,7 +535,7 @@ function GenericTab({
       .then(ref => {
         fixedRow = { ...fixedRow, fid: ref.id };
         fixedRow = fixRowFields(fixedRow);
-        fixedRow = getOwners(fixedRow, role);
+        fixedRow = addOwnersForUsers(role, uid, userStatus.owners, type, fixedRow);
 
         rowsCopy.unshift(fixedRow);
 
@@ -605,7 +563,7 @@ function GenericTab({
         setGenericSaveButtonColor('secondary');
         setLoadingAdd(false);
       })
-      .catch(function (error) {
+      .catch(function(error) {
         console.log('Error adding', error);
       });
   };
@@ -623,14 +581,11 @@ function GenericTab({
   };
 
   const getAppropriateSelect = () => {
-
-    if (type === 'tutors')
-      return selectedIndexes.length === 1 ? 'מדריך בחור' : 'מדריכים בחורים';
-    if (type === 'coordinators')
-      return selectedIndexes.length === 1 ? 'רכז בחור' : 'רכזים בחורים';
+    if (type === 'tutors') return selectedIndexes.length === 1 ? 'מדריך בחור' : 'מדריכים בחורים';
+    if (type === 'coordinators') return selectedIndexes.length === 1 ? 'רכז בחור' : 'רכזים בחורים';
     if (type === 'departmentManagers')
       return selectedIndexes.length === 1 ? 'מנהל בחור' : 'מנהלים בחורים';
-  }
+  };
   const rowText = getAppropriateSelect();
 
   const columnsToShow = [...columns];
@@ -734,9 +689,12 @@ function GenericTab({
           }
         }}
       />
-      {selectedIndexes.length !== 0 && <span style={{ textAlign: 'center', alignContent: 'center', alignSelf: 'center', font: 30 }}>
-        {selectedIndexes.length} {rowText}
-      </span>}
+      {selectedIndexes.length !== 0 && (
+        <span
+          style={{ textAlign: 'center', alignContent: 'center', alignSelf: 'center', font: 30 }}>
+          {selectedIndexes.length} {rowText}
+        </span>
+      )}
 
       <div className={classes.actionsContainer}>
         <div className={classes.actions}>
