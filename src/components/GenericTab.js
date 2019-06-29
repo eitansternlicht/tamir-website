@@ -32,7 +32,7 @@ import moment from 'moment';
 import ReactDOM from 'react-dom';
 import { Filters, Editors } from 'react-data-grid-addons';
 import deepcopy from 'deepcopy';
-import { getUsersPhones} from '../utils/createRowData';
+import { getUsersPhones } from '../utils/createRowData';
 import { removeEmptyFields } from '../utils/general-utils';
 import { addOwners } from '../utils/local-db';
 
@@ -618,7 +618,7 @@ function GenericTab({
   const exportToExcel = () => {
     const columnNames = columns.map(r => r.name);
     const aoa = [columnNames].concat(rowsCopy.map(rowToArr));
-    aoaToFile({ fileName: 'List.xlsx', aoa });
+    aoaToFile({ fileName: 'Users List', aoa });
   };
 
   const firstTimeLoading = () => {
@@ -646,18 +646,18 @@ function GenericTab({
         if (originalRows[i].fid === ids[j].fid) {
           if (rowsCopy[ids[j].id] !== undefined) {
             console.log("date", originalRows[i].lastModified);
-            if (originalRows[i].lastModified instanceof Date){
+            if (originalRows[i].lastModified instanceof Date) {
               if (originalRows[i].lastModified.getTime() !==
                 new Date(rowsCopy[ids[j].id].lastModified).getTime())
                 rows.push(rowsCopy[ids[j].id]);
             }
-              
-              else{
-                if (originalRows[i].lastModified.toDate().getTime() !==
+
+            else {
+              if (originalRows[i].lastModified.toDate().getTime() !==
                 new Date(rowsCopy[ids[j].id].lastModified).getTime())
                 rows.push(rowsCopy[ids[j].id]);
-              }
-                
+            }
+
 
           }
         }

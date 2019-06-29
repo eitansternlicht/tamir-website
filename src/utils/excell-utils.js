@@ -19,7 +19,7 @@ const fileToAOA = ({ fileName, result }) => {
   const res = [];
   if (typeof result !== 'string') {
     const worksheet = XLSX.read(new Uint8Array(result), { type: 'array' });
-    worksheet.SheetNames.forEach(function(sheetName) {
+    worksheet.SheetNames.forEach(function (sheetName) {
       const roa = XLSX.utils.sheet_to_json(worksheet.Sheets[sheetName], { header: 1 });
       if (roa.length) {
         res.push({ fileName, sheetName, aoa: roa });

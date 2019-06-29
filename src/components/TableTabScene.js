@@ -511,7 +511,7 @@ function TableTabScene({
   const exportToExcel = () => {
     const columnNames = columns.map(r => r.name);
     const aoa = [columnNames].concat(rowsCopy.map(studentToArr));
-    aoaToFile({ fileName: 'Students List.xlsx', aoa });
+    aoaToFile({ fileName: 'Students List', aoa });
   };
 
   const getTutorFromFid = fid => {
