@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TableTabScene } from '../components';
-import { makeStyles, Typography, Tab, Tabs, AppBar, Button } from '@material-ui/core/';
+import { makeStyles, Typography, Tab, Tabs, AppBar, Button, Toolbar } from '@material-ui/core/';
 import green from '@material-ui/core/colors/green';
 import { GenericTab } from '../components/GenericTab';
 import {
@@ -101,7 +101,6 @@ const MainScene = () => {
           .then(idTokenResult => {
             if (idTokenResult && idTokenResult.claims && idTokenResult.claims.isRegistered) {
               setUserStatus(idTokenResult.claims);
-
             } else {
               firebase
                 .auth()
@@ -236,29 +235,39 @@ const MainScene = () => {
 
   if (userStatus === 'SignedOut')
     return (
-      <div style={{ padding: 50 }}>
-        <Typography variant="h5" component="h5" style={{ textAlign: 'right', paddingBottom: 10 }}>
-          טמיר
-        </Typography>
-        <Typography variant="h5" component="h5" style={{ textAlign: 'right' }}>
-          התחבר
-        </Typography>
-        <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
+      <div style={{ backgroundColor: '#d6d6c2', height: 777 }}>
+        <AppBar>
+          <Toolbar>
+            <Typography variant="h6" style={{ flexGrow: 1 }}>
+              Login
+            </Typography>
+
+            <h3 color="inherit"> טמיר התחבר</h3>
+          </Toolbar>
+        </AppBar>
+        <div style={{ paddingTop: 150 }}>
+          <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
+        </div>
       </div>
     );
   else if (userStatus === 'SignedOutPermissionDenied')
     return (
-      <div style={{ padding: 50 }}>
-        <Typography variant="h5" component="h5" style={{ textAlign: 'right', paddingBottom: 10 }}>
-          טמיר
-        </Typography>
-        <Typography variant="h5" component="h5" style={{ textAlign: 'right' }}>
-          התחבר
-        </Typography>
-        <Typography variant="h5" component="h5" style={{ textAlign: 'right', color: 'red' }}>
-          אין הרשאות גישה למספר זה
-        </Typography>
-        <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
+      <div style={{ backgroundColor: '#d6d6c2', height: 777 }}>
+        <AppBar>
+          <Toolbar>
+            <Typography variant="h6" style={{ flexGrow: 1 }}>
+              Login
+            </Typography>
+
+            <h3 color="inherit"> טמיר התחבר</h3>
+          </Toolbar>
+        </AppBar>
+        <div style={{ paddingTop: 150 }}>
+          <Typography variant="h5" component="h5" style={{ paddingLeft:730, color: 'red' }}>
+            אין הרשאות גישה למספר זה
+          </Typography>
+          <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
+        </div>
       </div>
     );
   else if (userStatus === 'SignedInCheckingPermissions')
@@ -267,14 +276,20 @@ const MainScene = () => {
     const { uid } = firebase.auth().currentUser;
     const { role } = userStatus;
     return (
-      <div  >
+      <div>
         {saveButtonColor === 'secondary' ? (window.onbeforeunload = popup) : null}
         <div>
           <AppBar
             position="static"
             color="default"
             className={classes.appBar}
-            style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', paddingLeft: 10, paddingTop: 7 }}>
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              paddingLeft: 10,
+              paddingTop: 7
+            }}>
             <Button
               style={{ marginRight: 'auto' }}
               size="large"
