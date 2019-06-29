@@ -38,9 +38,14 @@
 .react-grid-Cell {
   box-sizing: border-box;
   position: static;
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.25);
+  padding: 10;
+  margin: 10;
 }
 
+.react-grid-Row {
+  overflow: auto;
+}
 .react-grid-Row--even {
   background-color: white;
 }
