@@ -25,7 +25,8 @@ const useStyles = makeStyles(theme => ({
     width: '100%'
   },
   table: {
-    padding: 3.5,
+    padding: 20,
+    paddingTop: 5,
     borderRadius: 3
   },
   buttonProgress: {
@@ -269,14 +270,14 @@ const MainScene = () => {
     const { uid } = firebase.auth().currentUser;
     const { role } = userStatus;
     return (
-      <div>
+      <div  >
         {saveButtonColor === 'secondary' ? (window.onbeforeunload = popup) : null}
         <div>
           <AppBar
             position="static"
             color="default"
             className={classes.appBar}
-            style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
+            style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', paddingLeft: 10, paddingTop: 7 }}>
             <Button
               style={{ marginRight: 'auto' }}
               size="large"

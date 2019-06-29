@@ -11,9 +11,17 @@ import {
   DialogContentText,
   CircularProgress,
   MenuItem,
-  TextField
+  TextField,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Collapse,
+  Typography
 } from '@material-ui/core/';
 import { MsgToShow, AssignmentDialog } from '.';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import SaveIcon from '@material-ui/icons/Save';
@@ -33,6 +41,23 @@ import deepcopy from 'deepcopy';
 import { entriesToObj } from '../utils/general-utils';
 
 const useStyles = makeStyles(theme => ({
+  root: {
+    textAlign: 'center',
+    alignContent: 'center',
+    border: 3,
+    borderRadius: 3,
+    borderColor: 'black',
+    borderWidth: 3,
+    //padding: 5,
+    width: '100%',
+    maxWidth: 300,
+    //backgroundColor: '#DDDDDD',
+  },
+  nested: {
+    paddingLeft: theme.spacing(2),
+    border: 3,
+    borderRadius: 3,
+  },
   actionsContainer: {
     display: 'flex',
     flexDirection: 'row-reverse'
@@ -181,6 +206,7 @@ function TableTabScene({
   const [loadingAdd, setLoadingAdd] = useState(false);
   const [loadingSave, setLoadingSave] = useState(false);
   const [openDeleteCheck, setOpenDeleteCheck] = useState(false);
+  const [openAssignMenu, setOpenAssignMenu] = useState(false);
 
   const classes = useStyles();
   const genders = [
@@ -193,6 +219,10 @@ function TableTabScene({
       label: 'נקבה'
     }
   ];
+
+  function handleClickOnAssignMenu() {
+    setOpenAssignMenu(!openAssignMenu);
+  }
 
   const removeEmptyFields = obj => entriesToObj(Object.entries(obj).filter(([, v]) => v));
 
@@ -417,7 +447,7 @@ function TableTabScene({
           visible: true
         });
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log('Error adding student', error);
       });
   };
@@ -611,40 +641,8 @@ function TableTabScene({
 
   return (
     <div>
-      <ReactDataGrid
-        rowKey="id"
-        columns={columnsToShow.reverse()}
-        rowGetter={i => filteredRows[i]}
-        rowsCount={filteredRows.length}
-        minHeight={350}
-        toolbar={<Toolbar enableFilter={true} />}
-        onAddFilter={filter => setFilters(handleFilterChange(filter))}
-        onClearFilters={() => setFilters({})}
-        getValidFilterValues={columnKey => getValidFilterValues(rowsCopy, columnKey)}
-        onGridSort={(sortColumn, sortDirection) =>
-          setRows(sortRows(rowsCopy, sortColumn, sortDirection))
-        }
-        onGridRowsUpdated={onGridRowsUpdated}
-        rowRenderer={RowRenderer}
-        enableCellSelect={true}
-        rowSelection={{
-          showCheckbox: true,
-          enableShiftSelect: true,
-          onRowsSelected: onRowsSelected,
-          onRowsDeselected: onRowsDeselected,
-          selectBy: {
-            indexes: selectedIndexes
-          }
-        }}
-      />
-      {selectedIndexes.length !== 0 && (
-        <span
-          style={{ textAlign: 'center', alignContent: 'center', alignSelf: 'center', font: 30 }}>
-          {rowText} {selectedIndexes.length}
-        </span>
-      )}
 
-      <div className={classes.actionsContainer}>
+      < div className={classes.actionsContainer} >
         <div className={classes.actions}>
           <Button
             disabled={loadingAdd}
@@ -757,242 +755,7 @@ function TableTabScene({
           </Dialog>
         </div>
 
-        <div className={classes.actions}>
-          {role !== 'tutor' ? (
-            <Button
-              size="large"
-              variant="contained"
-              color="primary"
-              className={classes.button}
-              onClick={() =>
-                selectedIndexes.length !== 0
-                  ? setAssignmentDialogType('tutors')
-                  : setAssignmentDialogType('')
-              }>
-              שבץ חניכים שנבחרו למדריך
-              <AssignmentIcon />
-            </Button>
-          ) : (
-            <></>
-          )}
 
-          <AssignmentDialog
-            title="בחר מדריך"
-            optionsArr={tutorsOptions}
-            visible={assignmentDialogType === 'tutors'}
-            handleClose={chosenOption => {
-              setAssignmentDialogType('');
-              if (selectedIndexes.length !== 0 && chosenOption !== 'Cancel') {
-                selectedIndexes.map(i => {
-                  if (chosenOption !== 'None') {
-                    let owners = rowsCopy[i].owners;
-                    if (owners.hasOwnProperty('tutors')) {
-                      owners = owners.tutors;
-                      let uids = owners.map(o => o.uid);
-                      if (!uids.includes(chosenOption))
-                        rowsCopy[i].owners.tutors.push({
-                          studentStatus: 'potential',
-                          uid: chosenOption
-                        });
-                    } else {
-                      owners = { ...owners, tutors: [] };
-                      owners.tutors.push({ studentStatus: 'potential', uid: chosenOption });
-                      rowsCopy[i].owners = owners;
-                    }
-                  } else {
-                    rowsCopy[i].owners.tutors = [];
-                  }
-                  firestoreModule
-                    .getSpecificStudent(rowsCopy[i].fid)
-                    .update({ owners: rowsCopy[i].owners });
-                  rowsCopy[i].lastModified = updateDate();
-                  rowsCopy = getMissedDetailsForAllStudents();
-                  setRows(rowsCopy);
-                  setMainRows(rowsCopy);
-                  return [];
-                });
-                if (chosenOption !== 'None')
-                  setMsgState({
-                    title: 'שיבוץ חניכים למדריך',
-                    body: 'כל החניכים שנבחרו שובצו בהצלחה',
-                    visible: true
-                  });
-                while (selectedIndexes.length !== 0) {
-                  selectedIndexes.shift();
-                }
-                setSaveButtonColor('secondary');
-              }
-            }}
-          />
-
-          {role === 'departmentManager' || role === 'ceo' ? (
-            <Button
-              size="large"
-              variant="contained"
-              color="primary"
-              className={classes.button}
-              onClick={() =>
-                selectedIndexes.length !== 0
-                  ? setAssignmentDialogType('coordinators')
-                  : setAssignmentDialogType('')
-              }>
-              שבץ חניכים שנבחרו לרכז
-              <AssignmentIcon />
-            </Button>
-          ) : (
-            <></>
-          )}
-
-          <AssignmentDialog
-            title="בחר רכז"
-            optionsArr={coordinatorsOptions}
-            visible={assignmentDialogType === 'coordinators'}
-            handleClose={chosenOption => {
-              setAssignmentDialogType('');
-              if (selectedIndexes.length !== 0 && chosenOption !== 'Cancel') {
-                selectedIndexes.map(i => {
-                  if (chosenOption !== 'None') {
-                    let owners = rowsCopy[i].owners;
-                    if (owners.hasOwnProperty('coordinators')) {
-                      owners = owners.coordinators;
-                      if (!owners.includes(chosenOption))
-                        rowsCopy[i].owners.coordinators.push(chosenOption);
-                    } else {
-                      owners = { ...owners, coordinators: [] };
-                      owners.coordinators.push(chosenOption);
-                      rowsCopy[i].owners = owners;
-                    }
-                  } else {
-                    rowsCopy[i].owners.coordinators = [];
-                  }
-                  firestoreModule
-                    .getSpecificStudent(rowsCopy[i].fid)
-                    .update({ owners: rowsCopy[i].owners });
-                  rowsCopy[i].lastModified = updateDate();
-                  rowsCopy = getMissedDetailsForAllStudents();
-                  setRows(rowsCopy);
-                  setMainRows(rowsCopy);
-                  return [];
-                });
-                if (chosenOption !== 'None')
-                  setMsgState({
-                    title: 'שיבוץ חניכים לרכז',
-                    body: 'כל החניכים שנבחרו שובצו בהצלחה',
-                    visible: true
-                  });
-
-                while (selectedIndexes.length !== 0) {
-                  selectedIndexes.shift();
-                }
-                setSaveButtonColor('secondary');
-              }
-              return;
-            }}
-          />
-
-          {role === 'ceo' ? (
-            <Button
-              size="large"
-              variant="contained"
-              color="primary"
-              className={classes.button}
-              onClick={() =>
-                selectedIndexes.length !== 0
-                  ? setAssignmentDialogType('departmentManagers')
-                  : setAssignmentDialogType('')
-              }>
-              שבץ חניכים שנבחרו למנהל מחלקה
-              <AssignmentIcon />
-            </Button>
-          ) : (
-            <></>
-          )}
-
-          <AssignmentDialog
-            title="בחר מנהל מחלקה"
-            optionsArr={departmentManagersOptions}
-            visible={assignmentDialogType === 'departmentManagers'}
-            handleClose={chosenOption => {
-              setAssignmentDialogType('');
-              if (selectedIndexes.length !== 0 && chosenOption !== 'Cancel') {
-                selectedIndexes.map(i => {
-                  if (chosenOption !== 'None') {
-                    let owners = rowsCopy[i].owners;
-                    if (owners.hasOwnProperty('departmentManagers')) {
-                      owners = owners.departmentManagers;
-
-                      if (!owners.includes(chosenOption))
-                        rowsCopy[i].owners.departmentManagers.push(chosenOption);
-                    } else {
-                      owners = { ...owners, departmentManagers: [] };
-                      owners.departmentManagers.push(chosenOption);
-                      rowsCopy[i].owners = owners;
-                    }
-                  } else {
-                    rowsCopy[i].owners.departmentManagers = [];
-                  }
-                  firestoreModule
-                    .getSpecificStudent(rowsCopy[i].fid)
-                    .update({ owners: rowsCopy[i].owners });
-                  rowsCopy[i].lastModified = updateDate();
-                  rowsCopy = getMissedDetailsForAllStudents();
-                  setRows(rowsCopy);
-                  setMainRows(rowsCopy);
-                  return [];
-                });
-                if (chosenOption !== 'None')
-                  setMsgState({
-                    title: 'שיבוץ חניכים למנהל מחלקה',
-                    body: 'כל החניכים שנבחרו שובצו בהצלחה',
-                    visible: true
-                  });
-                while (selectedIndexes.length !== 0) {
-                  selectedIndexes.shift();
-                }
-                setSaveButtonColor('secondary');
-              }
-              return;
-            }}
-          />
-        </div>
-
-        <div className={classes.actions}>
-          <Button
-            size="large"
-            variant="contained"
-            color="primary"
-            className={classes.button}
-            onClick={handleOpenCheckDelete}
-            disabled={loading}>
-            מחק חניכים שנבחרו
-            {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
-            <DeleteIcon />
-          </Button>
-          <Dialog
-            disableBackdropClick
-            disableEscapeKeyDown
-            open={openDeleteCheck}
-            onClose={handleCloseCheckDelete}>
-            <DialogTitle className={classes.formTitle}>{'מחיקת חניכים'}</DialogTitle>
-            <DialogContent>
-              <DialogContentText className={classes.formText}>
-                אתה עומד למחוק את כל החניכים שנבחרו
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button
-                onClick={handleCloseCheckDelete}
-                color="primary"
-                className={classes.button}
-                size="large">
-                בטל
-              </Button>
-              <Button onClick={deleteRow} color="secondary" className={classes.button} size="large">
-                אשר
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </div>
 
         <div className={classes.actions}>
           <Button
@@ -1019,8 +782,269 @@ function TableTabScene({
             {loadingSave && <CircularProgress size={24} className={classes.buttonProgress} />}
           </Button>
         </div>
-      </div>
-    </div>
+      </div >
+
+
+      < ReactDataGrid
+        rowKey="id"
+        columns={columnsToShow.reverse()}
+        rowGetter={i => filteredRows[i]}
+        rowsCount={filteredRows.length}
+        minHeight={350}
+        toolbar={< Toolbar enableFilter={true} />}
+        onAddFilter={filter => setFilters(handleFilterChange(filter))}
+        onClearFilters={() => setFilters({})}
+        getValidFilterValues={columnKey => getValidFilterValues(rowsCopy, columnKey)}
+        onGridSort={(sortColumn, sortDirection) =>
+          setRows(sortRows(rowsCopy, sortColumn, sortDirection))
+        }
+        onGridRowsUpdated={onGridRowsUpdated}
+        rowRenderer={RowRenderer}
+        enableCellSelect={true}
+        rowSelection={{
+          showCheckbox: true,
+          enableShiftSelect: true,
+          onRowsSelected: onRowsSelected,
+          onRowsDeselected: onRowsDeselected,
+          selectBy: {
+            indexes: selectedIndexes
+          }
+        }}
+      />
+
+
+
+      {selectedIndexes.length !== 0 ?
+        <div className={classes.actionsContainer}>
+          <List
+            component="nav"
+            className={classes.root} >
+
+            <ListItem button onClick={handleClickOnAssignMenu} className={classes.nested}>
+              <ListItemIcon>
+                <AssignmentIcon />
+              </ListItemIcon>
+              <ListItemText primary="שבץ חניכים שנבחרו" style={{ textAlign: 'center' }} />
+              {openAssignMenu ? <ExpandLess /> : <ExpandMore />}
+            </ListItem>
+            <Collapse in={openAssignMenu} timeout="auto" unmountOnExit className={classes.nested}>
+              <List component="div" disablePadding>
+
+                {role !== 'tutor' ? <ListItem button onClick={() =>
+                  selectedIndexes.length !== 0
+                    ? setAssignmentDialogType('tutors')
+                    : setAssignmentDialogType('')
+                } className={classes.nested}>
+                  <ListItemText primary="למדריך" style={{ textAlign: 'right', marginRight: '33%' }} className={classes.nested} />
+
+                </ListItem> : null}
+                <AssignmentDialog
+                  title="בחר מדריך"
+                  optionsArr={tutorsOptions}
+                  visible={assignmentDialogType === 'tutors'}
+                  handleClose={chosenOption => {
+                    setAssignmentDialogType('');
+                    if (selectedIndexes.length !== 0 && chosenOption !== 'Cancel') {
+                      selectedIndexes.map(i => {
+                        if (chosenOption !== 'None') {
+                          let owners = rowsCopy[i].owners;
+                          if (owners.hasOwnProperty('tutors')) {
+                            owners = owners.tutors;
+                            let uids = owners.map(o => o.uid);
+                            if (!uids.includes(chosenOption))
+                              rowsCopy[i].owners.tutors.push({
+                                studentStatus: 'potential',
+                                uid: chosenOption
+                              });
+                          } else {
+                            owners = { ...owners, tutors: [] };
+                            owners.tutors.push({ studentStatus: 'potential', uid: chosenOption });
+                            rowsCopy[i].owners = owners;
+                          }
+                        } else {
+                          rowsCopy[i].owners.tutors = [];
+                        }
+                        firestoreModule
+                          .getSpecificStudent(rowsCopy[i].fid)
+                          .update({ owners: rowsCopy[i].owners });
+                        rowsCopy[i].lastModified = updateDate();
+                        rowsCopy = getMissedDetailsForAllStudents();
+                        setRows(rowsCopy);
+                        setMainRows(rowsCopy);
+                        return [];
+                      });
+                      if (chosenOption !== 'None')
+                        setMsgState({
+                          title: 'שיבוץ חניכים למדריך',
+                          body: 'כל החניכים שנבחרו שובצו בהצלחה',
+                          visible: true
+                        });
+                      while (selectedIndexes.length !== 0) {
+                        selectedIndexes.shift();
+                      }
+                      setSaveButtonColor('secondary');
+                    }
+                  }}
+                />
+
+                {role === 'departmentManager' || role === 'ceo' ? <ListItem button onClick={() =>
+                  selectedIndexes.length !== 0
+                    ? setAssignmentDialogType('coordinators')
+                    : setAssignmentDialogType('')
+                }>
+                  <ListItemText primary="לרכז" style={{ textAlign: 'right', marginRight: '33%' }} />
+
+                </ListItem> : null}
+                <AssignmentDialog
+                  title="בחר רכז"
+                  optionsArr={coordinatorsOptions}
+                  visible={assignmentDialogType === 'coordinators'}
+                  handleClose={chosenOption => {
+                    setAssignmentDialogType('');
+                    if (selectedIndexes.length !== 0 && chosenOption !== 'Cancel') {
+                      selectedIndexes.map(i => {
+                        if (chosenOption !== 'None') {
+                          let owners = rowsCopy[i].owners;
+                          if (owners.hasOwnProperty('coordinators')) {
+                            owners = owners.coordinators;
+                            if (!owners.includes(chosenOption))
+                              rowsCopy[i].owners.coordinators.push(chosenOption);
+                          } else {
+                            owners = { ...owners, coordinators: [] };
+                            owners.coordinators.push(chosenOption);
+                            rowsCopy[i].owners = owners;
+                          }
+                        } else {
+                          rowsCopy[i].owners.coordinators = [];
+                        }
+                        firestoreModule
+                          .getSpecificStudent(rowsCopy[i].fid)
+                          .update({ owners: rowsCopy[i].owners });
+                        rowsCopy[i].lastModified = updateDate();
+                        rowsCopy = getMissedDetailsForAllStudents();
+                        setRows(rowsCopy);
+                        setMainRows(rowsCopy);
+                        return [];
+                      });
+                      if (chosenOption !== 'None')
+                        setMsgState({
+                          title: 'שיבוץ חניכים לרכז',
+                          body: 'כל החניכים שנבחרו שובצו בהצלחה',
+                          visible: true
+                        });
+
+                      while (selectedIndexes.length !== 0) {
+                        selectedIndexes.shift();
+                      }
+                      setSaveButtonColor('secondary');
+                    }
+                    return;
+                  }}
+                />
+
+                {role === 'ceo' ? <ListItem button className={classes.nested} onClick={() =>
+                  selectedIndexes.length !== 0
+                    ? setAssignmentDialogType('departmentManagers')
+                    : setAssignmentDialogType('')
+                }>
+                  <ListItemText primary="למנהל מחלקה" style={{ textAlign: 'right', marginRight: '33%' }} />
+
+                </ListItem> : null}
+                <AssignmentDialog
+                  title="בחר מנהל מחלקה"
+                  optionsArr={departmentManagersOptions}
+                  visible={assignmentDialogType === 'departmentManagers'}
+                  handleClose={chosenOption => {
+                    setAssignmentDialogType('');
+                    if (selectedIndexes.length !== 0 && chosenOption !== 'Cancel') {
+                      selectedIndexes.map(i => {
+                        if (chosenOption !== 'None') {
+                          let owners = rowsCopy[i].owners;
+                          if (owners.hasOwnProperty('departmentManagers')) {
+                            owners = owners.departmentManagers;
+
+                            if (!owners.includes(chosenOption))
+                              rowsCopy[i].owners.departmentManagers.push(chosenOption);
+                          } else {
+                            owners = { ...owners, departmentManagers: [] };
+                            owners.departmentManagers.push(chosenOption);
+                            rowsCopy[i].owners = owners;
+                          }
+                        } else {
+                          rowsCopy[i].owners.departmentManagers = [];
+                        }
+                        firestoreModule
+                          .getSpecificStudent(rowsCopy[i].fid)
+                          .update({ owners: rowsCopy[i].owners });
+                        rowsCopy[i].lastModified = updateDate();
+                        rowsCopy = getMissedDetailsForAllStudents();
+                        setRows(rowsCopy);
+                        setMainRows(rowsCopy);
+                        return [];
+                      });
+                      if (chosenOption !== 'None')
+                        setMsgState({
+                          title: 'שיבוץ חניכים למנהל מחלקה',
+                          body: 'כל החניכים שנבחרו שובצו בהצלחה',
+                          visible: true
+                        });
+                      while (selectedIndexes.length !== 0) {
+                        selectedIndexes.shift();
+                      }
+                      setSaveButtonColor('secondary');
+                    }
+                    return;
+                  }}
+                />
+              </List>
+            </Collapse>
+          </List>
+          <List
+            component="nav"
+            className={classes.root} style={{ maxWidth: 250, border: 3, borderColor: 'black' }} >
+
+            <ListItem button onClick={handleOpenCheckDelete} disabled={loading} >
+              <ListItemIcon>
+                <DeleteIcon />
+              </ListItemIcon>
+              <ListItemText primary="מחק חניכים שנבחרו" style={{ textAlign: 'right' }} />
+              {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
+            </ListItem>
+            <Dialog
+              disableBackdropClick
+              disableEscapeKeyDown
+              open={openDeleteCheck}
+              onClose={handleCloseCheckDelete}>
+              <DialogTitle className={classes.formTitle}>{'מחיקת חניכים'}</DialogTitle>
+              <DialogContent>
+                <DialogContentText className={classes.formText}>
+                  אתה עומד למחוק את כל החניכים שנבחרו
+            </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  onClick={handleCloseCheckDelete}
+                  color="primary"
+                  className={classes.button}
+                  size="large">
+                  בטל
+            </Button>
+                <Button onClick={deleteRow} color="secondary" className={classes.button} size="large">
+                  אשר
+            </Button>
+              </DialogActions>
+            </Dialog>
+          </List>
+          <List className={classes.saveContainer}>
+            <Typography style={{ color: '#3F51B5', font: 25 }} variant="subtitle1">
+              {selectedIndexes.length} {rowText}
+            </Typography>
+          </List>
+
+        </div>
+        : null
+      }
+    </div >
   );
 }
 

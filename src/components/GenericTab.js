@@ -11,7 +11,13 @@ import {
   DialogContentText,
   CircularProgress,
   MenuItem,
-  TextField
+  TextField,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Collapse,
+  Typography
 } from '@material-ui/core/';
 import { MsgToShow } from '.';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -165,6 +171,23 @@ const genders = [
 ];
 
 const useStyles = makeStyles(theme => ({
+  root: {
+    textAlign: 'center',
+    alignContent: 'center',
+    border: 3,
+    borderRadius: 3,
+    borderColor: 'black',
+    borderWidth: 3,
+    //padding: 5,
+    width: '100%',
+    maxWidth: 300,
+    //backgroundColor: '#DDDDDD',
+  },
+  nested: {
+    paddingLeft: theme.spacing(2),
+    border: 3,
+    borderRadius: 3,
+  },
   actionsContainer: {
     display: 'flex',
     flexDirection: 'row-reverse'
@@ -563,7 +586,7 @@ function GenericTab({
         setGenericSaveButtonColor('secondary');
         setLoadingAdd(false);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log('Error adding', error);
       });
   };
@@ -622,11 +645,20 @@ function GenericTab({
       for (let j = 0; j < ids.length; j++) {
         if (originalRows[i].fid === ids[j].fid) {
           if (rowsCopy[ids[j].id] !== undefined) {
-            if (
-              originalRows[i].lastModified.toDate().getTime() !==
-              new Date(rowsCopy[ids[j].id].lastModified).getTime()
-            )
-              rows.push(rowsCopy[ids[j].id]);
+            console.log("date", originalRows[i].lastModified);
+            if (originalRows[i].lastModified instanceof Date){
+              if (originalRows[i].lastModified.getTime() !==
+                new Date(rowsCopy[ids[j].id].lastModified).getTime())
+                rows.push(rowsCopy[ids[j].id]);
+            }
+              
+              else{
+                if (originalRows[i].lastModified.toDate().getTime() !==
+                new Date(rowsCopy[ids[j].id].lastModified).getTime())
+                rows.push(rowsCopy[ids[j].id]);
+              }
+                
+
           }
         }
       }
@@ -663,39 +695,6 @@ function GenericTab({
 
   return (
     <div>
-      <ReactDataGrid
-        rowKey="id"
-        columns={columnsToShow.reverse()}
-        rowGetter={i => filteredRows[i]}
-        rowsCount={filteredRows.length}
-        minHeight={350}
-        toolbar={<Toolbar enableFilter={true} />}
-        onAddFilter={filter => setFilters(handleFilterChange(filter))}
-        onClearFilters={() => setFilters({})}
-        getValidFilterValues={columnKey => getValidFilterValues(rowsCopy, columnKey)}
-        onGridSort={(sortColumn, sortDirection) =>
-          setRows(sortRows(rowsCopy, sortColumn, sortDirection))
-        }
-        onGridRowsUpdated={onGridRowsUpdated}
-        rowRenderer={RowRenderer}
-        enableCellSelect={true}
-        rowSelection={{
-          showCheckbox: true,
-          enableShiftSelect: true,
-          onRowsSelected: onRowsSelected,
-          onRowsDeselected: onRowsDeselected,
-          selectBy: {
-            indexes: selectedIndexes
-          }
-        }}
-      />
-      {selectedIndexes.length !== 0 && (
-        <span
-          style={{ textAlign: 'center', alignContent: 'center', alignSelf: 'center', font: 30 }}>
-          {selectedIndexes.length} {rowText}
-        </span>
-      )}
-
       <div className={classes.actionsContainer}>
         <div className={classes.actions}>
           <Button
@@ -801,52 +800,6 @@ function GenericTab({
           </Dialog>
         </div>
 
-        <div className={classes.actions}>
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            className={classes.button}
-            onClick={handleOpenCheckDelete}
-            disabled={loading}>
-            {type === 'tutors' && 'מחק מדריכים שנבחרו'}
-            {type === 'coordinators' && 'מחק רכזים שנבחרו'}
-            {type === 'departmentManagers' && 'מחק מנהלים שנבחרו'}
-            {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
-            <DeleteIcon />
-          </Button>
-
-          <Dialog
-            disableBackdropClick
-            disableEscapeKeyDown
-            open={openDeleteCheck}
-            onClose={handleCloseCheckDelete}>
-            <DialogTitle className={classes.formTitle}>
-              {type === 'tutors' && 'מחיקת מדריכים'}
-              {type === 'coordinators' && 'מחיקת רכזים'}
-              {type === 'departmentManagers' && 'מחיקת מנהלים'}
-            </DialogTitle>
-            <DialogContent>
-              <DialogContentText className={classes.formText}>
-                {type === 'tutors' && 'אתה עומד למחוק את כל המדריכים שנבחרו'}
-                {type === 'coordinators' && 'אתה עומד למחוק את כל הרכזים שנבחרו'}
-                {type === 'departmentManagers' && 'אתה עומד למחוק את כל המנהלים שנבחרו'}
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button
-                onClick={handleCloseCheckDelete}
-                color="primary"
-                className={classes.button}
-                size="large">
-                בטל
-              </Button>
-              <Button onClick={deleteRow} color="secondary" className={classes.button} size="large">
-                אשר
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </div>
 
         <div className={classes.actions}>
           <Button
@@ -866,7 +819,7 @@ function GenericTab({
             size="large"
             color={genericSaveButtonColor}
             className={classes.button}
-            onClick={() => saveUpdates()}
+            onClick={() => (genericSaveButtonColor === 'secondary' ? saveUpdates() : {})}
             disabled={loadingSave}>
             שמור שינויים
             <SaveIcon />
@@ -874,6 +827,95 @@ function GenericTab({
           </Button>
         </div>
       </div>
+
+      <ReactDataGrid
+        rowKey="id"
+        columns={columnsToShow.reverse()}
+        rowGetter={i => filteredRows[i]}
+        rowsCount={filteredRows.length}
+        minHeight={350}
+        toolbar={<Toolbar enableFilter={true} />}
+        onAddFilter={filter => setFilters(handleFilterChange(filter))}
+        onClearFilters={() => setFilters({})}
+        getValidFilterValues={columnKey => getValidFilterValues(rowsCopy, columnKey)}
+        onGridSort={(sortColumn, sortDirection) =>
+          setRows(sortRows(rowsCopy, sortColumn, sortDirection))
+        }
+        onGridRowsUpdated={onGridRowsUpdated}
+        rowRenderer={RowRenderer}
+        enableCellSelect={true}
+        rowSelection={{
+          showCheckbox: true,
+          enableShiftSelect: true,
+          onRowsSelected: onRowsSelected,
+          onRowsDeselected: onRowsDeselected,
+          selectBy: {
+            indexes: selectedIndexes
+          }
+        }}
+      />
+
+      {selectedIndexes.length !== 0 ?
+        <div className={classes.actionsContainer}>
+
+          <List
+            component="nav"
+            className={classes.root} style={{ maxWidth: 250, border: 3, borderColor: 'black' }} >
+
+            <ListItem button onClick={handleOpenCheckDelete} disabled={loading} >
+              <ListItemIcon>
+                <DeleteIcon />
+              </ListItemIcon>
+              {type === 'tutors' && <ListItemText primary="מחק מדריכים שנבחרו" style={{ textAlign: 'right' }} />}
+              {type === 'coordinators' && <ListItemText primary="מחק רכזים שנבחרו" style={{ textAlign: 'right' }} />}
+              {type === 'departmentManagers' && <ListItemText primary="מחק מנהלים שנבחרו" style={{ textAlign: 'right' }} />}
+
+              {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
+            </ListItem>
+
+            <Dialog
+              disableBackdropClick
+              disableEscapeKeyDown
+              open={openDeleteCheck}
+              onClose={handleCloseCheckDelete}>
+              <DialogTitle className={classes.formTitle}>
+                {type === 'tutors' && 'מחיקת מדריכים'}
+                {type === 'coordinators' && 'מחיקת רכזים'}
+                {type === 'departmentManagers' && 'מחיקת מנהלים'}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText className={classes.formText}>
+                  {type === 'tutors' && 'אתה עומד למחוק את כל המדריכים שנבחרו'}
+                  {type === 'coordinators' && 'אתה עומד למחוק את כל הרכזים שנבחרו'}
+                  {type === 'departmentManagers' && 'אתה עומד למחוק את כל המנהלים שנבחרו'}
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  onClick={handleCloseCheckDelete}
+                  color="primary"
+                  className={classes.button}
+                  size="large">
+                  בטל
+              </Button>
+                <Button onClick={deleteRow} color="secondary" className={classes.button} size="large">
+                  אשר
+              </Button>
+              </DialogActions>
+            </Dialog>
+
+          </List>
+
+          <List className={classes.saveContainer}>
+            <Typography style={{ color: '#3F51B5', font: 30 }} variant="subtitle1">
+              {selectedIndexes.length} {rowText}
+            </Typography>
+          </List>
+
+        </div>
+        : null
+      }
+
     </div>
   );
 }
