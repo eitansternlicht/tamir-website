@@ -160,7 +160,7 @@ const RowRenderer = ({ row, renderBaseRow, ...props }) => {
   };
   const color = props.idx % 2 ? '#eee' : '#3333';
   return (
-    <div style={{ background: color }}>{renderBaseRow({ ...props, row: rowToRender })}</div>
+    <div style={{ backgroundColor: color, backgroundPosition: 'absolute', borderBlockColor: color }}>{renderBaseRow({ ...props, row: rowToRender })}</div>
   );
 };
 
