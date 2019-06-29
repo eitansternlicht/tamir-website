@@ -538,19 +538,19 @@ function TableTabScene({
           if (arr[i].studentStatus === 'normal') {
             status = 'גויס';
             let temp = getTutorFromFid(arr[i].uid);
-            if (temp !== undefined) tutor = temp.firstName;
+            if (temp !== undefined) tutor = temp.firstName + ' ' + temp.lastName;
             break;
           } else if (arr[i].studentStatus === 'potential') {
             status = 'שובץ';
             let temp = getTutorFromFid(arr[i].uid);
-            if (temp !== undefined) tutor = temp.firstName;
+            if (temp !== undefined) tutor = temp.firstName + ' ' + temp.lastName;
           }
         }
       }
 
       if (newSt.owners.hasOwnProperty('coordinators') && newSt.owners.coordinators.length > 0) {
         let temp = getCoordinatorFromFid(newSt.owners.coordinators[0]);
-        if (temp !== undefined) coordinator = temp.firstName;
+        if (temp !== undefined) coordinator = temp.firstName + ' ' + temp.lastName;
       }
 
       if (
@@ -558,7 +558,7 @@ function TableTabScene({
         newSt.owners.departmentManagers.length > 0
       ) {
         let temp = getDepartmentManagerFromFid(newSt.owners.departmentManagers[0]);
-        if (temp !== undefined) departmentManager = temp.firstName;
+        if (temp !== undefined) departmentManager = temp.firstName + ' ' + temp.lastName;
       }
       newSt = {
         ...newSt,

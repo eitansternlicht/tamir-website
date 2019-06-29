@@ -40,6 +40,7 @@
 }
 .react-grid-Row {
   contain: none !important;
+  contain: 'layout';
 }
 
 .App-header {
