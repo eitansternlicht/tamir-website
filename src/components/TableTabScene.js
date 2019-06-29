@@ -13,7 +13,6 @@ import {
   MenuItem,
   TextField
 } from '@material-ui/core/';
-//import ButtonGroup from '@material-ui/core/ButtonGroup';
 import { MsgToShow, AssignmentDialog } from '.';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
@@ -22,7 +21,7 @@ import AssignmentIcon from '@material-ui/icons/AssignmentInd';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { aoaToFile } from '../utils/excell-utils';
-import { getOwners } from '../utils/general-utils';
+import { addOwners } from '../utils/local-db';
 import green from '@material-ui/core/colors/green';
 import 'react-responsive-ui/style.css';
 //import MuiPhoneNumber from '@material-ui/material-ui-phone-number';
@@ -34,11 +33,6 @@ import deepcopy from 'deepcopy';
 import { entriesToObj } from '../utils/general-utils';
 
 const useStyles = makeStyles(theme => ({
-  // wrapper: {
-  //   display: 'flex',
-  //   flex: 2,
-  //   flexDirection: 'row-reverse'
-  // },
   actionsContainer: {
     display: 'flex',
     flexDirection: 'row-reverse'
@@ -161,6 +155,7 @@ function TableTabScene({
   setMainRows,
   setSaveButtonColor,
   saveButtonColor,
+  userStatus,
   role,
   uid,
   tutors,
@@ -400,7 +395,7 @@ function TableTabScene({
     handleCloseForm();
     let fixedStudent = fixStudentFields(newStudent);
     removeUnnecessaryFields(fixedStudent);
-    fixedStudent = getOwners(fixedStudent, role, uid);
+    fixedStudent = addOwners(role, uid, userStatus.owners, null, fixedStudent);
     fixedStudent = removeEmptyFields(fixedStudent);
     firestoreModule
       .getStudents()
@@ -408,7 +403,7 @@ function TableTabScene({
       .then(ref => {
         fixedStudent = fixStudentFields(newStudent);
         fixedStudent = { ...fixedStudent, fid: ref.id };
-        fixedStudent = getOwners(fixedStudent, role);
+        fixedStudent = addOwners(role, uid, userStatus.owners, null, fixedStudent);
         rowsCopy.unshift(fixedStudent);
         updateNums();
         rowsCopy = getMissedDetailsForAllStudents();
@@ -422,7 +417,7 @@ function TableTabScene({
           visible: true
         });
       })
-      .catch(function (error) {
+      .catch(function(error) {
         console.log('Error adding student', error);
       });
   };
@@ -614,10 +609,8 @@ function TableTabScene({
     });
   };
 
- 
   return (
     <div>
-      
       <ReactDataGrid
         rowKey="id"
         columns={columnsToShow.reverse()}
@@ -644,9 +637,12 @@ function TableTabScene({
           }
         }}
       />
-      {selectedIndexes.length !== 0 && <span style={{ textAlign: 'center', alignContent: 'center', alignSelf: 'center', font: 30 }}>
-        {rowText} {selectedIndexes.length}
-      </span>}
+      {selectedIndexes.length !== 0 && (
+        <span
+          style={{ textAlign: 'center', alignContent: 'center', alignSelf: 'center', font: 30 }}>
+          {rowText} {selectedIndexes.length}
+        </span>
+      )}
 
       <div className={classes.actionsContainer}>
         <div className={classes.actions}>
@@ -777,8 +773,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-              <></>
-            )}
+            <></>
+          )}
 
           <AssignmentDialog
             title="בחר מדריך"
@@ -844,8 +840,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-              <></>
-            )}
+            <></>
+          )}
 
           <AssignmentDialog
             title="בחר רכז"
@@ -909,8 +905,8 @@ function TableTabScene({
               <AssignmentIcon />
             </Button>
           ) : (
-              <></>
-            )}
+            <></>
+          )}
 
           <AssignmentDialog
             title="בחר מנהל מחלקה"

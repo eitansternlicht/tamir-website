@@ -28,7 +28,7 @@ import { Filters, Editors } from 'react-data-grid-addons';
 import deepcopy from 'deepcopy';
 import { getUsersPhones } from '../utils/createRowData';
 import { removeEmptyFields } from '../utils/general-utils';
-import { addOwnersForUsers } from '../utils/local-db';
+import { addOwners } from '../utils/local-db';
 
 class phoneEditor extends React.Component {
   constructor(props) {
@@ -527,7 +527,7 @@ function GenericTab({
     handleCloseForm();
     let fixedRow = fixRowFields(newRow);
     removeUnnecessaryFields(fixedRow);
-    fixedRow = addOwnersForUsers(role, uid, userStatus.owners, type, fixedRow);
+    fixedRow = addOwners(role, uid, userStatus.owners, type, fixedRow);
     fixedRow = removeEmptyFields(fixedRow);
     firestoreModule
       .getUsers()
@@ -535,7 +535,7 @@ function GenericTab({
       .then(ref => {
         fixedRow = { ...fixedRow, fid: ref.id };
         fixedRow = fixRowFields(fixedRow);
-        fixedRow = addOwnersForUsers(role, uid, userStatus.owners, type, fixedRow);
+        fixedRow = addOwners(role, uid, userStatus.owners, type, fixedRow);
 
         rowsCopy.unshift(fixedRow);
 

@@ -12,7 +12,7 @@ import {
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebase from 'firebase';
 import Loader from 'react-loader-spinner';
-import { getOwners } from '../utils/general-utils';
+import { addOwners } from '../utils/local-db';
 import { firestoreModule } from '../Firebase/Firebase';
 import Upload from '../utils/Upload';
 import ReportsTabScene from './ReportsTabScene';
@@ -171,6 +171,7 @@ const MainScene = () => {
           setMainRows={setStudentsRows}
           saveButtonColor={saveButtonColor}
           setSaveButtonColor={setSaveButtonColor}
+          userStatus={userStatus}
           role={role}
           uid={uid}
           tutors={tutorsRows}
@@ -367,7 +368,7 @@ const MainScene = () => {
               <Upload
                 onNewFile={aooToAdd => {
                   aooToAdd.forEach(student => {
-                    const fixedStudent = getOwners(student, role, uid);
+                    const fixedStudent = addOwners(role, uid, userStatus.owners, null, student);
                     firestoreModule
                       .getStudents()
                       .add({ ...fixedStudent, lastModified: new Date() });
