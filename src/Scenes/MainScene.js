@@ -235,17 +235,15 @@ const MainScene = () => {
 
   if (userStatus === 'SignedOut')
     return (
-      <div style={{ backgroundColor: '#d6d6c2', height: 777 }}>
+      <div style={{ backgroundColor: '#EBEBEB', height: 777 }}>
         <AppBar>
           <Toolbar>
-            <Typography variant="h6" style={{ flexGrow: 1 }}>
-              Login
-            </Typography>
+            <Typography variant="h6" style={{ flexGrow: 1 }} />
 
             <h3 color="inherit"> טמיר התחבר</h3>
           </Toolbar>
         </AppBar>
-        <div style={{ paddingTop: 150 }}>
+        <div style={{ paddingTop: 200 }}>
           <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
         </div>
       </div>
@@ -255,15 +253,13 @@ const MainScene = () => {
       <div style={{ backgroundColor: '#d6d6c2', height: 777 }}>
         <AppBar>
           <Toolbar>
-            <Typography variant="h6" style={{ flexGrow: 1 }}>
-              Login
-            </Typography>
+            <Typography variant="h6" style={{ flexGrow: 1 }} />
 
             <h3 color="inherit"> טמיר התחבר</h3>
           </Toolbar>
         </AppBar>
-        <div style={{ paddingTop: 150 }}>
-          <Typography variant="h5" component="h5" style={{ paddingLeft:730, color: 'red' }}>
+        <div style={{ paddingTop: 200 }}>
+          <Typography variant="h5" component="h5" style={{ paddingLeft: 730, color: 'red' }}>
             אין הרשאות גישה למספר זה
           </Typography>
           <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
