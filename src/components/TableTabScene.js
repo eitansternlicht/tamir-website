@@ -158,9 +158,9 @@ const RowRenderer = ({ row, renderBaseRow, ...props }) => {
     lastModified: moment(row.lastModified).format('DD/MM/YYYY HH:MM:SS'),
     dob: row.dob === '' ? '' : moment(row.dob).format('DD/MM/YYYY')
   };
-  const color = props.idx % 2 ? '#eee' : '#555';
+  const color = props.idx % 2 ? '#eee' : '#3333';
   return (
-    <div style={{ backgroundColor: color }}>{renderBaseRow({ ...props, row: rowToRender })}</div>
+    <div style={{ backgroundColor: color, backgroundPosition: 'absolute', borderBlockColor: color }}>{renderBaseRow({ ...props, row: rowToRender })}</div>
   );
 };
 
@@ -469,7 +469,7 @@ function TableTabScene({
           visible: true
         });
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log('Error adding student', error);
       });
   };
