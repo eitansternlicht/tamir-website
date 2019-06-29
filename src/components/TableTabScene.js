@@ -38,6 +38,7 @@ import { firestoreModule } from '../Firebase/Firebase';
 import { Columns } from '../utils/getColumns';
 import moment from 'moment';
 import deepcopy from 'deepcopy';
+import { getStudentsPhones } from '../utils/createRowData';
 import { entriesToObj } from '../utils/general-utils';
 
 const useStyles = makeStyles(theme => ({
@@ -207,6 +208,7 @@ function TableTabScene({
   const [loadingSave, setLoadingSave] = useState(false);
   const [openDeleteCheck, setOpenDeleteCheck] = useState(false);
   const [openAssignMenu, setOpenAssignMenu] = useState(false);
+  const [studentsPhones, setStudentsPhones] = useState([]);
 
   const classes = useStyles();
   const genders = [
@@ -261,6 +263,24 @@ function TableTabScene({
   };
 
   const onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
+    if (updated.phone !== undefined) {
+      if (!isValidPhone(updated.phone)) {
+        setMsgState({
+          title: 'עריכת נייד',
+          body: '!נא להכניס נייד תקין',
+          visible: true
+        });
+        return;
+      }
+      if (checkIfStudentExist(updated.phone)) {
+        setMsgState({
+          title: 'עריכת נייד',
+          body: '!הנייד כבר קיים במערכת',
+          visible: true
+        });
+        return;
+      }
+    }
     setSaveButtonColor('secondary');
     const newRows = deepcopy(rowsCopy);
     for (let i = 0; i < newRows.length; i++) {
@@ -374,6 +394,10 @@ function TableTabScene({
     delete student.departmentManager;
   };
 
+  function checkIfStudentExist(phone) {
+    return studentsPhones.includes(phone);
+  }
+
   function isValidPhone(phone) {
     if (phone.length === 13) return true;
     return false;
@@ -413,6 +437,14 @@ function TableTabScene({
       setMsgState({
         title: 'הוספת חניך',
         body: '!נא להכניס נייד תקין',
+        visible: true
+      });
+      return;
+    }
+    if (checkIfStudentExist(newStudent.phone)) {
+      setMsgState({
+        title: 'הוספת חניך',
+        body: '!הנייד כבר קיים במערכת',
         visible: true
       });
       return;
@@ -560,6 +592,7 @@ function TableTabScene({
     let newRows = fixStudentsFields(rowsCopy);
     rowsCopy = [...newRows];
     newRows = getMissedDetailsForAllStudents();
+    getStudentsPhones(setStudentsPhones);
     setRows(newRows);
     setMainRows([...newRows]);
     setLoadingPage(false);

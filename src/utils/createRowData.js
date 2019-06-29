@@ -35,6 +35,13 @@ const getUsersPhones = (setIDArr) => {
       setIDArr(snapshot.docs.map(doc => doc.data()['phone']));
     });
 }
+const getStudentsPhones = (setIDArr) => {
+  firestoreModule
+    .getStudents()
+    .onSnapshot(snapshot => {
+      setIDArr(snapshot.docs.map(doc => doc.data()['phone']));
+    });
+}
 
 const getTutors = (setRows, uid, setLoading, role) => {
 
@@ -108,4 +115,4 @@ const getDepartmentManagers = (setRows, setLoading) => {
 
 }
 
-export { getStudents, getTutors, getCoordinators, getDepartmentManagers, getUsersPhones };
+export { getStudents, getTutors, getCoordinators, getDepartmentManagers, getUsersPhones, getStudentsPhones };

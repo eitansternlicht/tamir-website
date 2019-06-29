@@ -32,7 +32,7 @@ import moment from 'moment';
 import ReactDOM from 'react-dom';
 import { Filters, Editors } from 'react-data-grid-addons';
 import deepcopy from 'deepcopy';
-import { getUsersPhones } from '../utils/createRowData';
+import { getUsersPhones} from '../utils/createRowData';
 import { removeEmptyFields } from '../utils/general-utils';
 import { addOwners } from '../utils/local-db';
 
