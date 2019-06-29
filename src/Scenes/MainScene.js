@@ -105,6 +105,7 @@ const MainScene = () => {
             if (idTokenResult && idTokenResult.claims && idTokenResult.claims.isRegistered) {
               console.log('eitan idTokenResult', idTokenResult.claims);
               setUserStatus(idTokenResult.claims);
+              
             } else {
               firebase
                 .auth()
@@ -189,6 +190,7 @@ const MainScene = () => {
           setMainRows={setStudentsRows}
           saveButtonColor={saveButtonColor}
           setSaveButtonColor={setSaveButtonColor}
+          userStatus={userStatus}
           role={role}
           uid={uid}
           tutors={tutorsRows}
@@ -205,6 +207,7 @@ const MainScene = () => {
           setMainRows={setStudentsRows}
           saveButtonColor={saveButtonColor}
           setSaveButtonColor={setSaveButtonColor}
+          userStatus={userStatus}
           role={role}
           uid={uid}
           tutors={tutorsRows}
@@ -227,6 +230,7 @@ const MainScene = () => {
           setMainRows={setStudentsRows}
           saveButtonColor={saveButtonColor}
           setSaveButtonColor={setSaveButtonColor}
+          userStatus={userStatus}
           role={role}
           uid={uid}
           tutors={tutorsRows}

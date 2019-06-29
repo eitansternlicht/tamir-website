@@ -425,6 +425,7 @@ function TableTabScene({
     handleCloseForm();
     let fixedStudent = fixStudentFields(newStudent);
     removeUnnecessaryFields(fixedStudent);
+    console.log("status", userStatus);
     fixedStudent = addOwners(role, uid, userStatus.owners, null, fixedStudent);
     fixedStudent = removeEmptyFields(fixedStudent);
     firestoreModule
