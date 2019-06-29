@@ -6,12 +6,10 @@ class Progress extends Component {
         super(props)
         this.state = {}
     }
-    //const classes = useStyles();
 
     render() {
         return (
             <div style={{
-                // width: 100 %,
                 height: 8,
                 backgroundColor: 'rgb(183, 182, 184)',
                 borderRadius: 5

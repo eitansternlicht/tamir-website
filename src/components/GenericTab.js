@@ -177,10 +177,8 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 3,
     borderColor: 'black',
     borderWidth: 3,
-    //padding: 5,
     width: '100%',
-    maxWidth: 300,
-    //backgroundColor: '#DDDDDD',
+    maxWidth: 300
   },
   nested: {
     paddingLeft: theme.spacing(2),
@@ -247,9 +245,6 @@ const useStyles = makeStyles(theme => ({
   rowRener: {
     border: 1,
     borderRadius: 3
-  },
-  container: {
-    // display: 'flex'
   }
 }));
 
@@ -444,7 +439,6 @@ function GenericTab({
       setLoading(true);
       const fids = [];
       selectedIndexes.forEach(idx => fids.push(rowsCopy[idx].fid));
-      // firestoreModule.deleteStudents(fids)
       fids.forEach(id => firestoreModule.deleteUser(id));
       let newArr = rowsCopy.filter((row, i) => !selectedIndexes.includes(i));
       while (selectedIndexes.length !== 0) {
@@ -718,7 +712,7 @@ function GenericTab({
             open={openForm}
             onClose={handleCloseForm}
             aria-labelledby="form-dialog-title">
-            <form validate="true" className={classes.container} autoComplete="on">
+            <form validate="true" autoComplete="on">
               <DialogTitle id="form-dialog-title" className={classes.formTitle}>
                 {type === 'tutors' && 'הוספת מדריך'}
                 {type === 'coordinators' && 'הוספת רכז שכונה'}

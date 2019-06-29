@@ -32,7 +32,6 @@ import { aoaToFile } from '../utils/excell-utils';
 import { addOwners } from '../utils/local-db';
 import green from '@material-ui/core/colors/green';
 import 'react-responsive-ui/style.css';
-//import MuiPhoneNumber from '@material-ui/material-ui-phone-number';
 import PhoneInput from 'react-phone-number-input/react-responsive-ui';
 import { firestoreModule } from '../Firebase/Firebase';
 import { Columns } from '../utils/getColumns';
@@ -49,15 +48,13 @@ const useStyles = makeStyles(theme => ({
     borderRadius: 3,
     borderColor: 'black',
     borderWidth: 3,
-    //padding: 5,
     width: '100%',
-    maxWidth: 300,
-    //backgroundColor: '#DDDDDD',
+    maxWidth: 300
   },
   nested: {
     paddingLeft: theme.spacing(2),
     border: 3,
-    borderRadius: 3,
+    borderRadius: 3
   },
   actionsContainer: {
     display: 'flex',
@@ -80,12 +77,8 @@ const useStyles = makeStyles(theme => ({
   },
   button: {
     borderRadius: 5,
-    //color: 'white',
     fontFamily: 'Arial',
     fontSize: 18,
-    // left: 0,
-    // top: 0,
-    // color: "#000",
     padding: 4,
     margin: theme.spacing(1),
     textAlign: 'center',
@@ -121,9 +114,6 @@ const useStyles = makeStyles(theme => ({
   rowRender: {
     border: 1,
     borderRadius: 3
-  },
-  container: {
-    // display: 'flex'
   }
 }));
 
@@ -479,7 +469,7 @@ function TableTabScene({
           visible: true
         });
       })
-      .catch(function (error) {
+      .catch(function(error) {
         console.log('Error adding student', error);
       });
   };
@@ -660,7 +650,6 @@ function TableTabScene({
     rowsCopy = [...newRows];
     newRows = getMissedDetailsForAllStudents();
     setRows(newRows);
-    // setOriginalRows([...newRows]);
     setMainRows([...newRows]);
     updateNums();
     setLoadingSave(false);
@@ -674,8 +663,7 @@ function TableTabScene({
 
   return (
     <div>
-
-      < div className={classes.actionsContainer} >
+      <div className={classes.actionsContainer}>
         <div className={classes.actions}>
           <Button
             disabled={loadingAdd}
@@ -700,7 +688,7 @@ function TableTabScene({
             open={openForm}
             onClose={handleCloseForm}
             aria-labelledby="form-dialog-title">
-            <form className={classes.container} autoComplete="on">
+            <form autoComplete="on">
               <DialogTitle id="form-dialog-title" className={classes.formTitle}>
                 הוספת חניך
               </DialogTitle>
@@ -785,8 +773,6 @@ function TableTabScene({
           </Dialog>
         </div>
 
-
-
         <div className={classes.actions}>
           <Button
             size="large"
@@ -812,16 +798,15 @@ function TableTabScene({
             {loadingSave && <CircularProgress size={24} className={classes.buttonProgress} />}
           </Button>
         </div>
-      </div >
+      </div>
 
-
-      < ReactDataGrid
+      <ReactDataGrid
         rowKey="id"
         columns={columnsToShow.reverse()}
         rowGetter={i => filteredRows[i]}
         rowsCount={filteredRows.length}
         minHeight={350}
-        toolbar={< Toolbar enableFilter={true} />}
+        toolbar={<Toolbar enableFilter={true} />}
         onAddFilter={filter => setFilters(handleFilterChange(filter))}
         onClearFilters={() => setFilters({})}
         getValidFilterValues={columnKey => getValidFilterValues(rowsCopy, columnKey)}
@@ -842,14 +827,9 @@ function TableTabScene({
         }}
       />
 
-
-
-      {selectedIndexes.length !== 0 ?
+      {selectedIndexes.length !== 0 ? (
         <div className={classes.actionsContainer}>
-          <List
-            component="nav"
-            className={classes.root} >
-
+          <List component="nav" className={classes.root}>
             <ListItem button onClick={handleClickOnAssignMenu} className={classes.nested}>
               <ListItemIcon>
                 <AssignmentIcon />
@@ -859,15 +839,22 @@ function TableTabScene({
             </ListItem>
             <Collapse in={openAssignMenu} timeout="auto" unmountOnExit className={classes.nested}>
               <List component="div" disablePadding>
-
-                {role !== 'tutor' ? <ListItem button onClick={() =>
-                  selectedIndexes.length !== 0
-                    ? setAssignmentDialogType('tutors')
-                    : setAssignmentDialogType('')
-                } className={classes.nested}>
-                  <ListItemText primary="למדריך" style={{ textAlign: 'right', marginRight: '33%' }} className={classes.nested} />
-
-                </ListItem> : null}
+                {role !== 'tutor' ? (
+                  <ListItem
+                    button
+                    onClick={() =>
+                      selectedIndexes.length !== 0
+                        ? setAssignmentDialogType('tutors')
+                        : setAssignmentDialogType('')
+                    }
+                    className={classes.nested}>
+                    <ListItemText
+                      primary="למדריך"
+                      style={{ textAlign: 'right', marginRight: '33%' }}
+                      className={classes.nested}
+                    />
+                  </ListItem>
+                ) : null}
                 <AssignmentDialog
                   title="בחר מדריך"
                   optionsArr={tutorsOptions}
@@ -917,14 +904,20 @@ function TableTabScene({
                   }}
                 />
 
-                {role === 'departmentManager' || role === 'ceo' ? <ListItem button onClick={() =>
-                  selectedIndexes.length !== 0
-                    ? setAssignmentDialogType('coordinators')
-                    : setAssignmentDialogType('')
-                }>
-                  <ListItemText primary="לרכז" style={{ textAlign: 'right', marginRight: '33%' }} />
-
-                </ListItem> : null}
+                {role === 'departmentManager' || role === 'ceo' ? (
+                  <ListItem
+                    button
+                    onClick={() =>
+                      selectedIndexes.length !== 0
+                        ? setAssignmentDialogType('coordinators')
+                        : setAssignmentDialogType('')
+                    }>
+                    <ListItemText
+                      primary="לרכז"
+                      style={{ textAlign: 'right', marginRight: '33%' }}
+                    />
+                  </ListItem>
+                ) : null}
                 <AssignmentDialog
                   title="בחר רכז"
                   optionsArr={coordinatorsOptions}
@@ -972,14 +965,21 @@ function TableTabScene({
                   }}
                 />
 
-                {role === 'ceo' ? <ListItem button className={classes.nested} onClick={() =>
-                  selectedIndexes.length !== 0
-                    ? setAssignmentDialogType('departmentManagers')
-                    : setAssignmentDialogType('')
-                }>
-                  <ListItemText primary="למנהל מחלקה" style={{ textAlign: 'right', marginRight: '33%' }} />
-
-                </ListItem> : null}
+                {role === 'ceo' ? (
+                  <ListItem
+                    button
+                    className={classes.nested}
+                    onClick={() =>
+                      selectedIndexes.length !== 0
+                        ? setAssignmentDialogType('departmentManagers')
+                        : setAssignmentDialogType('')
+                    }>
+                    <ListItemText
+                      primary="למנהל מחלקה"
+                      style={{ textAlign: 'right', marginRight: '33%' }}
+                    />
+                  </ListItem>
+                ) : null}
                 <AssignmentDialog
                   title="בחר מנהל מחלקה"
                   optionsArr={departmentManagersOptions}
@@ -1031,9 +1031,9 @@ function TableTabScene({
           </List>
           <List
             component="nav"
-            className={classes.root} style={{ maxWidth: 250, border: 3, borderColor: 'black' }} >
-
-            <ListItem button onClick={handleOpenCheckDelete} disabled={loading} >
+            className={classes.root}
+            style={{ maxWidth: 250, border: 3, borderColor: 'black' }}>
+            <ListItem button onClick={handleOpenCheckDelete} disabled={loading}>
               <ListItemIcon>
                 <DeleteIcon />
               </ListItemIcon>
@@ -1049,7 +1049,7 @@ function TableTabScene({
               <DialogContent>
                 <DialogContentText className={classes.formText}>
                   אתה עומד למחוק את כל החניכים שנבחרו
-            </DialogContentText>
+                </DialogContentText>
               </DialogContent>
               <DialogActions>
                 <Button
@@ -1058,10 +1058,14 @@ function TableTabScene({
                   className={classes.button}
                   size="large">
                   בטל
-            </Button>
-                <Button onClick={deleteRow} color="secondary" className={classes.button} size="large">
+                </Button>
+                <Button
+                  onClick={deleteRow}
+                  color="secondary"
+                  className={classes.button}
+                  size="large">
                   אשר
-            </Button>
+                </Button>
               </DialogActions>
             </Dialog>
           </List>
@@ -1070,11 +1074,9 @@ function TableTabScene({
               {selectedIndexes.length} {rowText}
             </Typography>
           </List>
-
         </div>
-        : null
-      }
-    </div >
+      ) : null}
+    </div>
   );
 }
 

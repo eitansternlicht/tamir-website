@@ -71,11 +71,6 @@ const getTutors = (setRows, uid, setLoading, role) => {
 }
 
 const getCoordinators = (setRows, uid, setLoading, role) => {
-
-  // uid = !firebase.auth().currentUser.uid
-  //   ? tempUIDForTesting
-  //   : !firebase.auth().currentUser.uid;
-
   if (role === 'departmentManager')
     firestoreModule
       .getUsers()

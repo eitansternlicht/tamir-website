@@ -46,8 +46,6 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center'
   }
 }));
-// const role = 'ceo';
-// const uid = 'qIAOWJMzBXdSXHf20w8J';
 
 const uiConfig = {
   signInFlow: 'popup',
@@ -67,7 +65,6 @@ const popup = () => {
 };
 
 const MainScene = () => {
-  // const [isSignedIn, setIsSignedIn] = useState(true);
   const [userStatus, setUserStatus] = useState('SignedOut');
   const [loading, setLoading] = useState(true);
   const [loadingTutors, setLoadingTutors] = useState(true);
