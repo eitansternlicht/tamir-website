@@ -41,6 +41,7 @@ const getTutors = (setRows, uid, setLoading, role) => {
   // uid = !firebase.auth().currentUser.uid
   //   ? tempUIDForTesting
   //   : !firebase.auth().currentUser.uid;
+  console.log("role", role);
   let str = 'owners.' + role + 's';
   if (role === 'ceo') {
     firestoreModule
