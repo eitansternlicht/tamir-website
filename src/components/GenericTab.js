@@ -16,7 +16,6 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Collapse,
   Typography
 } from '@material-ui/core/';
 import { MsgToShow } from '.';
@@ -645,7 +644,6 @@ function GenericTab({
       for (let j = 0; j < ids.length; j++) {
         if (originalRows[i].fid === ids[j].fid) {
           if (rowsCopy[ids[j].id] !== undefined) {
-            console.log("date", originalRows[i].lastModified);
             if (originalRows[i].lastModified instanceof Date) {
               if (originalRows[i].lastModified.getTime() !==
                 new Date(rowsCopy[ids[j].id].lastModified).getTime())

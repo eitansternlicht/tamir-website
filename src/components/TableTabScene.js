@@ -457,7 +457,6 @@ function TableTabScene({
     handleCloseForm();
     let fixedStudent = fixStudentFields(newStudent);
     removeUnnecessaryFields(fixedStudent);
-    console.log("status", userStatus);
     fixedStudent = addOwners(role, uid, userStatus.owners, null, fixedStudent);
     fixedStudent = removeEmptyFields(fixedStudent);
     firestoreModule
@@ -745,7 +744,6 @@ function TableTabScene({
                   label="מין"
                   className={classes.textField}
                   onChange={handleChange('gender')}
-                  value={newStudent.gender}
                   SelectProps={{
                     MenuProps: {
                       className: classes.menu
@@ -759,13 +757,11 @@ function TableTabScene({
                 </TextField>
 
                 <PhoneInput
-                  required
                   error={formState.phoneErr}
                   country="IL"
                   label="מס' טלפון"
                   className={classes.textField}
                   placeholder="נייד"
-                  value={newStudent.phone}
                   onChange={handleChangePhone('phone')}
                 />
               </DialogContent>

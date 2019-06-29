@@ -146,7 +146,6 @@ class Select extends React.Component {
   handleClickOpen = () => {
     let canSend = checkIfAllFieldsHaveValue(mandatoryRows, this.state, this.chosen);
 
-    console.log('state', this.state);
     if (canSend === true) {
       const [, ...rest] = rows;
       this.props.onSelectingDone(

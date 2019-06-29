@@ -22,7 +22,6 @@ class BirthDayEditor extends React.Component {
   }
 
   handleChangeComplete = event => {
-    console.log('event', typeof event.target.value);
     this.setState({ dob: event.target.value }, () => this.props.onCommit());
   };
 
