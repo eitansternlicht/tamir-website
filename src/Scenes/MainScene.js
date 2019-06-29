@@ -247,7 +247,7 @@ const MainScene = () => {
     );
   else if (userStatus === 'SignedOutPermissionDenied')
     return (
-      <div style={{ backgroundColor: '#d6d6c2', height: 777 }}>
+      <div style={{ backgroundColor: '#EBEBEB', height: 777 }}>
         <AppBar>
           <Toolbar>
             <Typography variant="h6" style={{ flexGrow: 1 }} />
