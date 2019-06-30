@@ -183,7 +183,7 @@ const useStyles = makeStyles(theme => ({
   nested: {
     paddingLeft: theme.spacing(2),
     border: 3,
-    borderRadius: 3,
+    borderRadius: 3
   },
   actionsContainer: {
     display: 'flex',
@@ -579,7 +579,7 @@ function GenericTab({
         setGenericSaveButtonColor('secondary');
         setLoadingAdd(false);
       })
-      .catch(function (error) {
+      .catch(function(error) {
         console.log('Error adding', error);
       });
   };
@@ -639,18 +639,18 @@ function GenericTab({
         if (originalRows[i].fid === ids[j].fid) {
           if (rowsCopy[ids[j].id] !== undefined) {
             if (originalRows[i].lastModified instanceof Date) {
-              if (originalRows[i].lastModified.getTime() !==
-                new Date(rowsCopy[ids[j].id].lastModified).getTime())
+              if (
+                originalRows[i].lastModified.getTime() !==
+                new Date(rowsCopy[ids[j].id].lastModified).getTime()
+              )
+                rows.push(rowsCopy[ids[j].id]);
+            } else {
+              if (
+                originalRows[i].lastModified.toDate().getTime() !==
+                new Date(rowsCopy[ids[j].id].lastModified).getTime()
+              )
                 rows.push(rowsCopy[ids[j].id]);
             }
-
-            else {
-              if (originalRows[i].lastModified.toDate().getTime() !==
-                new Date(rowsCopy[ids[j].id].lastModified).getTime())
-                rows.push(rowsCopy[ids[j].id]);
-            }
-
-
           }
         }
       }
@@ -690,9 +690,9 @@ function GenericTab({
       <div className={classes.actionsContainer}>
         <div className={classes.actions}>
           <Button
+            style={{ color: '#0089c6', border: 3, borderStyle: 'solid' }}
+            variant="outlined"
             disabled={loadingAdd}
-            variant="contained"
-            color="primary"
             className={classes.button}
             onClick={() => handleClickOpenForm()}
             size="large">
@@ -792,11 +792,10 @@ function GenericTab({
           </Dialog>
         </div>
 
-
         <div className={classes.actions}>
           <Button
-            variant="contained"
-            color="primary"
+            style={{ color: '#0089c6', border: 3, borderStyle: 'solid' }}
+            variant="outlined"
             size="large"
             className={classes.button}
             onClick={() => exportToExcel()}>
@@ -807,7 +806,8 @@ function GenericTab({
 
         <div className={classes.saveContainer}>
           <Button
-            variant="contained"
+            style={{ border: 3, borderStyle: 'solid' }}
+            variant="outlined"
             size="large"
             color={genericSaveButtonColor}
             className={classes.button}
@@ -847,20 +847,25 @@ function GenericTab({
         }}
       />
 
-      {selectedIndexes.length !== 0 ?
+      {selectedIndexes.length !== 0 ? (
         <div className={classes.actionsContainer}>
-
           <List
             component="nav"
-            className={classes.root} style={{ maxWidth: 250, border: 3, borderColor: 'black' }} >
-
-            <ListItem button onClick={handleOpenCheckDelete} disabled={loading} >
+            className={classes.root}
+            style={{ maxWidth: 250, border: 3, borderColor: 'black' }}>
+            <ListItem button onClick={handleOpenCheckDelete} disabled={loading}>
               <ListItemIcon>
                 <DeleteIcon />
               </ListItemIcon>
-              {type === 'tutors' && <ListItemText primary="מחק מדריכים שנבחרו" style={{ textAlign: 'right' }} />}
-              {type === 'coordinators' && <ListItemText primary="מחק רכזים שנבחרו" style={{ textAlign: 'right' }} />}
-              {type === 'departmentManagers' && <ListItemText primary="מחק מנהלים שנבחרו" style={{ textAlign: 'right' }} />}
+              {type === 'tutors' && (
+                <ListItemText primary="מחק מדריכים שנבחרו" style={{ textAlign: 'right' }} />
+              )}
+              {type === 'coordinators' && (
+                <ListItemText primary="מחק רכזים שנבחרו" style={{ textAlign: 'right' }} />
+              )}
+              {type === 'departmentManagers' && (
+                <ListItemText primary="מחק מנהלים שנבחרו" style={{ textAlign: 'right' }} />
+              )}
 
               {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
             </ListItem>
@@ -889,13 +894,16 @@ function GenericTab({
                   className={classes.button}
                   size="large">
                   בטל
-              </Button>
-                <Button onClick={deleteRow} color="secondary" className={classes.button} size="large">
+                </Button>
+                <Button
+                  onClick={deleteRow}
+                  color="secondary"
+                  className={classes.button}
+                  size="large">
                   אשר
-              </Button>
+                </Button>
               </DialogActions>
             </Dialog>
-
           </List>
 
           <List className={classes.saveContainer}>
@@ -903,11 +911,8 @@ function GenericTab({
               {selectedIndexes.length} {rowText}
             </Typography>
           </List>
-
         </div>
-        : null
-      }
-
+      ) : null}
     </div>
   );
 }

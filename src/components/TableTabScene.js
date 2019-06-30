@@ -160,7 +160,10 @@ const RowRenderer = ({ row, renderBaseRow, ...props }) => {
   };
   const color = props.idx % 2 ? '#eee' : '#3333';
   return (
-    <div style={{ backgroundColor: color, backgroundPosition: 'absolute', borderBlockColor: color }}>{renderBaseRow({ ...props, row: rowToRender })}</div>
+    <div
+      style={{ backgroundColor: color, backgroundPosition: 'absolute', borderBlockColor: color }}>
+      {renderBaseRow({ ...props, row: rowToRender })}
+    </div>
   );
 };
 
@@ -469,7 +472,7 @@ function TableTabScene({
           visible: true
         });
       })
-      .catch(function (error) {
+      .catch(function(error) {
         console.log('Error adding student', error);
       });
   };
@@ -666,10 +669,10 @@ function TableTabScene({
       <div className={classes.actionsContainer}>
         <div className={classes.actions}>
           <Button
+            style={{ color: '#0089c6', border: 3, borderStyle: 'solid' }}
+            variant="outlined"
             disabled={loadingAdd}
             size="large"
-            variant="contained"
-            color="primary"
             className={classes.button}
             onClick={() => handleClickOpenForm()}>
             הוסף חניך
@@ -775,9 +778,9 @@ function TableTabScene({
 
         <div className={classes.actions}>
           <Button
+            style={{ color: '#0089c6', border: 3, borderStyle: 'solid' }}
+            variant="outlined"
             size="large"
-            variant="contained"
-            color="primary"
             className={classes.button}
             onClick={() => exportToExcel()}>
             ייצא לאקסל
@@ -787,8 +790,9 @@ function TableTabScene({
 
         <div className={classes.saveContainer}>
           <Button
+            style={{ border: 3, borderStyle: 'solid' }}
+            variant="outlined"
             size="large"
-            variant="contained"
             color={saveButtonColor}
             className={classes.button}
             onClick={() => (saveButtonColor === 'secondary' ? saveUpdates() : {})}

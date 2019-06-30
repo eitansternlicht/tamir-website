@@ -14,6 +14,7 @@ import { totalHoursWorked } from '../utils/local-db';
 import { aoaToFile } from '../utils/excell-utils';
 import _ from 'lodash';
 import moment from 'moment';
+// import { fontFamily } from '@material-ui/system';
 
 require('react-month-picker-input/dist/react-month-picker-input.css');
 
@@ -54,7 +55,9 @@ const ReportsTabScene = props => {
       <Box display="flex" flexDirection="row-reverse">
         <Box flex="1" flexDirection="column">
           <Box style={{ textAlign: 'right', marginBottom: 10 }}>
-            <Typography variant="h4" style={{ color: '#41ad48' }}>
+            <Typography
+              variant="h4"
+              style={{ color: '#41ad48', fontFamily: 'Alef', fontWeight: 'bold' }}>
               בחירת סוג דו״ח
             </Typography>
           </Box>
@@ -71,13 +74,13 @@ const ReportsTabScene = props => {
                 <FormControlLabel
                   value="monthlyReport"
                   control={<Radio color="primary" />}
-                  label="דוח מדריכים לפי חודש"
+                  label={'דו"ח מדריכים לפי חודש'}
                   labelPlacement="start"
                 />
                 <FormControlLabel
                   value="specificTutorReport"
                   control={<Radio color="primary" />}
-                  label="דוח מדריך ספציפי"
+                  label={'דו"ח מדריך ספציפי'}
                   labelPlacement="start"
                 />
               </RadioGroup>
@@ -85,7 +88,14 @@ const ReportsTabScene = props => {
           </Box>
           {reportType === 'monthlyReport' ? (
             <Box style={{ textAlign: 'right' }}>
-              <Typography variant="h4" style={{ color: '#41ad48', marginBottom: 10 }}>
+              <Typography
+                variant="h4"
+                style={{
+                  color: '#41ad48',
+                  marginBottom: 10,
+                  fontFamily: 'Alef',
+                  fontWeight: 'bold'
+                }}>
                 בחירת חודש
               </Typography>
               <MonthPickerInput

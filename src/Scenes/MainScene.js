@@ -44,7 +44,14 @@ const useStyles = makeStyles(theme => ({
     padding: 5
   },
   appBar: {
-    alignItems: 'center'
+    alignItems: 'center',
+    backgroundColor: '#F9F9F9'
+  },
+  tabLabel: {
+    fontFamily: 'Alef',
+    fontWeight: 'bold',
+    fontSize: 22,
+    color: '#41ad48'
   }
 }));
 
@@ -233,14 +240,29 @@ const MainScene = () => {
 
   if (userStatus === 'SignedOut')
     return (
-      <div style={{ backgroundColor: '#F9F9F9', height: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <div
+        style={{
+          backgroundColor: '#F9F9F9',
+          height: '100vh',
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
         <AppBar>
           <Toolbar>
             <Typography variant="h6" style={{ flexGrow: 1 }} />
             <h3 color="inherit">התחבר</h3>
           </Toolbar>
         </AppBar>
-        <img src={logo} style={{ width: 245, height: 128, alignSelf: 'flex-end', marginRight: 50, marginTop: 100  }} />
+        <img
+          src={logo}
+          style={{
+            width: 245,
+            height: 128,
+            alignSelf: 'flex-end',
+            marginRight: 50,
+            marginTop: 100
+          }}
+        />
         <div>
           <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
         </div>
@@ -248,14 +270,29 @@ const MainScene = () => {
     );
   else if (userStatus === 'SignedOutPermissionDenied')
     return (
-      <div style={{ backgroundColor: '#F9F9F9', height: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <div
+        style={{
+          backgroundColor: '#F9F9F9',
+          height: '100vh',
+          display: 'flex',
+          flexDirection: 'column'
+        }}>
         <AppBar>
           <Toolbar>
             <Typography variant="h6" style={{ flexGrow: 1 }} />
             <h3 color="inherit">התחבר</h3>
           </Toolbar>
         </AppBar>
-        <img src={logo} style={{ width: 245, height: 128, alignSelf: 'flex-end', marginRight: 50, marginTop: 100  }} />
+        <img
+          src={logo}
+          style={{
+            width: 245,
+            height: 128,
+            alignSelf: 'flex-end',
+            marginRight: 50,
+            marginTop: 100
+          }}
+        />
         <div>
           <Typography variant="h5" component="h5" style={{ paddingLeft: 730, color: 'red' }}>
             אין הרשאות גישה למספר זה
@@ -265,7 +302,17 @@ const MainScene = () => {
       </div>
     );
   else if (userStatus === 'SignedInCheckingPermissions')
-    return <div style={{display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center'}}><Loader type="Grid" color="#41ad48" height="100" width="100"/></div>;
+    return (
+      <div
+        style={{
+          display: 'flex',
+          height: '100vh',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+        <Loader type="Grid" color="#41ad48" height="100" width="100" />
+      </div>
+    );
   else {
     const { uid } = firebase.auth().currentUser;
     const { role } = userStatus;
@@ -285,10 +332,16 @@ const MainScene = () => {
               paddingTop: 7
             }}>
             <Button
-              style={{ marginRight: 'auto' }}
+              style={{
+                marginRight: 'auto',
+                fontSize: 18,
+                fontWeight: 'bold',
+                alignContent: 'center',
+                textAlign: 'right',
+                color: '#41ad48'
+              }}
               size="large"
-              variant="outlined"
-              color="primary"
+              color="41ad48"
               onClick={() => {
                 setUserStatus('SignedOut');
                 firebase.auth().signOut();
@@ -296,23 +349,53 @@ const MainScene = () => {
               התנתק
             </Button>
             <Tabs
-              indicatorColor="primary"
+              TabIndicatorProps={{
+                style: {
+                  backgroundColor: '#41ad48'
+                }
+              }}
               style={{ marginRight: 'auto' }}
               textColor="primary"
               variant="scrollable"
               scrollButtons="auto"
               value={displayedTab}
               onChange={handleChange}>
-              <Tab key={0} value="ReportsTabScene" label="דוחות" />
-              <Tab key={5} value="ImportFile" label="ייבוא קובץ מאקסל" />
+              <Tab
+                key={0}
+                value="ReportsTabScene"
+                label={<span className={classes.tabLabel}>דו״חות</span>}
+              />
+              <Tab
+                key={5}
+                value="ImportFile"
+                label={<span className={classes.tabLabel}>ייבוא מאקסל</span>}
+              />
               {role === 'ceo' ? (
-                <Tab key={1} value="DepartmentManagersTabScene" label="מנהלי מחלקות" />
+                <Tab
+                  key={1}
+                  value="DepartmentManagersTabScene"
+                  label={<span className={classes.tabLabel}>מנהלי מחלקות</span>}
+                />
               ) : null}
               {role === 'departmentManager' || role === 'ceo' ? (
-                <Tab key={2} value="CoordinatorsTabScene" label="רכזים" />
+                <Tab
+                  key={2}
+                  value="CoordinatorsTabScene"
+                  label={<span className={classes.tabLabel}>רכזים</span>}
+                />
               ) : null}
-              {role !== 'tutor' ? <Tab key={3} value="TutorsTabScene" label="מדריכים" /> : null}
-              <Tab key={4} value="TableTabScene" label="חניכים" />
+              {role !== 'tutor' ? (
+                <Tab
+                  key={3}
+                  value="TutorsTabScene"
+                  label={<span className={classes.tabLabel}>מדריכים</span>}
+                />
+              ) : null}
+              <Tab
+                key={4}
+                value="TableTabScene"
+                label={<span className={classes.tabLabel}>חניכים</span>}
+              />
             </Tabs>
           </AppBar>
 
