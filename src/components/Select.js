@@ -219,8 +219,8 @@ class Select extends React.Component {
             <TableBody>
               <TableRow style={{ width: 'auto', marginLeft: 'auto', marginRight: 'auto' }}>
                 <TableCell component="th" scope="row" />
-                <TableCell align="center"> מותאם ל </TableCell>
-                <TableCell align="center"> עמודה בטבלה </TableCell>
+                <TableCell align="center"> מותאם לעמודה מהאקסל </TableCell>
+                <TableCell align="center"> עמודה באתר </TableCell>
               </TableRow>
               {rows.map(row =>
                 row !== 'i' ? (

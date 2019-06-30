@@ -275,7 +275,8 @@ const MainScene = () => {
           backgroundColor: '#F9F9F9',
           height: '100vh',
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          alignItems: 'center'
         }}>
         <AppBar>
           <Toolbar>
@@ -294,7 +295,7 @@ const MainScene = () => {
           }}
         />
         <div>
-          <Typography variant="h5" component="h5" style={{ paddingLeft: 730, color: 'red' }}>
+          <Typography variant="h5" component="h5" style={{ textAlign: 'right', color: 'red' }}>
             אין הרשאות גישה למספר זה
           </Typography>
           <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
