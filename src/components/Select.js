@@ -68,8 +68,6 @@ class Select extends React.Component {
       staffMemberAppointed: '',
       comments: '',
       i: '',
-      okeeDialog: '',
-      errordialog: '',
       send: false,
       msgState: { title: '', body: '', visible: false }
     };
@@ -132,7 +130,7 @@ class Select extends React.Component {
     }
   };
 
-  chekdisabled = str => {
+  checkDisabled = str => {
     if (str === 'i') {
       return false;
     }
@@ -236,7 +234,7 @@ class Select extends React.Component {
                         onChange={this.handleChange(row)}
                         inputProps={{ 'aria-label': 'age' }}>
                         {this.props.fileRows.map(row => (
-                          <option key={row} disabled={this.chekdisabled(row)} value={row}>
+                          <option key={row} disabled={this.checkDisabled(row)} value={row}>
                             {row}
                           </option>
                         ))}

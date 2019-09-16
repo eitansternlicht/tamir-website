@@ -472,7 +472,7 @@ function TableTabScene({
           visible: true
         });
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log('Error adding student', error);
       });
   };
@@ -503,7 +503,7 @@ function TableTabScene({
   const exportToExcel = () => {
     const columnNames = columns.map(r => r.name);
     const aoa = [columnNames].concat(rowsCopy.map(studentToArr));
-    aoaToFile({ fileName: 'Students List', aoa });
+    aoaToFile({ fileName: 'רשימת חניכים', aoa });
   };
 
   const getTutorFromFid = fid => {
@@ -735,6 +735,7 @@ function TableTabScene({
                   label="מין"
                   className={classes.textField}
                   onChange={handleChange('gender')}
+                  value={newStudent.gender}
                   SelectProps={{
                     MenuProps: {
                       className: classes.menu

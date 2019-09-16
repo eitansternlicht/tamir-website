@@ -248,9 +248,10 @@ const MainScene = () => {
           flexDirection: 'column'
         }}>
         <AppBar>
-          <Toolbar>
-            <Typography variant="h6" style={{ flexGrow: 1 }} />
-            <h3 color="inherit">התחבר</h3>
+          <Toolbar style={{ textAlign: 'center' }}>
+            <Typography variant="h3" style={{ flexGrow: 1, alignContent: 'center', alignItems: 'center' }} >
+              <h3 color="inherit"  >דף התחברות</h3>
+            </Typography>
           </Toolbar>
         </AppBar>
         <img
@@ -398,6 +399,17 @@ const MainScene = () => {
                 label={<span className={classes.tabLabel}>חניכים</span>}
               />
             </Tabs>
+
+            <img
+              src={logo}
+              style={{
+                width: 124,
+                height: 67,
+                //alignSelf: 'flex-end',
+                marginRight: 70,
+               // marginTop: 5
+              }}
+            />
           </AppBar>
 
           {displayedTab === 'TableTabScene' ? (

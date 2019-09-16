@@ -579,7 +579,7 @@ function GenericTab({
         setGenericSaveButtonColor('secondary');
         setLoadingAdd(false);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log('Error adding', error);
       });
   };
@@ -611,7 +611,9 @@ function GenericTab({
   const exportToExcel = () => {
     const columnNames = columns.map(r => r.name);
     const aoa = [columnNames].concat(rowsCopy.map(rowToArr));
-    aoaToFile({ fileName: 'Users List', aoa });
+    if (type === 'tutors') aoaToFile({ fileName: 'רשימת מדריכים', aoa });
+    if (type === 'coordinators') aoaToFile({ fileName: 'רשימת רכזים', aoa });
+    if (type === 'departmentManagers') aoaToFile({ fileName: 'רשימת מנהלי מחלקות', aoa });
   };
 
   const firstTimeLoading = () => {

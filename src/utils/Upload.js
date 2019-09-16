@@ -30,7 +30,7 @@ class Upload extends Component {
                     this.props.onNewFile(this.state.aoo.map(obj => entriesToObj(fileRowsToTableRows.map(([tableName, fileName]) => [tableName, obj[fileName]]))))
                 }} fileRows={Object.keys(this.state.aoo[0])} /> : <div>
                         <Dropzone onGetFile={(aoa) => this.setState({ aoo: this.aoaToAoo(aoa), selecting: aoa.length > 0, successfullUploaded: aoa.length > 0 })} />
-                        <Typography align='center' style={{ fontSize: 40 }}>גרור / לחץ לבחירת קובץ</Typography>
+                        <Typography align='center' style={{ fontSize: 40, color: '#41ad48' }}>גרור / לחץ לבחירת קובץ</Typography>
                     </div>
                 }
 
