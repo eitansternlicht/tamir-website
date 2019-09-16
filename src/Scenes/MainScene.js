@@ -17,6 +17,7 @@ import { firestoreModule } from '../Firebase/Firebase';
 import Upload from '../utils/Upload';
 import ReportsTabScene from './ReportsTabScene';
 import logo from '../assets/images/tamir_logoshakuf.png';
+import backG from '../assets/images/S.jpg';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -245,7 +246,11 @@ const MainScene = () => {
           backgroundColor: '#F9F9F9',
           height: '100vh',
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          backgroundImage: `url(${backG})`,
+          backgroundSize: 'cover',
+          // backgroundRepeat: 'no-repeat',
+          // backgroundPosition: 'center'
         }}>
         <AppBar>
           <Toolbar style={{ textAlign: 'center' }}>
@@ -277,12 +282,16 @@ const MainScene = () => {
           height: '100vh',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center'
+          //     backgroundImage: `url(${ backG })`,
+          //     backgroundSize: 'cover',
+          //     backgroundRepeat  : 'no-repeat',
+          //  backgroundPosition: 'center'
         }}>
         <AppBar>
-          <Toolbar>
-            <Typography variant="h6" style={{ flexGrow: 1 }} />
-            <h3 color="inherit">התחבר</h3>
+          <Toolbar style={{ textAlign: 'center' }}>
+            <Typography variant="h3" style={{ flexGrow: 1, alignContent: 'center', alignItems: 'center' }} >
+              <h3 color="inherit"  >דף התחברות</h3>
+            </Typography>
           </Toolbar>
         </AppBar>
         <img
@@ -297,7 +306,7 @@ const MainScene = () => {
         />
         <div>
           <Typography variant="h5" component="h5" style={{ textAlign: 'right', color: 'red' }}>
-            אין הרשאות גישה למספר זה
+            !אין הרשאות גישה למספר זה
           </Typography>
           <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth()} />
         </div>
@@ -407,7 +416,7 @@ const MainScene = () => {
                 height: 67,
                 //alignSelf: 'flex-end',
                 marginRight: 70,
-               // marginTop: 5
+                // marginTop: 5
               }}
             />
           </AppBar>
