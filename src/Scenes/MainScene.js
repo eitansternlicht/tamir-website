@@ -282,8 +282,8 @@ const MainScene = () => {
           height: '100vh',
           display: 'flex',
           flexDirection: 'column',
-          //     backgroundImage: `url(${ backG })`,
-          //     backgroundSize: 'cover',
+          backgroundImage: `url(${backG})`,
+          backgroundSize: 'cover',
           //     backgroundRepeat  : 'no-repeat',
           //  backgroundPosition: 'center'
         }}>
@@ -352,10 +352,12 @@ const MainScene = () => {
                 color: '#41ad48'
               }}
               size="large"
-              color="41ad48"
+              
               onClick={() => {
-                setUserStatus('SignedOut');
-                firebase.auth().signOut();
+                firebase.auth().signOut().then(() => {
+                  setUserStatus('SignedOut');
+                });
+                
               }}>
               התנתק
             </Button>
