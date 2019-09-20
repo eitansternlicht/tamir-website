@@ -8,13 +8,20 @@ const getStudents = (setRows, setLoading, uid, role) => {
       .onSnapshot(querySnapshot => {
         setRows(querySnapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id })))
         setLoading(false);
+      }, err => {
+        console.log(err);
+        setLoading(false);
       });
   else if (role === 'tutor')
     firestoreModule
       .getStudents()
       .where(str, 'array-contains', { uid })
       .onSnapshot(querySnapshot => {
+        console.log(querySnapshot);
         setRows(querySnapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id })))
+        setLoading(false);
+      }, err => {
+        console.log(err);
         setLoading(false);
       });
   else {
@@ -23,6 +30,9 @@ const getStudents = (setRows, setLoading, uid, role) => {
       .where(str, 'array-contains', uid)
       .onSnapshot(querySnapshot => {
         setRows(querySnapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id })))
+        setLoading(false);
+      }, err => {
+        console.log(err);
         setLoading(false);
       });
   }
@@ -33,6 +43,8 @@ const getUsersPhones = (setIDArr) => {
     .getUsers()
     .onSnapshot(snapshot => {
       setIDArr(snapshot.docs.map(doc => doc.data()['phone']));
+    }, err => {
+      console.log(err);
     });
 }
 const getStudentsPhones = (setIDArr) => {
@@ -40,11 +52,12 @@ const getStudentsPhones = (setIDArr) => {
     .getStudents()
     .onSnapshot(snapshot => {
       setIDArr(snapshot.docs.map(doc => doc.data()['phone']));
+    }, err => {
+      console.log(err);
     });
 }
 
 const getTutors = (setRows, uid, setLoading, role) => {
-
 
   let str = 'owners.' + role + 's';
   if (role === 'ceo') {
@@ -54,6 +67,9 @@ const getTutors = (setRows, uid, setLoading, role) => {
         let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
         answer = answer.filter(row => row.role === 'tutor');
         setRows(answer);
+        setLoading(false);
+      }, err => {
+        console.log(err);
         setLoading(false);
       });
   }
@@ -65,6 +81,9 @@ const getTutors = (setRows, uid, setLoading, role) => {
         let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
         answer = answer.filter(row => row.role === 'tutor');
         setRows(answer);
+        setLoading(false);
+      }, err => {
+        console.log(err);
         setLoading(false);
       });
   }
@@ -80,6 +99,9 @@ const getCoordinators = (setRows, uid, setLoading, role) => {
         answer = answer.filter(row => row.role === 'coordinator');
         setRows(answer);
         setLoading(false);
+      }, err => {
+        console.log(err);
+        setLoading(false);
       });
   else
     firestoreModule
@@ -88,6 +110,9 @@ const getCoordinators = (setRows, uid, setLoading, role) => {
         let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
         answer = answer.filter(row => row.role === 'coordinator');
         setRows(answer);
+        setLoading(false);
+      }, err => {
+        console.log(err);
         setLoading(false);
       });
 
@@ -102,6 +127,9 @@ const getDepartmentManagers = (setRows, setLoading) => {
       let answer = snapshot.docs.map(doc => ({ ...doc.data(), fid: doc.id }));
       answer = answer.filter(row => row.role === 'departmentManager');
       setRows(answer);
+      setLoading(false);
+    }, err => {
+      console.log(err);
       setLoading(false);
     });
 

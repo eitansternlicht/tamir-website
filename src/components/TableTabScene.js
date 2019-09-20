@@ -474,6 +474,12 @@ function TableTabScene({
       })
       .catch(function (error) {
         console.log('Error adding student', error);
+        setLoadingAdd(false);
+        setMsgState({
+          title: 'הוספת חניך',
+          body: '!ארעה שגיאה בהוספת החניך',
+          visible: true
+        });
       });
   };
 
