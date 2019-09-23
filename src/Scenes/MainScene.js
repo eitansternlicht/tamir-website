@@ -248,8 +248,8 @@ const MainScene = () => {
           height: '100vh',
           display: 'flex',
           flexDirection: 'column',
-          backgroundImage: `url(${backG})`,
-          backgroundSize: 'cover',
+          // backgroundImage: `url(${backG})`,
+          // backgroundSize: 'cover',
           // backgroundRepeat: 'no-repeat',
           // backgroundPosition: 'center'
         }}>
@@ -283,8 +283,8 @@ const MainScene = () => {
           height: '100vh',
           display: 'flex',
           flexDirection: 'column',
-          backgroundImage: `url(${backG})`,
-          backgroundSize: 'cover',
+          // backgroundImage: `url(${backG})`,
+          // backgroundSize: 'cover',
           //     backgroundRepeat  : 'no-repeat',
           //  backgroundPosition: 'center'
         }}>
