@@ -1,13 +1,20 @@
 {
-  "main.css": "/tamir-website/static/css/main.a140e2a9.chunk.css",
-  "main.js": "/tamir-website/static/js/main.c3c4558e.chunk.js",
-  "main.js.map": "/tamir-website/static/js/main.c3c4558e.chunk.js.map",
-  "runtime~main.js": "/tamir-website/static/js/runtime~main.2ff394f1.js",
-  "runtime~main.js.map": "/tamir-website/static/js/runtime~main.2ff394f1.js.map",
-  "static/js/2.6b673174.chunk.js": "/tamir-website/static/js/2.6b673174.chunk.js",
-  "static/js/2.6b673174.chunk.js.map": "/tamir-website/static/js/2.6b673174.chunk.js.map",
-  "index.html": "/tamir-website/index.html",
-  "precache-manifest.1729a7e2622ba86cda9b4ee2433d5b67.js": "/tamir-website/precache-manifest.1729a7e2622ba86cda9b4ee2433d5b67.js",
-  "service-worker.js": "/tamir-website/service-worker.js",
-  "static/css/main.a140e2a9.chunk.css.map": "/tamir-website/static/css/main.a140e2a9.chunk.css.map"
+  "files": {
+    "main.css": "/tamir-website/static/css/main.9b30b2b1.chunk.css",
+    "main.js": "/tamir-website/static/js/main.623d07b5.chunk.js",
+    "main.js.map": "/tamir-website/static/js/main.623d07b5.chunk.js.map",
+    "runtime~main.js": "/tamir-website/static/js/runtime~main.0a9d1a45.js",
+    "runtime~main.js.map": "/tamir-website/static/js/runtime~main.0a9d1a45.js.map",
+    "static/css/2.9ad1803d.chunk.css": "/tamir-website/static/css/2.9ad1803d.chunk.css",
+    "static/js/2.1608fa59.chunk.js": "/tamir-website/static/js/2.1608fa59.chunk.js",
+    "static/js/2.1608fa59.chunk.js.map": "/tamir-website/static/js/2.1608fa59.chunk.js.map",
+    "index.html": "/tamir-website/index.html",
+    "precache-manifest.09a9c485e0adbf8daaafac489152251b.js": "/tamir-website/precache-manifest.09a9c485e0adbf8daaafac489152251b.js",
+    "service-worker.js": "/tamir-website/service-worker.js",
+    "static/css/2.9ad1803d.chunk.css.map": "/tamir-website/static/css/2.9ad1803d.chunk.css.map",
+    "static/css/main.9b30b2b1.chunk.css.map": "/tamir-website/static/css/main.9b30b2b1.chunk.css.map",
+    "static/media/App.css": "/tamir-website/static/media/Alef-Regular.fce9cab7.ttf",
+    "static/media/S.jpg": "/tamir-website/static/media/S.5b3b9cd5.jpg",
+    "static/media/tamir_logoshakuf.png": "/tamir-website/static/media/tamir_logoshakuf.1dceb69b.png"
+  }
 }
