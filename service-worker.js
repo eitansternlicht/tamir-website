@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/tamir-website/precache-manifest.09a9c485e0adbf8daaafac489152251b.js"
+  "/tamir-website/precache-manifest.68ea0cfe655d28be22ddd302ac9cbbb6.js"
 );
 
 self.addEventListener('message', (event) => {
