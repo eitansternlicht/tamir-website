@@ -16,8 +16,10 @@ const entriesToObj = entries =>
 
 const zip = (arr1, arr2) => arr1.map((elm, i) => [elm, arr2[i]]);
 
-const checkIfAllFieldsHaveValue = (fields, obj, hasValue) => {
-  return fields.filter(field => hasValue(obj, field)).length === fields.length;
+const exists = (obj, field) => obj[field];
+
+const checkIfAllFieldsHaveValue = (fields, obj, hasValue = exists) => {
+  return fields.every(field => hasValue(obj, field));
 };
 
 const removeEmptyFields = obj => entriesToObj(Object.entries(obj).filter(([, v]) => v));

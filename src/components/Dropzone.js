@@ -4,12 +4,12 @@ import { filesToAOAs } from '../utils/excell-utils';
 import { MsgToShow } from './MsgToShow';
 
 import logo from '../assets/images/tamir_logoshakuf.png';
-
+const hasAtLeastOneValue = arr => arr.some(v => v !== undefined && v !== null && v !== '');
 const Dropzone = ({ onGetFile }) => {
   const [msgState, setMsgState] = useState({ title: '', body: '', visible: false });
   const onDrop = useCallback(acceptedFiles => {
     filesToAOAs(acceptedFiles).then(aoas => {
-      if (aoas.length > 0) onGetFile(aoas[0].aoa);
+      if (aoas.length > 0) onGetFile(aoas[0].aoa.filter(hasAtLeastOneValue));
       else {
         setMsgState({
           title: 'ייבוא מאקסל',
@@ -45,4 +45,4 @@ const Dropzone = ({ onGetFile }) => {
   );
 };
 
-export default Dropzone;
+export { Dropzone };
