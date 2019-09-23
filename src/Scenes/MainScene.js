@@ -162,11 +162,8 @@ const MainScene = () => {
   function getAppropriateStudentsRows() {
     const { uid } = firebase.auth().currentUser;
     const { role } = userStatus;
-    console.log("loading", loading);
 
     if (role === 'tutor' && !loading) {
-      console.log("loading2", loading);
-      console.log("stds", studentsRows)
       return (
         <TableTabScene
           originalRows={originalRows}
