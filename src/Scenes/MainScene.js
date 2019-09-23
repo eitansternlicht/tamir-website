@@ -495,7 +495,11 @@ const MainScene = () => {
 
           {displayedTab === 'ReportsTabScene' ? (
             <div className={classes.table}>
-              <ReportsTabScene tutors={tutorsOriginalRows} />
+              {role !== 'tutor' ? <ReportsTabScene tutors={tutorsOriginalRows} />
+                : <ReportsTabScene tutor={{
+                  fid: firebase.auth().currentUser.uid
+                }} />
+              }
             </div>
           ) : null}
         </div>
