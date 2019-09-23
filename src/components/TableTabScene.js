@@ -155,7 +155,7 @@ function getRows(rows, filters) {
 const RowRenderer = ({ row, renderBaseRow, ...props }) => {
   const rowToRender = {
     ...row,
-    lastModified: moment(row.lastModified).format('DD/MM/YYYY HH:MM:SS'),
+    lastModified: moment(row.lastModified).format('DD/MM/YYYY HH:mm:ss'),
     dob: row.dob === '' ? '' : moment(row.dob).format('DD/MM/YYYY')
   };
   const color = props.idx % 2 ? '#eee' : '#3333';
@@ -280,11 +280,12 @@ function TableTabScene({
       if (i >= fromRow && i <= toRow) {
         newRows[i] = { ...rowsCopy[i], ...updated };
         newRows[i].lastModified = updateDate();
+
       } else {
         newRows[i] = { ...rowsCopy[i] };
         newRows[i].lastModified = new Date(newRows[i].lastModified);
+
       }
-      if (newRows[i].dob !== '') new Date(newRows[i].dob);
     }
 
     setRows(newRows);
